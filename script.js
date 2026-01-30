@@ -1,14 +1,14 @@
-// Constantes e Configurações
-const STORAGE_KEY = 'docz_mirrors_v2'; 
+// ==========================================
+// CONFIGURAÇÕES E CONSTANTES
+// ==========================================
+const STORAGE_KEY = 'docz_mirrors_v8'; 
 
-// Tipos
 const MirrorType = {
     CAIXA: 'caixa',
     DOCUMENTO: 'documento',
     AVULSO: 'avulso'
 };
 
-// Configuração Padrão
 const defaultMirrorConfig = {
     id: '',
     name: '',
@@ -17,24 +17,40 @@ const defaultMirrorConfig = {
     logoImage: null,
     logoSize: 2,
     
-    // Valores customizados vazios
     customValues: {
-        'code_field': '', 
+        // Cabeçalho
         'top_label': 'SETOR', 
-        'top_value': '',      
+        'top_value': '',
+        
         'title_label': 'TÍTULO', 
-        'title_value': '',       
+        'title_value': '',
+        
+        // Texto Central
         'main_text': '',         
-        'ano': '',
-        'interm': '',
-        'dest': '',
-        'barcode': ''
+        
+        // Datas
+        'data_1_label': 'ANO PRODUÇÃO',
+        'data_1_value': '',
+        'data_2_label': 'ANO DESTINAÇÃO',
+        'data_2_value': '',
+        
+        // Rodapé
+        'interm_label': 'INTERMEDIÁRIO',
+        'interm_value': '',
+        
+        'dest_label': 'DESTINAÇÃO FINAL',
+        'dest_value': '',
+        
+        'barcode_label': 'CÓDIGO DE BARRAS',
+        'barcode_value': ''
     },
     
     layoutOption: 2
 };
 
-// Opções em Português
+// --- OPÇÕES DOS DROPDOWNS ---
+
+// Cabeçalho
 const labelOptions = [
     { value: 'SETOR', label: 'Setor' },
     { value: 'DEPARTAMENTO', label: 'Departamento' },
@@ -50,13 +66,46 @@ const titleOptions = [
     { value: 'PROJETO', label: 'Projeto' }
 ];
 
-// Estado da Aplicação
+// Datas
+const data1Options = [
+    { value: 'ANO PRODUÇÃO', label: 'Ano Produção' },
+    { value: 'DATA INICIAL', label: 'Data Inicial' },
+    { value: 'VIGÊNCIA', label: 'Vigência' }
+];
+
+const data2Options = [
+    { value: 'ANO DESTINAÇÃO', label: 'Ano Destinação' },
+    { value: 'DATA FINAL', label: 'Data Final' },
+    { value: 'VALIDADE', label: 'Validade' }
+];
+
+// Rodapé
+const intermOptions = [
+    { value: 'INTERMEDIÁRIO', label: 'Intermediário' },
+    { value: 'PRAZO', label: 'Prazo' },
+    { value: 'CORRENTE', label: 'Fase Corrente' },
+    { value: 'F. INTERM.', label: 'F. Interm.' }
+];
+
+const destOptions = [
+    { value: 'DESTINAÇÃO FINAL', label: 'Destinação Final' },
+    { value: 'DESTINAÇÃO', label: 'Destinação' },
+    { value: 'DESTINO', label: 'Destino' },
+    { value: 'AÇÃO FINAL', label: 'Ação Final' }
+];
+
+const barcodeOptions = [
+    { value: 'CÓDIGO DE BARRAS', label: 'Código de Barras' },
+    { value: 'IDENTIFICADOR', label: 'Identificador' },
+    { value: 'PROTOCOLO', label: 'Protocolo' },
+    { value: 'CHAVE', label: 'Chave' }
+];
+
 let state = {
     mirrors: [],
     currentConfig: { ...defaultMirrorConfig },
     selectedMirrorId: null,
-    isEditing: false,
-    mirrorToDelete: null
+    editContext: { key: null, label: '' } 
 };
 
 // ==========================================
@@ -92,7 +141,26 @@ function showToast(message) {
 }
 
 // ==========================================
-// RENDERIZAÇÃO DO FORMULÁRIO (Configurações)
+// COMPONENTES DE RENDERIZAÇÃO
+// ==========================================
+
+function renderPencilButton(key, label) {
+    const hasValue = state.currentConfig.customValues[key]?.length > 0;
+    const btnClass = hasValue ? 'btn-primary' : 'btn-outline';
+    
+    return `
+        <button type="button" 
+                class="btn ${btnClass}" 
+                style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;" 
+                onclick="openEditModal('${key}', '${label}')" 
+                title="Editar ${label}">
+            ✏️
+        </button>
+    `;
+}
+
+// ==========================================
+// RENDERIZAÇÃO DO FORMULÁRIO (ESQUERDA)
 // ==========================================
 
 function renderForm() {
@@ -109,126 +177,121 @@ function renderForm() {
                 <input type="text" class="form-input" placeholder="Nome do Modelo (ex: Padrão RH)" 
                        value="${config.name}" oninput="updateConfig('name', this.value)">
                 
-                <div class="checkbox-item">
-                    <input type="checkbox" id="includeLogo" ${config.includeLogo ? 'checked' : ''}
-                           onchange="updateConfig('includeLogo', this.checked)">
-                    <label for="includeLogo">Incluir Logo</label>
-                </div>
-
-                ${config.includeLogo ? `
-                    <div class="upload-area">
-                        ${config.logoImage ? 
-                            `<div class="flex items-center gap-3">
-                                <img src="${config.logoImage}" style="height:40px;">
-                                <button class="btn btn-outline btn-sm" onclick="removeLogo()">Remover</button>
-                             </div>` : 
-                             // MUDANÇA AQUI: De Upload Logo para Selecionar Logo
-                            `<button class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Selecionar Logo</button>`
-                        }
-                        <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
+                <div class="flex items-center justify-between">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeLogo" ${config.includeLogo ? 'checked' : ''}
+                               onchange="updateConfig('includeLogo', this.checked)">
+                        <label for="includeLogo">Incluir Logo</label>
                     </div>
-                ` : ''}
+                    
+                    ${config.includeLogo ? `
+                        <div class="flex items-center gap-2">
+                            ${config.logoImage ? 
+                                `<img src="${config.logoImage}" style="height:30px; border:1px solid #ccc;">
+                                 <button type="button" class="btn btn-outline btn-sm" onclick="removeLogo()">❌</button>` : 
+                                `<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Selecionar</button>`
+                            }
+                            <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
+                        </div>
+                    ` : ''}
+                </div>
             </div>
 
             <hr style="border-color: var(--color-border);">
 
-            <div class="space-y-4">
+            <div class="space-y-3">
                 <h3 class="section-header">Cabeçalho</h3>
                 
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-xs font-bold text-muted-foreground">Rótulo Linha 1</label>
-                        <select class="form-input" onchange="updateCustomValue('top_label', this.value)">
-                            ${labelOptions.map(opt => `
-                                <option value="${opt.value}" ${values.top_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                            `).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-muted-foreground">Valor Linha 1</label>
-                        <input type="text" class="form-input" value="${values.top_value || ''}" 
-                               placeholder="Ex: FACULDADE SENAC"
-                               oninput="updateCustomValue('top_value', this.value)">
-                    </div>
+                <div class="flex gap-2 items-center">
+                    <select class="form-input flex-1" onchange="updateCustomValue('top_label', this.value)">
+                        ${labelOptions.map(opt => `
+                            <option value="${opt.value}" ${values.top_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                        `).join('')}
+                    </select>
+                    ${renderPencilButton('top_value', 'Valor da Linha 1')}
                 </div>
 
-                <div>
-                    <label class="text-xs font-bold text-muted-foreground">Código Numérico (Bloco Esquerdo)</label>
-                    <input type="text" class="form-input" value="${values.code_field || ''}" 
-                           placeholder="Ex: 000"
-                           oninput="updateCustomValue('code_field', this.value)">
-                </div>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-xs font-bold text-muted-foreground">Rótulo Título</label>
-                        <select class="form-input" onchange="updateCustomValue('title_label', this.value)">
-                            ${titleOptions.map(opt => `
-                                <option value="${opt.value}" ${values.title_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                            `).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-muted-foreground">Valor Título</label>
-                        <input type="text" class="form-input" value="${values.title_value || ''}" 
-                               placeholder="Ex: ADM GERAL"
-                               oninput="updateCustomValue('title_value', this.value)">
-                    </div>
+                <div class="flex gap-2 items-center">
+                    <select class="form-input flex-1" onchange="updateCustomValue('title_label', this.value)">
+                        ${titleOptions.map(opt => `
+                            <option value="${opt.value}" ${values.title_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                        `).join('')}
+                    </select>
+                    ${renderPencilButton('title_value', 'Valor da Linha 2')}
                 </div>
             </div>
 
             <hr style="border-color: var(--color-border);">
 
-            <div class="space-y-4">
+            <div class="space-y-3">
                 <h3 class="section-header">Texto Central</h3>
-                <textarea class="form-input" style="height: 100px; resize: vertical;" 
-                          placeholder="Cole o texto descritivo aqui..."
-                          oninput="updateCustomValue('main_text', this.value)">${values.main_text || ''}</textarea>
+                <div class="flex gap-2 items-center">
+                    <select class="form-input flex-1" disabled style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155;">
+                        <option selected>Conteúdo do Bloco</option>
+                    </select>
+                    ${renderPencilButton('main_text', 'Texto Central')}
+                </div>
             </div>
 
             <hr style="border-color: var(--color-border);">
 
-            <div class="space-y-4">
-                <h3 class="section-header">Tabela de Prazos</h3>
+            <div class="space-y-3">
+                <h3 class="section-header">Rodapé</h3>
                 
                 <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-xs font-bold text-muted-foreground">Ano / Período</label>
-                        <input type="text" class="form-input" value="${values.ano || ''}" 
-                               placeholder="Ex: 2024"
-                               oninput="updateCustomValue('ano', this.value)">
+                    
+                    <div class="flex gap-1 items-center">
+                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_1_label', this.value)">
+                            ${data1Options.map(opt => `
+                                <option value="${opt.value}" ${values.data_1_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                            `).join('')}
+                        </select>
+                        ${renderPencilButton('data_1_value', 'Valor Data 1')}
                     </div>
-                    <div>
-                        <label class="text-xs font-bold text-muted-foreground">Prazo Intermediário</label>
-                        <input type="text" class="form-input" value="${values.interm || ''}" 
-                               placeholder="Ex: ."
-                               oninput="updateCustomValue('interm', this.value)">
+
+                    <div class="flex gap-1 items-center">
+                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_2_label', this.value)">
+                            ${data2Options.map(opt => `
+                                <option value="${opt.value}" ${values.data_2_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                            `).join('')}
+                        </select>
+                        ${renderPencilButton('data_2_value', 'Valor Data 2')}
                     </div>
-                    <div class="col-span-2">
-                        <label class="text-xs font-bold text-muted-foreground">Destinação Final</label>
-                        <input type="text" class="form-input" value="${values.dest || ''}" 
-                               placeholder="Ex: GUARDA PERMANENTE"
-                               oninput="updateCustomValue('dest', this.value)">
+
+                    <div class="flex gap-1 items-center">
+                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('interm_label', this.value)">
+                            ${intermOptions.map(opt => `
+                                <option value="${opt.value}" ${values.interm_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                            `).join('')}
+                        </select>
+                        ${renderPencilButton('interm_value', 'Valor Intermediário')}
+                    </div>
+
+                    <div class="flex gap-1 items-center">
+                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('dest_label', this.value)">
+                            ${destOptions.map(opt => `
+                                <option value="${opt.value}" ${values.dest_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                            `).join('')}
+                        </select>
+                        ${renderPencilButton('dest_value', 'Valor Destinação')}
+                    </div>
+
+                    <div class="col-span-2 flex gap-2 items-center">
+                        <select class="form-input flex-1" onchange="updateCustomValue('barcode_label', this.value)">
+                            ${barcodeOptions.map(opt => `
+                                <option value="${opt.value}" ${values.barcode_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                            `).join('')}
+                        </select>
+                        ${renderPencilButton('barcode_value', 'Valor Código')}
                     </div>
                 </div>
             </div>
-
-            <div class="space-y-4">
-                <h3 class="section-header">Rodapé</h3>
-                <div>
-                    <label class="text-xs font-bold text-muted-foreground">Código de Barras</label>
-                    <input type="text" class="form-input" value="${values.barcode || ''}" 
-                           placeholder="Digite o código"
-                           oninput="updateCustomValue('barcode', this.value)">
-                </div>
-            </div>
-
         </div>
     `;
 }
 
 // ==========================================
-// RENDERIZAÇÃO DO PREVIEW (Visualização)
+// RENDERIZAÇÃO DO PREVIEW (DIREITA)
 // ==========================================
 
 function renderPreview() {
@@ -240,16 +303,36 @@ function renderPreview() {
 
     const data = {
         topLabel: vals.top_label || 'SETOR',
-        topValue: vals.top_value || '', 
-        code: vals.code_field || '',    
+        topValue: vals.top_value || '',
+        
         titleLabel: vals.title_label || 'TÍTULO',
         titleValue: vals.title_value || '', 
+        
         text: vals.main_text || '',     
-        ano: vals.ano || '',
-        interm: vals.interm || '',
-        dest: vals.dest || '',
-        barcode: vals.barcode || ''
+        
+        // Datas
+        d1Val: vals.data_1_value || '',
+        d2Val: vals.data_2_value || '',
+
+        // Rodapé
+        intermLabel: vals.interm_label || 'INTERMEDIÁRIO',
+        intermVal: vals.interm_value || '',
+        
+        destLabel: vals.dest_label || 'DESTINAÇÃO FINAL',
+        destVal: vals.dest_value || '',
+        
+        barcodeVal: vals.barcode_value || ''
     };
+
+    // Lógica para juntar os anos com traço
+    let anoDisplay = data.d1Val;
+    if (data.d2Val) {
+        if (anoDisplay) {
+            anoDisplay += ' - ' + data.d2Val;
+        } else {
+            anoDisplay = data.d2Val;
+        }
+    }
 
     container.innerHTML = `
         <div class="senac-container">
@@ -271,8 +354,8 @@ function renderPreview() {
             </div>
 
             <div class="senac-row" style="min-height: 35px;">
-                <div class="senac-col-label" style="justify-content: center;">
-                    <span class="senac-value">${data.code}</span>
+                <div class="senac-col-label">
+                    <span class="senac-label">${data.titleLabel}:</span>
                 </div>
                 <div class="senac-col-value">
                     <span class="senac-value">${data.titleValue}</span>
@@ -281,7 +364,7 @@ function renderPreview() {
 
             <div class="senac-row">
                 <div class="senac-text-block">
-                    ${data.text ? data.text : ''}
+                    ${data.text ? data.text.replace(/\n/g, '<br>') : ''}
                 </div>
             </div>
 
@@ -289,37 +372,71 @@ function renderPreview() {
                 <table class="senac-footer-table">
                     <tr>
                         <th style="width: 25%;">ANO</th>
-                        <th colspan="2">PRAZO DE GUARDA</th>
+                        <th colspan="2">RODAPÉ</th> 
                     </tr>
                     <tr>
-                        <td rowspan="2" style="vertical-align: middle; height: 50px;">${data.ano}</td>
-                        <td style="width: 37.5%;">INTERMEDIÁRIO</td>
-                        <td style="width: 37.5%;">DESTINAÇÃO FINAL</td>
+                        <td rowspan="2" style="vertical-align: middle; height: 50px; font-weight: bold;">
+                            ${anoDisplay}
+                        </td>
+                        <td style="width: 37.5%;">${data.intermLabel}</td>
+                        <td style="width: 37.5%;">${data.destLabel}</td>
                     </tr>
                     <tr>
-                        <td style="height: 40px; vertical-align: middle;">${data.interm}</td>
-                        <td style="height: 40px; vertical-align: middle;">${data.dest}</td>
+                        <td style="height: 40px; vertical-align: middle;">${data.intermVal}</td>
+                        <td style="height: 40px; vertical-align: middle;">${data.destVal}</td>
                     </tr>
                 </table>
             </div>
 
             <div class="senac-barcode-container" style="min-height: 80px;">
-                ${data.barcode ? `
+                ${data.barcodeVal ? `
                     <div style="font-family: 'Libre Barcode 39', monospace; font-size: 48px; height: 40px; overflow: hidden; white-space: nowrap;">
-                        *${data.barcode}*
+                        *${data.barcodeVal}*
                     </div>
                     <div style="font-family: monospace; font-size: 11px; letter-spacing: 1px; margin-top: 5px;">
-                        ${data.barcode}
+                        ${data.barcodeVal}
                     </div>
                 ` : ''}
             </div>
-
         </div>
     `;
 }
 
 // ==========================================
-// FUNÇÕES DE LÓGICA E DADOS
+// LÓGICA DO MODAL (POP-UP)
+// ==========================================
+
+function openEditModal(key, label) {
+    state.editContext = { key, label };
+    
+    const modal = document.getElementById('edit-modal');
+    const input = document.getElementById('edit-modal-input');
+    const title = document.getElementById('edit-modal-title');
+    
+    if (!modal || !input) return;
+
+    title.textContent = `Editar ${label}`;
+    input.value = state.currentConfig.customValues[key] || '';
+    
+    modal.style.display = 'flex';
+    setTimeout(() => input.focus(), 50);
+}
+
+function saveEditModal() {
+    const input = document.getElementById('edit-modal-input');
+    const { key } = state.editContext;
+    if (key) updateCustomValue(key, input.value);
+    closeEditModal();
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('edit-modal');
+    if (modal) modal.style.display = 'none';
+    state.editContext = { key: null, label: '' };
+}
+
+// ==========================================
+// ATUALIZAÇÃO DE DADOS
 // ==========================================
 
 function updateConfig(key, value) {
@@ -333,7 +450,8 @@ function updateCustomValue(key, value) {
         state.currentConfig.customValues = {};
     }
     state.currentConfig.customValues[key] = value;
-    renderPreview(); // Atualiza em tempo real
+    renderForm();
+    renderPreview();
 }
 
 function handleLogoUpload(event) {
@@ -352,29 +470,28 @@ function removeLogo() {
 }
 
 // ==========================================
-// GESTÃO DA LISTA (Salvar, Novo, Excluir)
+// GESTÃO DA LISTA E BOTÕES
 // ==========================================
 
 function renderMirrorList() {
     const container = document.getElementById('mirror-list-container');
     if (!container) return;
 
-    // Cabeçalho da Lista
     container.innerHTML = `
         <div class="mirror-list-header">
-            <span class="section-header">Meus Espelhos</span>
-            <button class="action-button" onclick="createNew()" title="Novo Espelho">+</button>
+            <span class="section-header">Modelos</span>
+            <button type="button" class="action-button" onclick="createNew()" title="Novo Espelho">+</button>
         </div>
         <div class="mirror-list-content">
             ${state.mirrors.length === 0 ? 
-                '<div class="p-4 text-center text-muted-foreground text-sm">Nenhum espelho salvo</div>' : 
+                '<div class="p-4 text-center text-muted-foreground text-sm">Nenhum modelo salvo</div>' : 
                 state.mirrors.map(mirror => `
                     <div class="mirror-item ${state.selectedMirrorId === mirror.id ? 'mirror-item-selected' : ''}" 
                          onclick="loadMirror('${mirror.id}')">
                         <div class="mirror-info">
                             <div class="mirror-name">${mirror.name || 'Sem nome'}</div>
                         </div>
-                        <button class="action-button-destructive" onclick="deleteMirror('${mirror.id}', event)">🗑️</button>
+                        <button type="button" class="action-button-destructive" onclick="deleteMirror('${mirror.id}', event)">🗑️</button>
                     </div>
                 `).join('')
             }
@@ -385,10 +502,9 @@ function renderMirrorList() {
 function saveMirror() {
     const config = state.currentConfig;
     if (!config.name) {
-        alert("Por favor, dê um nome ao espelho antes de salvar.");
+        alert("Por favor, dê um nome ao modelo antes de salvar.");
         return;
     }
-
     if (!config.id) config.id = generateId();
 
     const existingIndex = state.mirrors.findIndex(m => m.id === config.id);
@@ -401,7 +517,7 @@ function saveMirror() {
     state.selectedMirrorId = config.id;
     saveToLocalStorage();
     renderMirrorList();
-    showToast("Espelho salvo com sucesso!");
+    showToast("Modelo salvo com sucesso!");
 }
 
 function createNew() {
@@ -424,7 +540,7 @@ function loadMirror(id) {
 }
 
 function deleteMirror(id, event) {
-    event.stopPropagation(); // Evita carregar o espelho ao clicar em deletar
+    event.stopPropagation();
     if(confirm("Tem certeza que deseja excluir?")) {
         state.mirrors = state.mirrors.filter(m => m.id !== id);
         if(state.selectedMirrorId === id) createNew();
@@ -440,13 +556,16 @@ function deleteMirror(id, event) {
 function init() {
     loadFromLocalStorage();
     
-    // Listeners dos botões principais
     document.getElementById('save-button')?.addEventListener('click', saveMirror);
-    document.getElementById('default-button')?.addEventListener('click', createNew); // Botão Padrão agora cria Novo
+    document.getElementById('default-button')?.addEventListener('click', createNew);
     document.getElementById('print-button')?.addEventListener('click', () => window.print());
     document.getElementById('cancel-button')?.addEventListener('click', () => {
         if(state.selectedMirrorId) loadMirror(state.selectedMirrorId);
         else createNew();
+    });
+
+    document.getElementById('edit-modal')?.addEventListener('click', e => {
+        if (e.target.id === 'edit-modal') closeEditModal();
     });
 
     renderMirrorList();
