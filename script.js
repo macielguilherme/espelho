@@ -1,5 +1,5 @@
 // Constantes e Configurações
-const STORAGE_KEY = 'docz_mirrors_v2'; // Mudamos a chave para não conflitar com o antigo
+const STORAGE_KEY = 'docz_mirrors_v2'; 
 
 // Tipos
 const MirrorType = {
@@ -8,7 +8,7 @@ const MirrorType = {
     AVULSO: 'avulso'
 };
 
-// Configuração Padrão "Limpa"
+// Configuração Padrão
 const defaultMirrorConfig = {
     id: '',
     name: '',
@@ -17,25 +17,24 @@ const defaultMirrorConfig = {
     logoImage: null,
     logoSize: 2,
     
-    // Valores customizados onde guardaremos tudo o que você digita
+    // Valores customizados vazios
     customValues: {
-        'code_field': '', // Para o 000
-        'top_label': 'SETOR', // Padrão do dropdown
-        'top_value': '',      // Valor do Setor
-        'title_label': 'TÍTULO', // Padrão do dropdown
-        'title_value': '',       // Valor do Título
-        'main_text': '',         // Texto central
+        'code_field': '', 
+        'top_label': 'SETOR', 
+        'top_value': '',      
+        'title_label': 'TÍTULO', 
+        'title_value': '',       
+        'main_text': '',         
         'ano': '',
         'interm': '',
         'dest': '',
         'barcode': ''
     },
     
-    // Mantemos estrutura apenas para controle interno
     layoutOption: 2
 };
 
-// Dados para os Dropdowns (Apenas sugestões de Rótulos)
+// Opções em Português
 const labelOptions = [
     { value: 'SETOR', label: 'Setor' },
     { value: 'DEPARTAMENTO', label: 'Departamento' },
@@ -93,7 +92,7 @@ function showToast(message) {
 }
 
 // ==========================================
-// RENDERIZAÇÃO DO FORMULÁRIO (Lado Esquerdo)
+// RENDERIZAÇÃO DO FORMULÁRIO (Configurações)
 // ==========================================
 
 function renderForm() {
@@ -123,7 +122,8 @@ function renderForm() {
                                 <img src="${config.logoImage}" style="height:40px;">
                                 <button class="btn btn-outline btn-sm" onclick="removeLogo()">Remover</button>
                              </div>` : 
-                            `<button class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Upload Logo</button>`
+                             // MUDANÇA AQUI: De Upload Logo para Selecionar Logo
+                            `<button class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Selecionar Logo</button>`
                         }
                         <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
                     </div>
@@ -228,7 +228,7 @@ function renderForm() {
 }
 
 // ==========================================
-// RENDERIZAÇÃO DO PREVIEW (Lado Direito)
+// RENDERIZAÇÃO DO PREVIEW (Visualização)
 // ==========================================
 
 function renderPreview() {
