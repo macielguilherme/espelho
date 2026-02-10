@@ -23,7 +23,7 @@ const headerLinesByModel = {
 
     'Modelo GRUPO EQUATORIAL ENERGIA': 5,
 
-    'Modelo IGES': 14
+    'Modelo IGES': 6
 };
 
 
@@ -354,21 +354,12 @@ const headerLabelOptionsByModel = {
     },
 
     'Modelo IGES': {
-        top: ['{CAMPO} - {CHAVE}'],
-        title: ['{CAMPO} - {CHAVE}'],
-        extra: ['{CAMPO} - {CHAVE}'],
-        line4: ['{CAMPO} - {CHAVE}'],
-        line5: ['{CAMPO} - {CHAVE}'],
-
-        line6: ['{CAMPO} - {CHAVE}'],
-        line7: ['{CAMPO} - {CHAVE}'],
-        line8: ['{CAMPO} - {CHAVE}'],
-        line9: ['{CAMPO} - {CHAVE}'],
-        line10: ['{CAMPO} - {CHAVE}'],
-        line11: ['{CAMPO} - {CHAVE}'],
-        line12: ['{CAMPO} - {CHAVE}'],
-        line13: ['{CAMPO} - {CHAVE}'],
-        line14: ['{CAMPO} - {CHAVE}']
+        top: ['UNIDADE'],
+        title: ['Nº CAIXA - {CHAVE}'],
+        extra: ['DEPARTAMENTO - {CHAVE}'],
+        line4: ['TIPO DOCUMENTAL - {CHAVE}'],
+        line5: ['CÓDIGO - {CHAVE}'],
+        line6: ['PACIENTE - {CHAVE}'],
     },
 
     'Modelo HOME ASSISTENCE': {
