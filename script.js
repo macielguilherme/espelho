@@ -304,37 +304,37 @@ function createCodigoUnico() {
 
 const headerLabelOptionsByModel = {
     'Modelo Código Único': {
-        top: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}']
     },
     'Modelo CADE': {
-        top: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}']
     },
     'Modelo MTE': {
-        top: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}']
     },
     'Modelo HMAB': {
-        top: ['CÓDIGO - {CHAVE}'],
-        title: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}'],
+        title: ['{CAMPO} - {CHAVE}']
     },
     'Modelo Diretoria': {
-        top: ['DIRETORIA / ORGÃO - {CHAVE}'],
-        title: ['CÓDIGO - {CHAVE}'],
-        extra: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}'],
+        title: ['{CAMPO} - {CHAVE}'],
+        extra: ['{CAMPO} - {CHAVE}']
     },
     'Modelo Novacap': {
-        top: ['DEPARTAMENTO'],
-        title: ['CÓDIGO - {CHAVE}'],
-        extra: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}'],
+        title: ['{CAMPO} - {CHAVE}'],
+        extra: ['{CAMPO} - {CHAVE}']
     },
     'Modelo HOME ASSISTENCE': {
-        top: ['CONVÊNIO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}']
     },
     'Modelo GRUPO EQUATORIAL ENERGIA': {
-        top: ['CÓDIGO - {CHAVE}'],
-        title: ['CÓDIGO - {CHAVE}'],
-        extra: ['CÓDIGO - {CHAVE}'],
-        line4: ['CÓDIGO - {CHAVE}'],
-        line5: ['CÓDIGO - {CHAVE}']
+        top: ['{CAMPO} - {CHAVE}'],
+        title: ['{CAMPO} - {CHAVE}'],
+        extra: ['{CAMPO} - {CHAVE}'],
+        line4: ['{CAMPO} - {CHAVE}'],
+        line5: ['{CAMPO} - {CHAVE}']
     }
 };
 
