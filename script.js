@@ -1181,11 +1181,22 @@ function openEditModal(key, label) {
     if (!modal || !input) return;
 
     title.textContent = `Editar ${label}`;
-    input.value = state.currentConfig.customValues[key] || '';
+
+    // 🔥 PACIENTES EDITÁVEIS (linha por linha)
+    if (
+        state.currentConfig.name === 'Modelo IGES' &&
+        key === 'line6_value'
+    ) {
+        input.value = state.currentConfig.customValues.main_text || '';
+        input.setAttribute('rows', 9);
+    } else {
+        input.value = state.currentConfig.customValues[key] || '';
+    }
 
     modal.style.display = 'flex';
     setTimeout(() => input.focus(), 50);
 }
+
 
 function saveEditModal() {
     const input = document.getElementById('edit-modal-input');
@@ -1214,10 +1225,21 @@ function updateCustomValue(key, value) {
     if (!state.currentConfig.customValues) {
         state.currentConfig.customValues = {};
     }
-    state.currentConfig.customValues[key] = value;
+
+    // 🔥 PACIENTES SALVOS INDIVIDUALMENTE
+    if (
+        state.currentConfig.name === 'Modelo IGES' &&
+        key === 'line6_value'
+    ) {
+        state.currentConfig.customValues.main_text = value;
+    } else {
+        state.currentConfig.customValues[key] = value;
+    }
+
     renderForm();
     renderPreview();
 }
+
 
 function handleLogoUpload(event) {
     const file = event.target.files[0];
