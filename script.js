@@ -21,7 +21,9 @@ const headerLinesByModel = {
     'Modelo Diretoria': 3,
     'Modelo Novacap': 3,
 
-    'Modelo GRUPO EQUATORIAL ENERGIA': 5
+    'Modelo GRUPO EQUATORIAL ENERGIA': 5,
+
+    'Modelo IGES': 14
 };
 
 
@@ -74,6 +76,30 @@ const defaultMirrorConfig = {
 
     layoutOption: 2
 };
+
+const igesMirrorConfig = {
+    ...defaultMirrorConfig,
+    type: MirrorType.DOCUMENTO,
+    name: 'Modelo IGES',
+    includeLogo: true,
+    logoImage: './logo9.png',  // ← Adicionado ./
+    customValues: {
+        top_label: 'UNIDADE',
+        top_value: '',
+
+        title_label: 'Nº CAIXA',
+        title_value: '',
+
+        extra_label: 'DEPARTAMENTO',
+        extra_value: '',
+
+        line4_label: 'TIPO DOCUMENTAL',
+        line4_value: '',
+
+        main_text: 'PACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE'
+    }
+};
+
 
 const codigoUnicoMirrorConfig = {
     ...defaultMirrorConfig,
@@ -326,6 +352,25 @@ const headerLabelOptionsByModel = {
         title: ['{CAMPO} - {CHAVE}'],
         extra: ['{CAMPO} - {CHAVE}']
     },
+
+    'Modelo IGES': {
+        top: ['{CAMPO} - {CHAVE}'],
+        title: ['{CAMPO} - {CHAVE}'],
+        extra: ['{CAMPO} - {CHAVE}'],
+        line4: ['{CAMPO} - {CHAVE}'],
+        line5: ['{CAMPO} - {CHAVE}'],
+
+        line6: ['{CAMPO} - {CHAVE}'],
+        line7: ['{CAMPO} - {CHAVE}'],
+        line8: ['{CAMPO} - {CHAVE}'],
+        line9: ['{CAMPO} - {CHAVE}'],
+        line10: ['{CAMPO} - {CHAVE}'],
+        line11: ['{CAMPO} - {CHAVE}'],
+        line12: ['{CAMPO} - {CHAVE}'],
+        line13: ['{CAMPO} - {CHAVE}'],
+        line14: ['{CAMPO} - {CHAVE}']
+    },
+
     'Modelo HOME ASSISTENCE': {
         top: ['{CAMPO} - {CHAVE}']
     },
@@ -337,6 +382,7 @@ const headerLabelOptionsByModel = {
         line5: ['{CAMPO} - {CHAVE}']
     }
 };
+
 
 
 // --- OPÇÕES DOS DROPDOWNS ---
@@ -458,6 +504,18 @@ function loadFromLocalStorage() {
 
         saveToLocalStorage();
     }
+
+    // 🔹 ADICIONAR IGES SE NÃO EXISTIR
+    if (!state.mirrors.some(m => m.name === 'Modelo IGES')) {
+        state.mirrors.push({
+            ...igesMirrorConfig,
+            id: generateId(),
+            customValues: { ...igesMirrorConfig.customValues }
+        });
+
+        saveToLocalStorage();
+    }
+
 
     // 🔹 ADICIONAR NOVACAP SE NÃO EXISTIR
     if (!state.mirrors.some(m => m.name === 'Modelo Novacap')) {
@@ -630,40 +688,90 @@ function renderForm() {
            <div class="space-y-3">
     <h3 class="section-header">Cabeçalho</h3>
 
-    ${totalHeaderLines >= 1 ? `
-    <div class="flex gap-2 items-center">
-        ${renderHeaderSelect('top', 'top_label')}
-        ${renderPencilButton('top_value', 'Valor da Linha 1')}
-    </div>
-    ` : ''}
+   ${totalHeaderLines >= 1 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('top', 'top_label')}
+    ${renderPencilButton('top_value', 'Valor da Linha 1')}
+</div>` : ''}
 
-    ${totalHeaderLines >= 2 ? `
-    <div class="flex gap-2 items-center">
-        ${renderHeaderSelect('title', 'title_label')}
-        ${renderPencilButton('title_value', 'Valor da Linha 2')}
-    </div>
-    ` : ''}
+${totalHeaderLines >= 2 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('title', 'title_label')}
+    ${renderPencilButton('title_value', 'Valor da Linha 2')}
+</div>` : ''}
 
-    ${totalHeaderLines >= 3 ? `
-    <div class="flex gap-2 items-center">
-        ${renderHeaderSelect('extra', 'extra_label')}
-        ${renderPencilButton('extra_value', 'Valor da Linha 3')}
-    </div>
-    ` : ''}
+${totalHeaderLines >= 3 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('extra', 'extra_label')}
+    ${renderPencilButton('extra_value', 'Valor da Linha 3')}
+</div>` : ''}
 
-    ${totalHeaderLines >= 4 ? `
-    <div class="flex gap-2 items-center">
-        ${renderHeaderSelect('line4', 'line4_label')}
-        ${renderPencilButton('line4_value', 'Valor da Linha 4')}
-    </div>
-    ` : ''}
+${totalHeaderLines >= 4 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line4', 'line4_label')}
+    ${renderPencilButton('line4_value', 'Valor da Linha 4')}
+</div>` : ''}
 
-    ${totalHeaderLines >= 5 ? `
-    <div class="flex gap-2 items-center">
-        ${renderHeaderSelect('line5', 'line5_label')}
-        ${renderPencilButton('line5_value', 'Valor da Linha 5')}
-    </div>
-    ` : ''}
+${totalHeaderLines >= 5 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line5', 'line5_label')}
+    ${renderPencilButton('line5_value', 'Valor da Linha 5')}
+</div>` : ''}
+
+${totalHeaderLines >= 6 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line6', 'line6_label')}
+    ${renderPencilButton('line6_value', 'Valor da Linha 6')}
+</div>` : ''}
+
+${totalHeaderLines >= 7 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line7', 'line7_label')}
+    ${renderPencilButton('line7_value', 'Valor da Linha 7')}
+</div>` : ''}
+
+${totalHeaderLines >= 8 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line8', 'line8_label')}
+    ${renderPencilButton('line8_value', 'Valor da Linha 8')}
+</div>` : ''}
+
+${totalHeaderLines >= 9 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line9', 'line9_label')}
+    ${renderPencilButton('line9_value', 'Valor da Linha 9')}
+</div>` : ''}
+
+${totalHeaderLines >= 10 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line10', 'line10_label')}
+    ${renderPencilButton('line10_value', 'Valor da Linha 10')}
+</div>` : ''}
+
+${totalHeaderLines >= 11 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line11', 'line11_label')}
+    ${renderPencilButton('line11_value', 'Valor da Linha 11')}
+</div>` : ''}
+
+${totalHeaderLines >= 12 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line12', 'line12_label')}
+    ${renderPencilButton('line12_value', 'Valor da Linha 12')}
+</div>` : ''}
+
+${totalHeaderLines >= 13 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line13', 'line13_label')}
+    ${renderPencilButton('line13_value', 'Valor da Linha 13')}
+</div>` : ''}
+
+${totalHeaderLines >= 14 ? `
+<div class="flex gap-2 items-center">
+    ${renderHeaderSelect('line14', 'line14_label')}
+    ${renderPencilButton('line14_value', 'Valor da Linha 14')}
+</div>` : ''}
+
 </div>
 
 
@@ -776,6 +884,8 @@ function renderPreview() {
     const isHMAB = config.name === 'Modelo HMAB';
     const isHomeAssistence = config.name === 'Modelo HOME ASSISTENCE';
     const isEquatorialEnergia = config.name === 'Modelo GRUPO EQUATORIAL ENERGIA';
+    const isIGES = config.name === 'Modelo IGES';
+
 
     const d1 = vals.data_1_value || '';
     const d2 = vals.data_2_value || '';
@@ -791,6 +901,79 @@ function renderPreview() {
             logoHtml = `<img src="${config.logoImage}" style="max-height:60px; max-width:100%;" alt="Logo">`;
         }
     }
+
+    if (isIGES) {
+
+        container.innerHTML = `
+        <div style="
+            border:1px solid #000;
+            font-family: Arial, sans-serif;
+            font-size:12px;
+        ">
+
+            <!-- LOGO -->
+            <div style="
+                border-bottom:1px solid #000;
+                height:80px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            ">
+                ${logoHtml}
+            </div>
+
+            <!-- UNIDADE / Nº CAIXA -->
+            <div style="display:grid; grid-template-columns: 2fr 1fr;">
+                <div style="border-right:1px solid #000; border-bottom:1px solid #000; padding:6px;">
+                    <strong>Unidade:</strong> ${vals.top_value || ''}
+                </div>
+                <div style="border-bottom:1px solid #000; padding:6px;">
+                    <strong>Nº Caixa:</strong> ${vals.title_value || ''}
+                </div>
+            </div>
+
+            <!-- DEPARTAMENTO -->
+            <div style="border-bottom:1px solid #000; padding:6px;">
+                <strong>Departamento:</strong> ${vals.extra_value || ''}
+            </div>
+
+            <!-- TIPO DOCUMENTAL / CÓDIGO -->
+            <div style="display:grid; grid-template-columns: 2fr 1fr;">
+                <div style="border-right:1px solid #000; border-bottom:1px solid #000; padding:6px;">
+                    <strong>Tipo Documental:</strong> ${vals.line4_value || ''}
+                </div>
+                <div style="border-bottom:1px solid #000; padding:6px;">
+                    <strong>Código:</strong>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO -->
+            <div style="border-bottom:1px solid #000; padding:6px;">
+                <strong>Conteúdo:</strong>
+            </div>
+
+            <!-- LINHAS (PACIENTE) -->
+            ${(vals.main_text || '')
+                .split('\n')
+                .filter(l => l.trim())
+                .map(l => `
+        <div style="
+            border-bottom:1px solid #000;
+            text-align:center;
+            padding:6px;
+        ">
+            ${l}
+        </div>
+    `).join('')}
+
+
+
+        </div>
+    `;
+
+        return; // ⛔ impede cair no render padrão
+    }
+
 
     container.innerHTML = `
         <div class="senac-container">
