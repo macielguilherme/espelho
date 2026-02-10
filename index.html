@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espelho Personalizado - DocZ</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="header-left">
+                <button class="icon-button" id="back-button">
+                    <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <h1 class="header-title">Espelho Personalizado</h1>
+            </div>
+            <span class="badge" id="status-badge">Caixa – Novo</span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="content-grid">
+            <div class="left-column">
+                <div class="mirror-list-container" id="mirror-list-container">
+                    </div>
+
+                <div class="form-container" id="form-container">
+                    </div>
+            </div>
+
+            <div class="right-column">
+                <div class="preview-sticky">
+                    <div class="preview-container">
+                        <h3 class="preview-title">Visualização</h3>
+                        <div class="preview-content" id="preview-content">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="action-bar">
+        <div class="action-container">
+            <button class="btn btn-outline" id="cancel-button">
+                <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Cancelar
+            </button>
+            
+            <button class="btn btn-outline" id="print-button">
+                <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M6 14h12v8H6z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Imprimir
+            </button>
+            
+            <button class="btn btn-outline" id="default-button">
+                <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Novo
+            </button>
+            
+            <button class="btn btn-primary" id="save-button">
+                <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M17 21v-8H7v8M7 3v5h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Salvar
+            </button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="edit-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="edit-modal-title">Editar campo</h2>
+                <p class="modal-description text-xs text-muted-foreground">
+                    Digite ou cole o conteúdo abaixo.
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                <textarea id="edit-modal-input" class="form-input" 
+                          style="height: 150px; resize: vertical; padding: 10px; font-family: monospace; line-height: 1.5;"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeEditModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveEditModal()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="delete-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Excluir Espelho</h2>
+                <p class="modal-description">Essa ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="delete-cancel">Cancelar</button>
+                <button class="btn btn-destructive" id="delete-confirm">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
