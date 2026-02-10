@@ -863,6 +863,8 @@ ${totalHeaderLines >= 14 ? `
 function renderPreview() {
     const container = document.getElementById('preview-content');
     if (!container) return;
+    if (!state.selectedMirrorId) return;
+
 
     const config = state.currentConfig;
     const vals = config.customValues || {};
@@ -1310,12 +1312,14 @@ function saveMirror() {
 function createNew() {
     state.currentConfig = { ...defaultMirrorConfig, customValues: {}, id: '' };
     state.selectedMirrorId = null;
-    renderForm();
-    renderPreview();
     renderMirrorList();
+    updateEditorVisibility();
+
 }
 
 function loadMirror(id) {
+
+
     const mirror = state.mirrors.find(m => m.id === id);
     if (mirror) {
         state.currentConfig = { ...mirror };
@@ -1323,6 +1327,8 @@ function loadMirror(id) {
         renderForm();
         renderPreview();
         renderMirrorList();
+        updateEditorVisibility();
+
     }
 }
 
@@ -1340,6 +1346,13 @@ function deleteMirror(id, event) {
 // INICIALIZAÇÃO
 // ==========================================
 
+function updateEditorVisibility() {
+    const editor = document.getElementById('editor-area');
+    if (!editor) return;
+    editor.style.display = state.selectedMirrorId ? 'flex' : 'none';
+}
+
+
 function init() {
     loadFromLocalStorage();
 
@@ -1356,8 +1369,8 @@ function init() {
     });
 
     renderMirrorList();
-    renderForm();
-    renderPreview();
+    updateEditorVisibility();
+
 }
 
 if (document.readyState === 'loading') {
