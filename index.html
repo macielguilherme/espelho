@@ -36,10 +36,10 @@
         <div class="content-grid">
             <div class="left-column">
                 <div class="mirror-list-container" id="mirror-list-container">
-                    </div>
+                </div>
 
                 <div class="form-container" id="form-container">
-                    </div>
+                </div>
             </div>
 
             <div class="right-column">
@@ -47,7 +47,7 @@
                     <div class="preview-container">
                         <h3 class="preview-title">Visualização</h3>
                         <div class="preview-content" id="preview-content">
-                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,6 +93,7 @@
         </div>
     </div>
 
+    <!-- Modal de Edição de Texto -->
     <div class="modal-overlay" id="edit-modal" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
@@ -114,6 +115,144 @@
         </div>
     </div>
 
+    <!-- Modal de Configuração de Campo (com CSS inline apenas nos novos elementos) -->
+<div class="modal-overlay" id="field-config-modal" style="display:none;">
+    <div class="modal-content" style="max-width: 700px; width: 90%;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="field-config-title">Configurar Campo</h2>
+            <p class="modal-description text-xs text-muted-foreground">
+                Configure as opções de exibição para este campo.
+            </p>
+        </div>
+
+        <div style="max-height: 70vh; overflow-y: auto; padding-right: 10px;">
+            <!-- Layout em 2 colunas -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                
+                <!-- COLUNA ESQUERDA -->
+                <div class="space-y-4">
+                    
+                    <!-- Checkbox: Exibir Nome do Campo -->
+                    <div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-show-label" checked>
+                            <label for="config-show-label">Exibir Nome do Campo</label>
+                        </div>
+                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                            Ex: "Código: 041.2" vs "041.2"
+                        </div>
+                    </div>
+
+                    <!-- Checkbox: Separador por Pipe -->
+                    <div style="margin-top: 16px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-use-pipe" checked>
+                            <label for="config-use-pipe">Separador por Pipe ( | )</label>
+                        </div>
+                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                            Ex: "Código | 041.2" vs "Código 041.2"
+                        </div>
+                    </div>
+
+                    <!-- Checkbox: Ordem da Informação -->
+                    <div style="margin-top: 16px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-invert-order">
+                            <label for="config-invert-order">Inverter Ordem</label>
+                        </div>
+                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                            Ex: "041.2: Código" vs "Código: 041.2"
+                        </div>
+                    </div>
+
+                    <!-- Checkbox: Caixa Alta -->
+                    <div style="margin-top: 16px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-uppercase">
+                            <label for="config-uppercase">Caixa Alta</label>
+                        </div>
+                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                            Ex: "CÓDIGO: 041.2" vs "código: 041.2"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUNA DIREITA -->
+                <div class="space-y-4">
+                    
+                    <!-- Checkbox: Negrito -->
+                    <div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-bold">
+                            <label for="config-bold">Negrito</label>
+                        </div>
+                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                            Aplica negrito ao texto
+                        </div>
+                    </div>
+
+                    <!-- Checkbox: Exibição Condicional -->
+                    <div style="margin-top: 16px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-conditional">
+                            <label for="config-conditional">Exibir mesmo sem valor</label>
+                        </div>
+                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                            Quando vazio: "Departamento | Sem Informação"
+                        </div>
+                    </div>
+
+                    <!-- Checkbox: Tamanho Máximo -->
+                    <div style="margin-top: 16px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="config-max-length-enable">
+                            <label for="config-max-length-enable">Limitar tamanho</label>
+                        </div>
+                        
+                        <div id="max-length-container" style="margin-left: 24px; display: none; margin-top: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="number" id="config-max-length" class="form-input" 
+                                       placeholder="Limite" min="1" max="500" style="width: 100px;">
+                                <span class="text-xs text-muted-foreground">caracteres</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alinhamento (ocupa as 2 colunas) -->
+            <div style="margin-top: 24px; grid-column: span 2;">
+                <label class="form-label">Alinhamento no Bloco:</label>
+                <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
+                    <label class="radio-item">
+                        <input type="radio" name="config-alignment" value="left" checked> Esquerda
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="config-alignment" value="center"> Centro
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="config-alignment" value="right"> Direita
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preview do formato (ocupa as 2 colunas) -->
+            <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview:</div>
+                <div id="field-config-preview" style="font-size: 14px; padding: 12px; background: white; border-radius: 4px; min-height: 50px; border: 1px solid #e2e8f0;">
+                    Código | 041.2
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer" style="margin-top: 24px;">
+            <button class="btn btn-outline" onclick="closeFieldConfigModal()">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveFieldConfig()">Aplicar Configuração</button>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal de Exclusão -->
     <div class="modal-overlay" id="delete-modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
