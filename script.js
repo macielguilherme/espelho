@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURAÇÕES E CONSTANTES
 // ==========================================
-const STORAGE_KEY = 'docz_mirrors_v8';
+const STORAGE_KEY = 'docz_mirrors_v9';
 
 const MirrorType = {
     CAIXA: 'caixa',
@@ -15,19 +15,34 @@ const headerLinesByModel = {
     'Modelo CADE': 1,
     'Modelo MTE': 1,
     'Modelo HOME ASSISTENCE': 1,
-
     'Modelo HMAB': 2,
-
     'Modelo Diretoria': 3,
     'Modelo Novacap': 3,
-
     'Modelo GRUPO EQUATORIAL ENERGIA': 5,
-
     'Modelo IGES': 6
 };
 
+// ==========================================
+// CONFIGURAÇÕES DE CAMPO
+// ==========================================
 
+const defaultFieldConfig = {
+    showLabel: true,           // Exibir nome do campo
+    usePipe: true,             // Separador por pipe
+    invertOrder: false,        // Inverter ordem (info primeiro)
+    uppercase: false,          // Caixa alta
+    bold: false,               // Negrito
+    conditional: false,        // Exibir mesmo vazio
+    maxLength: null,           // Tamanho máximo
+    alignment: 'left'          // left, center, right
+};
 
+// Cache para configurações por modelo
+let modelFieldConfigs = {};
+
+// ==========================================
+// CONFIGURAÇÕES DOS MODELOS
+// ==========================================
 
 const defaultMirrorConfig = {
     id: '',
@@ -36,44 +51,29 @@ const defaultMirrorConfig = {
     includeLogo: true,
     logoImage: null,
     logoSize: 2,
-
     customValues: {
-        // Cabeçalho - Atualizado para 5 linhas
         'top_label': 'SETOR',
         'top_value': '',
-
         'title_label': 'TÍTULO',
         'title_value': '',
-
-        'extra_label': '',      // ← Novo campo para terceira linha
-        'extra_value': '',      // ← Novo campo para terceira linha
-
-        'line4_label': '',      // ← Novo campo para quarta linha
-        'line4_value': '',      // ← Novo campo para quarta linha
-
-        'line5_label': '',      // ← Novo campo para quinta linha
-        'line5_value': '',      // ← Novo campo para quinta linha
-
-        // Texto Central
+        'extra_label': '',
+        'extra_value': '',
+        'line4_label': '',
+        'line4_value': '',
+        'line5_label': '',
+        'line5_value': '',
         'main_text': '',
-
-        // Datas
         'data_1_label': 'ANO PRODUÇÃO',
         'data_1_value': '',
         'data_2_label': 'ANO DESTINAÇÃO',
         'data_2_value': '',
-
-        // Rodapé
         'interm_label': 'INTERMEDIÁRIO',
         'interm_value': '',
-
         'dest_label': 'DESTINAÇÃO FINAL',
         'dest_value': '',
-
         'barcode_label': 'CÓDIGO DE BARRAS',
         'barcode_value': ''
     },
-
     layoutOption: 2
 };
 
@@ -82,31 +82,26 @@ const igesMirrorConfig = {
     type: MirrorType.DOCUMENTO,
     name: 'Modelo IGES',
     includeLogo: true,
-    logoImage: './logo9.png',  // ← Adicionado ./
+    logoImage: './logo9.png',
     customValues: {
         top_label: 'UNIDADE',
         top_value: '',
-
         title_label: 'Nº CAIXA',
         title_value: '',
-
         extra_label: 'DEPARTAMENTO',
         extra_value: '',
-
         line4_label: 'TIPO DOCUMENTAL',
         line4_value: '',
-
         main_text: 'PACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE'
     }
 };
-
 
 const codigoUnicoMirrorConfig = {
     ...defaultMirrorConfig,
     type: MirrorType.DOCUMENTO_CODIGO,
     name: 'Modelo Código Único',
     includeLogo: true,
-    logoImage: './logo1.png',  // ← Adicionado ./
+    logoImage: './logo1.png',
     customValues: {
         top_label: 'CÓDIGO',
         top_value: '',
@@ -131,7 +126,7 @@ const diretoriaMirrorConfig = {
     type: MirrorType.DOCUMENTO_DIRETORIA,
     name: 'Modelo Diretoria',
     includeLogo: true,
-    logoImage: './logo2.png',  // ← Adicionado ./
+    logoImage: './logo2.png',
     customValues: {
         top_label: 'DIRETORIA / ORGÃO',
         top_value: '',
@@ -153,13 +148,12 @@ const diretoriaMirrorConfig = {
     }
 };
 
-
 const novacapMirrorConfig = {
     ...defaultMirrorConfig,
     type: MirrorType.DOCUMENTO_CODIGO,
     name: 'Modelo Novacap',
     includeLogo: true,
-    logoImage: './logo3.png',  // ← Adicionado ./
+    logoImage: './logo3.png',
     customValues: {
         top_label: 'DEPARTAMENTO',
         top_value: '',
@@ -186,7 +180,7 @@ const mteMirrorConfig = {
     type: MirrorType.DOCUMENTO_CODIGO,
     name: 'Modelo MTE',
     includeLogo: true,
-    logoImage: './logo4.png',  // ← Adicionado ./
+    logoImage: './logo4.png',
     customValues: {
         top_label: 'CÓDIGO',
         top_value: '',
@@ -236,7 +230,7 @@ const hmabMirrorConfig = {
     type: MirrorType.DOCUMENTO_CODIGO,
     name: 'Modelo HMAB',
     includeLogo: true,
-    logoImage: './logo6.png',  // Nova logo específica para HMAB
+    logoImage: './logo6.png',
     customValues: {
         top_label: 'CÓDIGO',
         top_value: '',
@@ -314,20 +308,6 @@ const equatorialEnergiaMirrorConfig = {
     }
 };
 
-
-
-
-function createCodigoUnico() {
-    state.currentConfig = {
-        ...codigoUnicoMirrorConfig,
-        id: '',
-        customValues: { ...codigoUnicoMirrorConfig.customValues }
-    };
-    state.selectedMirrorId = null;
-    renderForm();
-    renderPreview();
-}
-
 const headerLabelOptionsByModel = {
     'Modelo Código Único': {
         top: ['{CAMPO} - {CHAVE}']
@@ -352,7 +332,6 @@ const headerLabelOptionsByModel = {
         title: ['{CAMPO} - {CHAVE}'],
         extra: ['{CAMPO} - {CHAVE}']
     },
-
     'Modelo IGES': {
         top: ['UNIDADE'],
         title: ['Nº CAIXA - {CHAVE}'],
@@ -361,7 +340,6 @@ const headerLabelOptionsByModel = {
         line5: ['CÓDIGO - {CHAVE}'],
         line6: ['PACIENTE - {CHAVE}'],
     },
-
     'Modelo HOME ASSISTENCE': {
         top: ['{CAMPO} - {CHAVE}']
     },
@@ -374,11 +352,7 @@ const headerLabelOptionsByModel = {
     }
 };
 
-
-
-// --- OPÇÕES DOS DROPDOWNS ---
-
-// Cabeçalho
+// Opções dos dropdowns
 const labelOptions = [
     { value: 'SETOR', label: 'Setor' },
     { value: 'DEPARTAMENTO', label: 'Departamento' },
@@ -394,7 +368,6 @@ const titleOptions = [
     { value: 'PROJETO', label: 'Projeto' }
 ];
 
-// Datas
 const data1Options = [
     { value: 'ANO PRODUÇÃO', label: 'Ano Produção' },
     { value: 'DATA INICIAL', label: 'Data Inicial' },
@@ -407,7 +380,6 @@ const data2Options = [
     { value: 'VALIDADE', label: 'Validade' }
 ];
 
-// Rodapé
 const intermOptions = [
     { value: 'INTERMEDIÁRIO', label: 'Intermediário' },
     { value: 'PRAZO', label: 'Prazo' },
@@ -441,11 +413,319 @@ let state = {
 // ==========================================
 
 function generateId() {
-    return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+    return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + Math.random().toString(36);
 }
 
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed; 
+        top: 1rem; 
+        right: 1rem; 
+        background: ${type === 'success' ? '#10b981' : '#ef4444'}; 
+        color: white; 
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem; 
+        z-index: 1100;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        animation: slideIn 0.2s ease-out;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.2s ease-out';
+        setTimeout(() => toast.remove(), 200);
+    }, 3000);
+}
+
+// ==========================================
+// FUNÇÕES DE CONFIGURAÇÃO DE CAMPO
+// ==========================================
+
+function initializeFieldConfigs(modelName) {
+    if (!modelFieldConfigs[modelName]) {
+        modelFieldConfigs[modelName] = {};
+    }
+    
+    const allFields = [
+        'top_value', 'title_value', 'extra_value', 'line4_value', 'line5_value',
+        'line6_value', 'line7_value', 'line8_value', 'line9_value', 'line10_value',
+        'main_text', 'data_1_value', 'data_2_value', 'interm_value', 'dest_value',
+        'barcode_value'
+    ];
+    
+    allFields.forEach(field => {
+        if (!modelFieldConfigs[modelName][field]) {
+            modelFieldConfigs[modelName][field] = { ...defaultFieldConfig };
+        }
+    });
+}
+
+function getFieldConfig(modelName, fieldKey) {
+    if (!modelFieldConfigs[modelName]) {
+        initializeFieldConfigs(modelName);
+    }
+    return modelFieldConfigs[modelName][fieldKey] || { ...defaultFieldConfig };
+}
+
+function updateFieldConfig(modelName, fieldKey, configChanges) {
+    if (!modelFieldConfigs[modelName]) {
+        initializeFieldConfigs(modelName);
+    }
+    modelFieldConfigs[modelName][fieldKey] = {
+        ...modelFieldConfigs[modelName][fieldKey],
+        ...configChanges
+    };
+    saveToLocalStorage();
+}
+
+function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
+    const config = getFieldConfig(modelName, fieldKey);
+    
+    let value = rawValue || '';
+    let displayValue = value;
+    let displayLabel = fieldLabel || '';
+    
+    // Truncar se necessário
+    if (config.maxLength && displayValue.length > config.maxLength) {
+        displayValue = displayValue.substring(0, config.maxLength) + '…';
+    }
+    
+    // Se não tem valor e não é condicional, retorna vazio
+    if (!value && !config.conditional) {
+        return { html: '', shouldRender: false };
+    }
+    
+    // Se não tem valor mas é condicional
+    if (!value && config.conditional) {
+        displayValue = 'Sem Informação';
+    }
+    
+    // Aplicar caixa alta
+    if (config.uppercase) {
+        displayValue = displayValue.toUpperCase();
+        displayLabel = displayLabel.toUpperCase();
+    }
+    
+    let formattedText = '';
+    
+    if (!config.showLabel) {
+        formattedText = displayValue;
+    } else if (config.usePipe) {
+        formattedText = config.invertOrder ?
+            `${displayValue} | ${displayLabel}` :
+            `${displayLabel} | ${displayValue}`;
+    } else {
+        formattedText = config.invertOrder ?
+            `${displayValue}: ${displayLabel}` :
+            `${displayLabel}: ${displayValue}`;
+    }
+    
+    // Aplicar negrito e alinhamento
+    const fontWeight = config.bold ? 'bold' : 'normal';
+    const textAlign = config.alignment || 'left';
+    
+    const html = `<span style="font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; word-break: break-word;">${formattedText}</span>`;
+    
+    return { html, shouldRender: true };
+}
+
+// ==========================================
+// MODAL DE CONFIGURAÇÃO DE CAMPO
+// ==========================================
+
+let currentConfigField = { key: null, label: '', modelName: '' };
+
+function openFieldConfigModal(key, label) {
+    const config = state.currentConfig;
+    const modelName = config.name;
+    currentConfigField = { key, label, modelName };
+    
+    const modal = document.getElementById('field-config-modal');
+    const title = document.getElementById('field-config-title');
+    
+    if (!modal) return;
+    
+    title.textContent = `Configurar: ${label}`;
+    
+    const fieldConfig = getFieldConfig(modelName, key);
+    
+    document.getElementById('config-show-label').checked = fieldConfig.showLabel;
+    document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
+    document.getElementById('config-invert-order').checked = fieldConfig.invertOrder;
+    document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
+    document.getElementById('config-bold').checked = fieldConfig.bold;
+    document.getElementById('config-conditional').checked = fieldConfig.conditional;
+    
+    const maxLengthEnable = fieldConfig.maxLength !== null && fieldConfig.maxLength !== undefined;
+    document.getElementById('config-max-length-enable').checked = maxLengthEnable;
+    document.getElementById('max-length-container').style.display = maxLengthEnable ? 'block' : 'none';
+    document.getElementById('config-max-length').value = fieldConfig.maxLength || '';
+    
+    const alignmentRadios = document.querySelectorAll('input[name="config-alignment"]');
+    alignmentRadios.forEach(radio => {
+        if (radio.value === fieldConfig.alignment) {
+            radio.checked = true;
+        }
+    });
+    
+    setupPreviewListeners();
+    updateFieldPreview();
+    
+    modal.style.display = 'flex';
+}
+
+function closeFieldConfigModal() {
+    const modal = document.getElementById('field-config-modal');
+    if (modal) modal.style.display = 'none';
+    currentConfigField = { key: null, label: '', modelName: '' };
+}
+
+function setupPreviewListeners() {
+    const inputs = [
+        'config-show-label',
+        'config-use-pipe',
+        'config-invert-order',
+        'config-uppercase',
+        'config-bold',
+        'config-conditional',
+        'config-max-length-enable',
+        'config-max-length'
+    ];
+    
+    inputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.removeEventListener('input', updateFieldPreview);
+            element.removeEventListener('change', updateFieldPreview);
+            element.addEventListener('input', updateFieldPreview);
+            element.addEventListener('change', updateFieldPreview);
+        }
+    });
+    
+    document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
+        radio.removeEventListener('change', updateFieldPreview);
+        radio.addEventListener('change', updateFieldPreview);
+    });
+    
+    const maxLengthEnable = document.getElementById('config-max-length-enable');
+    if (maxLengthEnable) {
+        maxLengthEnable.addEventListener('change', function(e) {
+            document.getElementById('max-length-container').style.display = e.target.checked ? 'block' : 'none';
+            updateFieldPreview();
+        });
+    }
+}
+
+function updateFieldPreview() {
+    const preview = document.getElementById('field-config-preview');
+    if (!preview) return;
+    
+    const showLabel = document.getElementById('config-show-label').checked;
+    const usePipe = document.getElementById('config-use-pipe').checked;
+    const invertOrder = document.getElementById('config-invert-order').checked;
+    const uppercase = document.getElementById('config-uppercase').checked;
+    const bold = document.getElementById('config-bold').checked;
+    const conditional = document.getElementById('config-conditional').checked;
+    const maxLengthEnable = document.getElementById('config-max-length-enable').checked;
+    const maxLength = maxLengthEnable ? parseInt(document.getElementById('config-max-length').value) : null;
+    
+    const fieldName = currentConfigField.label || 'Campo';
+    const fieldValue = '041.2';
+    
+    let previewText = '';
+    
+    if (!showLabel) {
+        previewText = fieldValue;
+    } else if (usePipe) {
+        previewText = invertOrder ? 
+            `${fieldValue} | ${fieldName}` : 
+            `${fieldName} | ${fieldValue}`;
+    } else {
+        previewText = invertOrder ? 
+            `${fieldValue}: ${fieldName}` : 
+            `${fieldName}: ${fieldValue}`;
+    }
+    
+    if (conditional && !fieldValue) {
+        previewText = showLabel ? 
+            (usePipe ? `${fieldName} | Sem Informação` : `${fieldName}: Sem Informação`) :
+            'Sem Informação';
+    }
+    
+    if (uppercase) {
+        previewText = previewText.toUpperCase();
+    }
+    
+    if (maxLength && previewText.length > maxLength) {
+        previewText = previewText.substring(0, maxLength) + '…';
+    }
+    
+    let style = '';
+    if (bold) style += 'font-weight: bold; ';
+    
+    const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
+    style += `text-align: ${alignment};`;
+    
+    preview.innerHTML = `<span style="${style}">${previewText}</span>`;
+}
+
+function saveFieldConfig() {
+    const { key, modelName } = currentConfigField;
+    if (!key || !modelName) return;
+    
+    const maxLengthEnable = document.getElementById('config-max-length-enable').checked;
+    const maxLength = maxLengthEnable ? 
+        parseInt(document.getElementById('config-max-length').value) || null : 
+        null;
+    
+    const config = {
+        showLabel: document.getElementById('config-show-label').checked,
+        usePipe: document.getElementById('config-use-pipe').checked,
+        invertOrder: document.getElementById('config-invert-order').checked,
+        uppercase: document.getElementById('config-uppercase').checked,
+        bold: document.getElementById('config-bold').checked,
+        conditional: document.getElementById('config-conditional').checked,
+        maxLength: maxLength,
+        alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left'
+    };
+    
+    // 1. Primeiro atualiza a configuração no estado global
+    if (!modelFieldConfigs[modelName]) {
+        modelFieldConfigs[modelName] = {};
+    }
+    modelFieldConfigs[modelName][key] = {
+        ...modelFieldConfigs[modelName][key],
+        ...config
+    };
+    
+    // 2. Salva no localStorage (opcional, mas bom para persistência)
+    saveToLocalStorage();
+    
+    // 3. Fecha o modal
+    closeFieldConfigModal();
+    
+    // 4. FORÇA a re-renderização completa do preview
+    //    Usando o estado atual do currentConfig
+    renderPreview();
+    
+    // 5. Atualiza também o formulário para mostrar o indicador visual
+    renderForm();
+    
+    showToast('Configuração do campo aplicada!');
+}
+
+// ==========================================
+// FUNÇÕES DE PERSISTÊNCIA
+// ==========================================
+
 function saveToLocalStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.mirrors));
+    const dataToSave = {
+        mirrors: state.mirrors,
+        fieldConfigs: modelFieldConfigs
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
 }
 
 function loadFromLocalStorage() {
@@ -453,162 +733,82 @@ function loadFromLocalStorage() {
 
     if (saved) {
         try {
-            state.mirrors = JSON.parse(saved);
+            const parsed = JSON.parse(saved);
+            state.mirrors = parsed.mirrors || [];
+            modelFieldConfigs = parsed.fieldConfigs || {};
         } catch (e) {
             state.mirrors = [];
+            modelFieldConfigs = {};
         }
     } else {
         state.mirrors = [];
+        modelFieldConfigs = {};
     }
 
-    // 🔹 GARANTIR QUE O MODELO CÓDIGO ÚNICO SEMPRE EXISTA
-    const jaExiste = state.mirrors.some(
-        m => m.type === MirrorType.DOCUMENTO_CODIGO
-    );
+    // Garantir que os modelos padrão existam
+    const modelos = [
+        { type: MirrorType.DOCUMENTO_CODIGO, config: codigoUnicoMirrorConfig, name: 'Modelo Código Único' },
+        { type: MirrorType.DOCUMENTO_DIRETORIA, config: diretoriaMirrorConfig, name: 'Modelo Diretoria' },
+        { type: MirrorType.DOCUMENTO, config: igesMirrorConfig, name: 'Modelo IGES' },
+        { type: MirrorType.DOCUMENTO_CODIGO, config: novacapMirrorConfig, name: 'Modelo Novacap' },
+        { type: MirrorType.DOCUMENTO_CODIGO, config: mteMirrorConfig, name: 'Modelo MTE' },
+        { type: MirrorType.DOCUMENTO_CODIGO, config: cadeMirrorConfig, name: 'Modelo CADE' },
+        { type: MirrorType.DOCUMENTO_CODIGO, config: hmabMirrorConfig, name: 'Modelo HMAB' },
+        { type: MirrorType.DOCUMENTO, config: homeAssistenceMirrorConfig, name: 'Modelo HOME ASSISTENCE' },
+        { type: MirrorType.DOCUMENTO_CODIGO, config: equatorialEnergiaMirrorConfig, name: 'Modelo GRUPO EQUATORIAL ENERGIA' }
+    ];
 
-    if (!jaExiste) {
-        const modeloCodigo = {
-            ...codigoUnicoMirrorConfig,
-            id: generateId(),
-            customValues: { ...codigoUnicoMirrorConfig.customValues }
-        };
+    modelos.forEach(modelo => {
+        if (!state.mirrors.some(m => m.name === modelo.name)) {
+            state.mirrors.push({
+                ...modelo.config,
+                id: generateId(),
+                customValues: { ...modelo.config.customValues }
+            });
+        }
+    });
 
-        state.mirrors.unshift(modeloCodigo);
-
-        // 🔥 SELECIONA AUTOMATICAMENTE
-        state.currentConfig = modeloCodigo;
-        state.selectedMirrorId = modeloCodigo.id;
-
-        saveToLocalStorage();
+    // Selecionar o primeiro modelo se nenhum estiver selecionado
+    if (!state.selectedMirrorId && state.mirrors.length > 0) {
+        state.selectedMirrorId = state.mirrors[0].id;
+        state.currentConfig = { ...state.mirrors[0] };
     }
 
-    const jaExisteDiretoria = state.mirrors.some(
-        m => m.type === MirrorType.DOCUMENTO_DIRETORIA
-    );
-
-    if (!jaExisteDiretoria) {
-        state.mirrors.push({
-            ...diretoriaMirrorConfig,
-            id: generateId(),
-            customValues: { ...diretoriaMirrorConfig.customValues }
-        });
-
-        saveToLocalStorage();
-    }
-
-    // 🔹 ADICIONAR IGES SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo IGES')) {
-        state.mirrors.push({
-            ...igesMirrorConfig,
-            id: generateId(),
-            customValues: { ...igesMirrorConfig.customValues }
-        });
-
-        saveToLocalStorage();
-    }
-
-
-    // 🔹 ADICIONAR NOVACAP SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo Novacap')) {
-        state.mirrors.push({
-            ...novacapMirrorConfig,
-            id: generateId(),
-            customValues: { ...novacapMirrorConfig.customValues }
-        });
-    }
-
-    // 🔹 ADICIONAR MTE SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo MTE')) {
-        state.mirrors.push({
-            ...mteMirrorConfig,
-            id: generateId(),
-            customValues: { ...mteMirrorConfig.customValues }
-        });
-    }
-
-    // 🔹 ADICIONAR CADE SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo CADE')) {
-        state.mirrors.push({
-            ...cadeMirrorConfig,
-            id: generateId(),
-            customValues: { ...cadeMirrorConfig.customValues }
-        });
-
-        saveToLocalStorage();
-    }
-
-    // 🔹 ADICIONAR HMAB SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo HMAB')) {
-        state.mirrors.push({
-            ...hmabMirrorConfig,
-            id: generateId(),
-            customValues: { ...hmabMirrorConfig.customValues }
-        });
-
-        saveToLocalStorage();
-    }
-
-    // 🔹 ADICIONAR HOME ASSISTENCE SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo HOME ASSISTENCE')) {
-        state.mirrors.push({
-            ...homeAssistenceMirrorConfig,
-            id: generateId(),
-            customValues: { ...homeAssistenceMirrorConfig.customValues }
-        });
-
-        saveToLocalStorage();
-    }
-
-    // 🔹 ADICIONAR GRUPO EQUATORIAL ENERGIA SE NÃO EXISTIR
-    if (!state.mirrors.some(m => m.name === 'Modelo GRUPO EQUATORIAL ENERGIA')) {
-        state.mirrors.push({
-            ...equatorialEnergiaMirrorConfig,
-            id: generateId(),
-            customValues: { ...equatorialEnergiaMirrorConfig.customValues }
-        });
-
-        saveToLocalStorage();
-    }
-
-
-}
-
-
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-success`;
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed; top: 1rem; right: 1rem;
-        background: #10b981; color: white; padding: 0.75rem 1rem;
-        border-radius: 0.375rem; z-index: 1000;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    saveToLocalStorage();
 }
 
 // ==========================================
-// COMPONENTES DE RENDERIZAÇÃO
+// RENDERIZAÇÃO DO FORMULÁRIO
 // ==========================================
 
 function renderPencilButton(key, label) {
-    const hasValue = state.currentConfig.customValues[key]?.length > 0;
-    const btnClass = hasValue ? 'btn-primary' : 'btn-outline';
-
+    const config = state.currentConfig;
+    const modelName = config.name;
+    const fieldConfig = getFieldConfig(modelName, key);
+    const hasValue = config.customValues[key]?.length > 0;
+    
+    let btnClass = 'btn-outline';
+    if (hasValue || fieldConfig.conditional) {
+        btnClass = 'btn-primary';
+    }
+    
+    const hasCustomConfig = Object.keys(defaultFieldConfig).some(k => 
+        fieldConfig[k] !== defaultFieldConfig[k]
+    );
+    
     return `
         <button type="button" 
                 class="btn ${btnClass}" 
-                style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;" 
-                onclick="openEditModal('${key}', '${label}')" 
-                title="Editar ${label}">
-            ✏️
+                style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; position: relative;" 
+                onclick="openFieldConfigModal('${key}', '${label}')" 
+                title="Configurar ${label}">
+            ⚙️
+            ${hasCustomConfig ? 
+                '<span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#10b981;border-radius:50%;"></span>' : 
+                ''}
         </button>
     `;
 }
-
-// ==========================================
-// RENDERIZAÇÃO DO FORMULÁRIO (ESQUERDA)
-// ==========================================
 
 function renderHeaderSelect(lineKey, valueKey) {
     const config = state.currentConfig;
@@ -631,7 +831,6 @@ function renderHeaderSelect(lineKey, valueKey) {
     `;
 }
 
-
 function renderForm() {
     const container = document.getElementById('form-container');
     if (!container) return;
@@ -639,12 +838,6 @@ function renderForm() {
     const config = state.currentConfig;
     const totalHeaderLines = headerLinesByModel[config.name] || 1;
     const values = config.customValues || {};
-    const headerOptions =
-        headerLabelOptionsByModel[config.name] || {};
-
-
-    // Verificar qual modelo está sendo editado
-    const isEquatorialEnergia = config.name === 'Modelo GRUPO EQUATORIAL ENERGIA';
     const isHomeAssistence = config.name === 'Modelo HOME ASSISTENCE';
 
     container.innerHTML = `
@@ -652,7 +845,7 @@ function renderForm() {
             <div class="space-y-4">
                 <h3 class="section-header">Configuração Geral</h3>
                 <input type="text" class="form-input" placeholder="Nome do Modelo (ex: Padrão RH)" 
-                       value="${config.name}" oninput="updateConfig('name', this.value)">
+                       value="${config.name || ''}" oninput="updateConfig('name', this.value)">
                 
                 <div class="flex items-center justify-between">
                     <div class="checkbox-item">
@@ -663,109 +856,58 @@ function renderForm() {
                     
                     ${config.includeLogo ? `
                         <div class="flex items-center gap-2">
-    ${config.logoImage ?
-                `<img src="${config.logoImage}" style="height:30px; border:1px solid #ccc;">
-         <button type="button" class="btn btn-outline btn-sm" onclick="removeLogo()">❌</button>` :
-                `<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Selecionar</button>`
+                            ${config.logoImage ?
+                `<img src="${config.logoImage}" style="height:30px; border:1px solid #ccc; border-radius:4px;">
+                             <button type="button" class="btn btn-outline btn-sm" onclick="removeLogo()">❌</button>` :
+                `<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Selecionar Logo</button>`
             }
-    <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
-</div>
+                            <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
+                        </div>
                     ` : ''}
                 </div>
             </div>
 
             <hr style="border-color: var(--color-border);">
 
-           <div class="space-y-3">
-    <h3 class="section-header">Cabeçalho</h3>
+            <div class="space-y-3">
+                <h3 class="section-header">Cabeçalho</h3>
 
-   ${totalHeaderLines >= 1 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('top', 'top_label')}
-    ${renderPencilButton('top_value', 'Valor da Linha 1')}
-</div>` : ''}
+                ${totalHeaderLines >= 1 ? `
+                    <div class="flex gap-2 items-center">
+                        ${renderHeaderSelect('top', 'top_label')}
+                        ${renderPencilButton('top_value', 'Valor da Linha 1')}
+                    </div>` : ''}
 
-${totalHeaderLines >= 2 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('title', 'title_label')}
-    ${renderPencilButton('title_value', 'Valor da Linha 2')}
-</div>` : ''}
+                ${totalHeaderLines >= 2 ? `
+                    <div class="flex gap-2 items-center">
+                        ${renderHeaderSelect('title', 'title_label')}
+                        ${renderPencilButton('title_value', 'Valor da Linha 2')}
+                    </div>` : ''}
 
-${totalHeaderLines >= 3 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('extra', 'extra_label')}
-    ${renderPencilButton('extra_value', 'Valor da Linha 3')}
-</div>` : ''}
+                ${totalHeaderLines >= 3 ? `
+                    <div class="flex gap-2 items-center">
+                        ${renderHeaderSelect('extra', 'extra_label')}
+                        ${renderPencilButton('extra_value', 'Valor da Linha 3')}
+                    </div>` : ''}
 
-${totalHeaderLines >= 4 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line4', 'line4_label')}
-    ${renderPencilButton('line4_value', 'Valor da Linha 4')}
-</div>` : ''}
+                ${totalHeaderLines >= 4 ? `
+                    <div class="flex gap-2 items-center">
+                        ${renderHeaderSelect('line4', 'line4_label')}
+                        ${renderPencilButton('line4_value', 'Valor da Linha 4')}
+                    </div>` : ''}
 
-${totalHeaderLines >= 5 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line5', 'line5_label')}
-    ${renderPencilButton('line5_value', 'Valor da Linha 5')}
-</div>` : ''}
+                ${totalHeaderLines >= 5 ? `
+                    <div class="flex gap-2 items-center">
+                        ${renderHeaderSelect('line5', 'line5_label')}
+                        ${renderPencilButton('line5_value', 'Valor da Linha 5')}
+                    </div>` : ''}
 
-${totalHeaderLines >= 6 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line6', 'line6_label')}
-    ${renderPencilButton('line6_value', 'Valor da Linha 6')}
-</div>` : ''}
-
-${totalHeaderLines >= 7 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line7', 'line7_label')}
-    ${renderPencilButton('line7_value', 'Valor da Linha 7')}
-</div>` : ''}
-
-${totalHeaderLines >= 8 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line8', 'line8_label')}
-    ${renderPencilButton('line8_value', 'Valor da Linha 8')}
-</div>` : ''}
-
-${totalHeaderLines >= 9 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line9', 'line9_label')}
-    ${renderPencilButton('line9_value', 'Valor da Linha 9')}
-</div>` : ''}
-
-${totalHeaderLines >= 10 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line10', 'line10_label')}
-    ${renderPencilButton('line10_value', 'Valor da Linha 10')}
-</div>` : ''}
-
-${totalHeaderLines >= 11 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line11', 'line11_label')}
-    ${renderPencilButton('line11_value', 'Valor da Linha 11')}
-</div>` : ''}
-
-${totalHeaderLines >= 12 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line12', 'line12_label')}
-    ${renderPencilButton('line12_value', 'Valor da Linha 12')}
-</div>` : ''}
-
-${totalHeaderLines >= 13 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line13', 'line13_label')}
-    ${renderPencilButton('line13_value', 'Valor da Linha 13')}
-</div>` : ''}
-
-${totalHeaderLines >= 14 ? `
-<div class="flex gap-2 items-center">
-    ${renderHeaderSelect('line14', 'line14_label')}
-    ${renderPencilButton('line14_value', 'Valor da Linha 14')}
-</div>` : ''}
-
-</div>
-
-
+                ${totalHeaderLines >= 6 ? `
+                    <div class="flex gap-2 items-center">
+                        ${renderHeaderSelect('line6', 'line6_label')}
+                        ${renderPencilButton('line6_value', 'Valor da Linha 6')}
+                    </div>` : ''}
+            </div>
 
             <hr style="border-color: var(--color-border);">
 
@@ -781,83 +923,76 @@ ${totalHeaderLines >= 14 ? `
 
             <hr style="border-color: var(--color-border);">
 
-            <!-- Rodapé (esconder para HOME ASSISTENCE) -->
             ${!isHomeAssistence ? `
-            <div class="space-y-3">
-                <h3 class="section-header">Rodapé</h3>
-                
-                <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-3">
+                    <h3 class="section-header">Rodapé</h3>
                     
-                    <div class="flex gap-1 items-center">
-                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_1_label', this.value)">
-                            ${data1Options.map(opt => `
-                                <option value="${opt.value}" ${values.data_1_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                            `).join('')}
-                        </select>
-                        ${renderPencilButton('data_1_value', 'Valor Data 1')}
-                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="flex gap-1 items-center">
+                            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_1_label', this.value)">
+                                ${data1Options.map(opt => `
+                                    <option value="${opt.value}" ${values.data_1_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                                `).join('')}
+                            </select>
+                            ${renderPencilButton('data_1_value', 'Valor Data 1')}
+                        </div>
 
-                    <div class="flex gap-1 items-center">
-                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_2_label', this.value)">
-                            ${data2Options.map(opt => `
-                                <option value="${opt.value}" ${values.data_2_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                            `).join('')}
-                        </select>
-                        ${renderPencilButton('data_2_value', 'Valor Data 2')}
-                    </div>
+                        <div class="flex gap-1 items-center">
+                            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_2_label', this.value)">
+                                ${data2Options.map(opt => `
+                                    <option value="${opt.value}" ${values.data_2_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                                `).join('')}
+                            </select>
+                            ${renderPencilButton('data_2_value', 'Valor Data 2')}
+                        </div>
 
-                    <div class="flex gap-1 items-center">
-                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('interm_label', this.value)">
-                            ${intermOptions.map(opt => `
-                                <option value="${opt.value}" ${values.interm_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                            `).join('')}
-                        </select>
-                        ${renderPencilButton('interm_value', 'Valor Intermediário')}
-                    </div>
+                        <div class="flex gap-1 items-center">
+                            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('interm_label', this.value)">
+                                ${intermOptions.map(opt => `
+                                    <option value="${opt.value}" ${values.interm_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                                `).join('')}
+                            </select>
+                            ${renderPencilButton('interm_value', 'Valor Intermediário')}
+                        </div>
 
-                    <div class="flex gap-1 items-center">
-                        <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('dest_label', this.value)">
-                            ${destOptions.map(opt => `
-                                <option value="${opt.value}" ${values.dest_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                            `).join('')}
-                        </select>
-                        ${renderPencilButton('dest_value', 'Valor Destinação')}
-                    </div>
+                        <div class="flex gap-1 items-center">
+                            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('dest_label', this.value)">
+                                ${destOptions.map(opt => `
+                                    <option value="${opt.value}" ${values.dest_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                                `).join('')}
+                            </select>
+                            ${renderPencilButton('dest_value', 'Valor Destinação')}
+                        </div>
 
-                    <div class="col-span-2 flex gap-2 items-center">
+                        <div class="col-span-2 flex gap-2 items-center">
+                            <select class="form-input flex-1" onchange="updateCustomValue('barcode_label', this.value)">
+                                ${barcodeOptions.map(opt => `
+                                    <option value="${opt.value}" ${values.barcode_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                                `).join('')}
+                            </select>
+                            ${renderPencilButton('barcode_value', 'Valor Código de Barras')}
+                        </div>
+                    </div>
+                </div>
+            ` : `
+                <div class="space-y-3">
+                    <h3 class="section-header">Código de Barras</h3>
+                    <div class="flex gap-2 items-center">
                         <select class="form-input flex-1" onchange="updateCustomValue('barcode_label', this.value)">
                             ${barcodeOptions.map(opt => `
                                 <option value="${opt.value}" ${values.barcode_label === opt.value ? 'selected' : ''}>${opt.label}</option>
                             `).join('')}
                         </select>
-                        ${renderPencilButton('barcode_value', 'Valor Código')}
+                        ${renderPencilButton('barcode_value', 'Valor Código de Barras')}
                     </div>
                 </div>
-            </div>
-            ` : `
-            <!-- Rodapé simplificado para HOME ASSISTENCE -->
-            <div class="space-y-3">
-                <h3 class="section-header">Código de Barras</h3>
-                <div class="flex gap-2 items-center">
-                    <select class="form-input flex-1" onchange="updateCustomValue('barcode_label', this.value)">
-                        ${barcodeOptions.map(opt => `
-                            <option value="${opt.value}" ${values.barcode_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                        `).join('')}
-                    </select>
-                    ${renderPencilButton('barcode_value', 'Valor Código de Barras')}
-                </div>
-            </div>
             `}
         </div>
     `;
 }
 
 // ==========================================
-// RENDERIZAÇÃO DO PREVIEW (DIREITA)
-// ==========================================
-
-// ==========================================
-// RENDERIZAÇÃO DO PREVIEW (DIREITA)
+// RENDERIZAÇÃO DO PREVIEW
 // ==========================================
 
 function renderPreview() {
@@ -865,20 +1000,19 @@ function renderPreview() {
     if (!container) return;
     if (!state.selectedMirrorId) return;
 
-
     const config = state.currentConfig;
     const vals = config.customValues || {};
+    const modelName = config.name;
 
-    const isCodigoUnico = config.name === 'Modelo Código Único';
-    const isDiretoria = config.name === 'Modelo Diretoria';
-    const isNovacap = config.name === 'Modelo Novacap';
-    const isMTE = config.name === 'Modelo MTE';
-    const isCADE = config.name === 'Modelo CADE';
-    const isHMAB = config.name === 'Modelo HMAB';
-    const isHomeAssistence = config.name === 'Modelo HOME ASSISTENCE';
-    const isEquatorialEnergia = config.name === 'Modelo GRUPO EQUATORIAL ENERGIA';
-    const isIGES = config.name === 'Modelo IGES';
-
+    const isCodigoUnico = modelName === 'Modelo Código Único';
+    const isDiretoria = modelName === 'Modelo Diretoria';
+    const isNovacap = modelName === 'Modelo Novacap';
+    const isMTE = modelName === 'Modelo MTE';
+    const isCADE = modelName === 'Modelo CADE';
+    const isHMAB = modelName === 'Modelo HMAB';
+    const isHomeAssistence = modelName === 'Modelo HOME ASSISTENCE';
+    const isEquatorialEnergia = modelName === 'Modelo GRUPO EQUATORIAL ENERGIA';
+    const isIGES = modelName === 'Modelo IGES';
 
     const d1 = vals.data_1_value || '';
     const d2 = vals.data_2_value || '';
@@ -886,291 +1020,261 @@ function renderPreview() {
 
     const labelStyle = "flex: 0 0 100%; max-width: 38%;";
 
-    // VERIFICA SE A LOGO EXISTE E É UMA URL DE IMAGEM
     let logoHtml = '';
     if (config.includeLogo && config.logoImage) {
-        // Verifica se é uma data URL (imagem carregada) ou caminho de arquivo
         if (config.logoImage.startsWith('data:image') || config.logoImage.startsWith('./') || config.logoImage.includes('.png')) {
-            logoHtml = `<img src="${config.logoImage}" style="max-height:60px; max-width:100%;" alt="Logo">`;
+            logoHtml = `<img src="${config.logoImage}" style="max-height:60px; max-width:100%; object-fit: contain;" alt="Logo">`;
         }
     }
 
+    // Preview especial para IGES
     if (isIGES) {
+        const unidadeResult = formatFieldValue(modelName, 'top_value', 'UNIDADE', vals.top_value);
+        const numeroCaixaResult = formatFieldValue(modelName, 'title_value', 'Nº CAIXA', vals.title_value);
+        const departamentoResult = formatFieldValue(modelName, 'extra_value', 'DEPARTAMENTO', vals.extra_value);
+        const tipoDocumentalResult = formatFieldValue(modelName, 'line4_value', 'TIPO DOCUMENTAL', vals.line4_value);
+        
+        const linhasPaciente = (vals.main_text || '')
+            .split('\n')
+            .filter(l => l.trim())
+            .map(l => formatFieldValue(modelName, 'line6_value', 'PACIENTE', l));
 
         container.innerHTML = `
-        <div style="
-            border:1px solid #000;
-            font-family: Arial, sans-serif;
-            font-size:12px;
-        ">
-
-            <!-- LOGO -->
-            <div style="
-                border-bottom:1px solid #000;
-                height:80px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-            ">
-                ${logoHtml}
-            </div>
-
-            <!-- UNIDADE / Nº CAIXA -->
-            <div style="display:grid; grid-template-columns: 2fr 1fr;">
-                <div style="border-right:1px solid #000; border-bottom:1px solid #000; padding:6px;">
-                    <strong>Unidade:</strong> ${vals.top_value || ''}
+            <div style="border:2px solid #000; font-family: Arial, sans-serif; font-size:12px;">
+                <div style="border-bottom:2px solid #000; height:80px; display:flex; align-items:center; justify-content:center; padding:10px;">
+                    ${logoHtml}
                 </div>
-                <div style="border-bottom:1px solid #000; padding:6px;">
-                    <strong>Nº Caixa:</strong> ${vals.title_value || ''}
+                <div style="display:grid; grid-template-columns: 2fr 1fr;">
+                    <div style="border-right:2px solid #000; border-bottom:2px solid #000; padding:8px;">
+                        ${unidadeResult.shouldRender ? unidadeResult.html : '&nbsp;'}
+                    </div>
+                    <div style="border-bottom:2px solid #000; padding:8px;">
+                        ${numeroCaixaResult.shouldRender ? numeroCaixaResult.html : '&nbsp;'}
+                    </div>
                 </div>
-            </div>
-
-            <!-- DEPARTAMENTO -->
-            <div style="border-bottom:1px solid #000; padding:6px;">
-                <strong>Departamento:</strong> ${vals.extra_value || ''}
-            </div>
-
-            <!-- TIPO DOCUMENTAL / CÓDIGO -->
-            <div style="display:grid; grid-template-columns: 2fr 1fr;">
-                <div style="border-right:1px solid #000; border-bottom:1px solid #000; padding:6px;">
-                    <strong>Tipo Documental:</strong> ${vals.line4_value || ''}
+                <div style="border-bottom:2px solid #000; padding:8px;">
+                    ${departamentoResult.shouldRender ? departamentoResult.html : '&nbsp;'}
                 </div>
-                <div style="border-bottom:1px solid #000; padding:6px;">
-                    <strong>Código:</strong>
+                <div style="display:grid; grid-template-columns: 2fr 1fr;">
+                    <div style="border-right:2px solid #000; border-bottom:2px solid #000; padding:8px;">
+                        ${tipoDocumentalResult.shouldRender ? tipoDocumentalResult.html : '&nbsp;'}
+                    </div>
+                    <div style="border-bottom:2px solid #000; padding:8px;">
+                        <strong>Código:</strong>
+                    </div>
                 </div>
+                <div style="border-bottom:2px solid #000; padding:8px;">
+                    <strong>Conteúdo:</strong>
+                </div>
+                ${linhasPaciente.map(result => `
+                    <div style="border-bottom:2px solid #000; text-align:center; padding:8px;">
+                        ${result.shouldRender ? result.html : '&nbsp;'}
+                    </div>
+                `).join('')}
             </div>
-
-            <!-- CONTEÚDO -->
-            <div style="border-bottom:1px solid #000; padding:6px;">
-                <strong>Conteúdo:</strong>
-            </div>
-
-            <!-- LINHAS (PACIENTE) -->
-            ${(vals.main_text || '')
-                .split('\n')
-                .filter(l => l.trim())
-                .map(l => `
-        <div style="
-            border-bottom:1px solid #000;
-            text-align:center;
-            padding:6px;
-        ">
-            ${l}
-        </div>
-    `).join('')}
-
-
-
-        </div>
-    `;
-
-        return; // ⛔ impede cair no render padrão
+        `;
+        return;
     }
 
-
-    container.innerHTML = `
+    // Preview padrão
+    let html = `
         <div class="senac-container">
-
-            <!-- LOGO -->
-            <div class="senac-row" style="display:flex;justify-content:center;align-items:center;padding:10px;border-bottom:1px solid #000;min-height:60px;">
+            <div class="senac-row" style="display:flex;justify-content:center;align-items:center;padding:10px;border-bottom:2px solid #000;min-height:60px;">
                 ${logoHtml}
             </div>
+    `;
 
-            <!-- TOPO MODELOS -->
-
-            ${isCodigoUnico ? `
-                <!-- Código Único -->
-                <div class="senac-row" style="min-height:35px;">
-                    <div class="senac-col-label" style="${labelStyle}">
-                        <span class="senac-label">${vals.top_label || 'CÓDIGO'}:</span>
-                    </div>
-                    <div class="senac-col-value">
-                        <span class="senac-value">${vals.top_value || ''}</span>
-                    </div>
+    // Renderizar linhas do cabeçalho baseado no modelo
+    if (isCodigoUnico || isMTE || isCADE) {
+        const result = formatFieldValue(modelName, 'top_value', vals.top_label || 'CÓDIGO', vals.top_value);
+        html += `
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">${vals.top_label || 'CÓDIGO'}:</span>
                 </div>
-            ` : ''}
-
-            ${(isDiretoria || isNovacap) ? `
-                <!-- Linha 0: top_label -->
-                <div class="senac-row" style="min-height:35px;">
-                    <div class="senac-col-label" style="${labelStyle}">
-                        <span class="senac-label">${vals.top_label || (isDiretoria ? 'DIRETORIA / ORGÃO' : 'DEPARTAMENTO')}:</span>
-                    </div>
-                    <div class="senac-col-value">
-                        <span class="senac-value">${vals.top_value || ''}</span>
-                    </div>
-                </div>
-
-                <!-- Linha 1: title_label -->
-                <div class="senac-row" style="min-height:35px;">
-                    <div class="senac-col-label" style="${labelStyle}">
-                        <span class="senac-label">${vals.title_label || 'CÓDIGO'}:</span>
-                    </div>
-                    <div class="senac-col-value">
-                        <span class="senac-value">${vals.title_value || ''}</span>
-                    </div>
-                </div>
-
-                <!-- Linha 2: extra_label -->
-                <div class="senac-row" style="min-height:35px;">
-                    <div class="senac-col-label" style="${labelStyle}">
-                        <span class="senac-label">${vals.extra_label || 'CÓDIGO'}:</span>
-                    </div>
-                    <div class="senac-col-value">
-                        <span class="senac-value">${vals.extra_value || ''}</span>
-                    </div>
-                </div>
-            ` : ''}
-
-            ${isMTE ? `
-                <!-- MTE -->
-                <div class="senac-row" style="min-height:35px;">
-                    <div class="senac-col-label" style="${labelStyle}">
-                        <span class="senac-label">${vals.top_label || 'CÓDIGO'}:</span>
-                    </div>
-                    <div class="senac-col-value">
-                        <span class="senac-value">${vals.top_value || ''}</span>
-                    </div>
-                </div>
-            ` : ''}
-
-            ${isCADE ? `
-    <!-- CADE -->
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.top_value || ''}</span>
-        </div>
-    </div>
-` : ''}
-
-${isHMAB ? `
-    <!-- HMAB -->
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.top_value || ''}</span>
-        </div>
-    </div>
-    
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.title_value || ''}</span>
-        </div>
-    </div>
-` : ''}
-
-${isHomeAssistence ? `
-    <!-- HOME ASSISTENCE -->
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CONVÊNIO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.top_value || ''}</span>
-        </div>
-    </div>
-` : ''}
-
-${isEquatorialEnergia ? `
-    <!-- GRUPO EQUATORIAL ENERGIA -->
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.top_value || ''}</span>
-        </div>
-    </div>
-    
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.title_value || ''}</span>
-        </div>
-    </div>
-    
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.extra_value || ''}</span>
-        </div>
-    </div>
-    
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.line4_value || ''}</span>
-        </div>
-    </div>
-    
-    <div class="senac-row" style="min-height:35px;">
-        <div class="senac-col-label" style="${labelStyle}">
-            <span class="senac-label">CÓDIGO:</span>
-        </div>
-        <div class="senac-col-value">
-            <span class="senac-value">${vals.line5_value || ''}</span>
-        </div>
-    </div>
-` : ''}
-
-            <!-- TEXTO PRINCIPAL -->
-            <div class="senac-row">
-                <div class="senac-text-block">
-                    ${(vals.main_text || '').replace(/\n/g, '<br>')}
+                <div class="senac-col-value">
+                    ${result.shouldRender ? result.html : '&nbsp;'}
                 </div>
             </div>
+        `;
+    }
 
-            <!-- RODAPÉ -->
-${!isHomeAssistence ? `
-<div class="senac-row" style="padding:0;display:block;border-bottom:1px solid #000;">
-    <table class="senac-footer-table">
-        <tr>
-            <th style="width:25%;">ANO</th>
-            <th colspan="2">RODAPÉ</th>
-        </tr>
-        <tr>
-            <td rowspan="2" style="font-weight:bold;">${ano}</td>
-            <td>${vals.interm_label || 'INTERMEDIÁRIO'}</td>
-            <td>${vals.dest_label || 'DESTINAÇÃO FINAL'}</td>
-        </tr>
-        <tr>
-            <td style="min-height:40px;">${vals.interm_value || '&nbsp;'}</td>
-            <td style="min-height:40px;">${vals.dest_value || '&nbsp;'}</td>
-        </tr>
-    </table>
-</div>
-` : ''}
-
-            <!-- CÓDIGO DE BARRAS -->
-            <div class="senac-barcode-container" style="min-height:80px;">
-                ${vals.barcode_value ? `
-                    <div style="font-family:'Libre Barcode 39';font-size:48px;">*${vals.barcode_value}*</div>
-                    <div style="font-family:monospace;font-size:11px;">${vals.barcode_value}</div>
-                ` : ''}
+    if (isDiretoria || isNovacap) {
+        const topResult = formatFieldValue(modelName, 'top_value', vals.top_label || (isDiretoria ? 'DIRETORIA / ORGÃO' : 'DEPARTAMENTO'), vals.top_value);
+        const titleResult = formatFieldValue(modelName, 'title_value', vals.title_label || 'CÓDIGO', vals.title_value);
+        const extraResult = formatFieldValue(modelName, 'extra_value', vals.extra_label || 'CÓDIGO', vals.extra_value);
+        
+        html += `
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">${vals.top_label || (isDiretoria ? 'DIRETORIA / ORGÃO' : 'DEPARTAMENTO')}:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${topResult.shouldRender ? topResult.html : '&nbsp;'}
+                </div>
             </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">${vals.title_label || 'CÓDIGO'}:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
+                </div>
+            </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">${vals.extra_label || 'CÓDIGO'}:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${extraResult.shouldRender ? extraResult.html : '&nbsp;'}
+                </div>
+            </div>
+        `;
+    }
 
+    if (isHMAB) {
+        const topResult = formatFieldValue(modelName, 'top_value', 'CÓDIGO', vals.top_value);
+        const titleResult = formatFieldValue(modelName, 'title_value', 'CÓDIGO', vals.title_value);
+        
+        html += `
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${topResult.shouldRender ? topResult.html : '&nbsp;'}
+                </div>
+            </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
+                </div>
+            </div>
+        `;
+    }
+
+    if (isHomeAssistence) {
+        const result = formatFieldValue(modelName, 'top_value', 'CONVÊNIO', vals.top_value);
+        html += `
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CONVÊNIO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${result.shouldRender ? result.html : '&nbsp;'}
+                </div>
+            </div>
+        `;
+    }
+
+    if (isEquatorialEnergia) {
+        const topResult = formatFieldValue(modelName, 'top_value', 'CÓDIGO', vals.top_value);
+        const titleResult = formatFieldValue(modelName, 'title_value', 'CÓDIGO', vals.title_value);
+        const extraResult = formatFieldValue(modelName, 'extra_value', 'CÓDIGO', vals.extra_value);
+        const line4Result = formatFieldValue(modelName, 'line4_value', 'CÓDIGO', vals.line4_value);
+        const line5Result = formatFieldValue(modelName, 'line5_value', 'CÓDIGO', vals.line5_value);
+        
+        html += `
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${topResult.shouldRender ? topResult.html : '&nbsp;'}
+                </div>
+            </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
+                </div>
+            </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${extraResult.shouldRender ? extraResult.html : '&nbsp;'}
+                </div>
+            </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${line4Result.shouldRender ? line4Result.html : '&nbsp;'}
+                </div>
+            </div>
+            <div class="senac-row" style="min-height:35px;">
+                <div class="senac-col-label" style="${labelStyle}">
+                    <span class="senac-label">CÓDIGO:</span>
+                </div>
+                <div class="senac-col-value">
+                    ${line5Result.shouldRender ? line5Result.html : '&nbsp;'}
+                </div>
+            </div>
+        `;
+    }
+
+    // Texto principal
+    const mainTextResult = formatFieldValue(modelName, 'main_text', 'TEXTO', vals.main_text);
+    html += `
+        <div class="senac-row">
+            <div class="senac-text-block">
+                ${mainTextResult.shouldRender ? mainTextResult.html : '&nbsp;'}
+            </div>
         </div>
     `;
+
+    // Rodapé
+    if (!isHomeAssistence) {
+        const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
+        const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
+        
+        html += `
+            <div class="senac-row" style="padding:0;display:block;border-bottom:2px solid #000;">
+                <table class="senac-footer-table">
+                    <tr>
+                        <th style="width:25%;">ANO</th>
+                        <th colspan="2">RODAPÉ</th>
+                    </tr>
+                    <tr>
+                        <td rowspan="2" style="font-weight:bold;">${ano || '&nbsp;'}</td>
+                        <td>${vals.interm_label || 'INTERMEDIÁRIO'}</td>
+                        <td>${vals.dest_label || 'DESTINAÇÃO FINAL'}</td>
+                    </tr>
+                    <tr>
+                        <td style="min-height:40px;">${intermResult.shouldRender ? intermResult.html : '&nbsp;'}</td>
+                        <td style="min-height:40px;">${destResult.shouldRender ? destResult.html : '&nbsp;'}</td>
+                    </tr>
+                </table>
+            </div>
+        `;
+    }
+
+    // Código de barras
+    const barcodeResult = formatFieldValue(modelName, 'barcode_value', vals.barcode_label || 'CÓDIGO DE BARRAS', vals.barcode_value);
+    html += `
+        <div class="senac-barcode-container" style="min-height:80px;">
+            ${vals.barcode_value ? `
+                <div style="font-family:'Libre Barcode 39';font-size:48px;">*${vals.barcode_value}*</div>
+            ` : ''}
+            <div style="font-family:monospace;font-size:11px;">
+                ${barcodeResult.shouldRender ? barcodeResult.html : '&nbsp;'}
+            </div>
+        </div>
+    </div>`;
+
+    container.innerHTML = html;
 }
 
-
-
 // ==========================================
-// LÓGICA DO MODAL (POP-UP)
+// MODAL DE EDIÇÃO DE TEXTO
 // ==========================================
 
 function openEditModal(key, label) {
@@ -1184,13 +1288,8 @@ function openEditModal(key, label) {
 
     title.textContent = `Editar ${label}`;
 
-    // 🔥 PACIENTES EDITÁVEIS (linha por linha)
-    if (
-        state.currentConfig.name === 'Modelo IGES' &&
-        key === 'line6_value'
-    ) {
+    if (state.currentConfig.name === 'Modelo IGES' && key === 'line6_value') {
         input.value = state.currentConfig.customValues.main_text || '';
-        input.setAttribute('rows', 9);
     } else {
         input.value = state.currentConfig.customValues[key] || '';
     }
@@ -1198,7 +1297,6 @@ function openEditModal(key, label) {
     modal.style.display = 'flex';
     setTimeout(() => input.focus(), 50);
 }
-
 
 function saveEditModal() {
     const input = document.getElementById('edit-modal-input');
@@ -1228,11 +1326,7 @@ function updateCustomValue(key, value) {
         state.currentConfig.customValues = {};
     }
 
-    // 🔥 PACIENTES SALVOS INDIVIDUALMENTE
-    if (
-        state.currentConfig.name === 'Modelo IGES' &&
-        key === 'line6_value'
-    ) {
+    if (state.currentConfig.name === 'Modelo IGES' && key === 'line6_value') {
         state.currentConfig.customValues.main_text = value;
     } else {
         state.currentConfig.customValues[key] = value;
@@ -1241,7 +1335,6 @@ function updateCustomValue(key, value) {
     renderForm();
     renderPreview();
 }
-
 
 function handleLogoUpload(event) {
     const file = event.target.files[0];
@@ -1259,7 +1352,7 @@ function removeLogo() {
 }
 
 // ==========================================
-// GESTÃO DA LISTA E BOTÕES
+// GESTÃO DA LISTA DE MODELOS
 // ==========================================
 
 function renderMirrorList() {
@@ -1269,7 +1362,7 @@ function renderMirrorList() {
     container.innerHTML = `
         <div class="mirror-list-header">
             <span class="section-header">Modelos</span>
-            <button type="button" class="action-button" onclick="createNew()" title="Novo Espelho">+</button>
+            <button type="button" class="action-button" onclick="createNew()" title="Novo Modelo">+</button>
         </div>
         <div class="mirror-list-content">
             ${state.mirrors.length === 0 ?
@@ -1291,35 +1384,38 @@ function renderMirrorList() {
 function saveMirror() {
     const config = state.currentConfig;
     if (!config.name) {
-        alert("Por favor, dê um nome ao modelo antes de salvar.");
+        showToast('Por favor, dê um nome ao modelo antes de salvar.', 'error');
         return;
     }
     if (!config.id) config.id = generateId();
 
     const existingIndex = state.mirrors.findIndex(m => m.id === config.id);
     if (existingIndex >= 0) {
-        state.mirrors[existingIndex] = config;
+        state.mirrors[existingIndex] = { ...config };
     } else {
-        state.mirrors.push(config);
+        state.mirrors.push({ ...config });
     }
 
     state.selectedMirrorId = config.id;
     saveToLocalStorage();
     renderMirrorList();
-    showToast("Modelo salvo com sucesso!");
+    showToast('Modelo salvo com sucesso!');
 }
 
 function createNew() {
-    state.currentConfig = { ...defaultMirrorConfig, customValues: {}, id: '' };
+    state.currentConfig = { 
+        ...defaultMirrorConfig, 
+        id: '',
+        name: 'Novo Modelo',
+        customValues: { ...defaultMirrorConfig.customValues } 
+    };
     state.selectedMirrorId = null;
     renderMirrorList();
-    updateEditorVisibility();
-
+    renderForm();
+    renderPreview();
 }
 
 function loadMirror(id) {
-
-
     const mirror = state.mirrors.find(m => m.id === id);
     if (mirror) {
         state.currentConfig = { ...mirror };
@@ -1327,18 +1423,23 @@ function loadMirror(id) {
         renderForm();
         renderPreview();
         renderMirrorList();
-        updateEditorVisibility();
-
     }
 }
 
 function deleteMirror(id, event) {
     event.stopPropagation();
-    if (confirm("Tem certeza que deseja excluir?")) {
+    if (confirm('Tem certeza que deseja excluir este modelo?')) {
         state.mirrors = state.mirrors.filter(m => m.id !== id);
-        if (state.selectedMirrorId === id) createNew();
+        if (state.selectedMirrorId === id) {
+            if (state.mirrors.length > 0) {
+                loadMirror(state.mirrors[0].id);
+            } else {
+                createNew();
+            }
+        }
         saveToLocalStorage();
         renderMirrorList();
+        showToast('Modelo excluído com sucesso!');
     }
 }
 
@@ -1346,35 +1447,83 @@ function deleteMirror(id, event) {
 // INICIALIZAÇÃO
 // ==========================================
 
-function updateEditorVisibility() {
-    const editor = document.getElementById('editor-area');
-    if (!editor) return;
-    editor.style.display = state.selectedMirrorId ? 'flex' : 'none';
-}
-
-
 function init() {
     loadFromLocalStorage();
 
+    // Configurar event listeners
     document.getElementById('save-button')?.addEventListener('click', saveMirror);
     document.getElementById('default-button')?.addEventListener('click', createNew);
     document.getElementById('print-button')?.addEventListener('click', () => window.print());
     document.getElementById('cancel-button')?.addEventListener('click', () => {
-        if (state.selectedMirrorId) loadMirror(state.selectedMirrorId);
-        else createNew();
+        if (state.selectedMirrorId) {
+            loadMirror(state.selectedMirrorId);
+        } else {
+            createNew();
+        }
     });
 
+    // Fechar modais ao clicar fora
     document.getElementById('edit-modal')?.addEventListener('click', e => {
         if (e.target.id === 'edit-modal') closeEditModal();
     });
 
-    renderMirrorList();
-    updateEditorVisibility();
+    document.getElementById('field-config-modal')?.addEventListener('click', e => {
+        if (e.target.id === 'field-config-modal') closeFieldConfigModal();
+    });
 
+    document.getElementById('delete-modal')?.addEventListener('click', e => {
+        if (e.target.id === 'delete-modal') document.getElementById('delete-modal').style.display = 'none';
+    });
+
+    document.getElementById('delete-cancel')?.addEventListener('click', () => {
+        document.getElementById('delete-modal').style.display = 'none';
+    });
+
+    // Renderizar interface
+    renderMirrorList();
+    
+    if (state.selectedMirrorId) {
+        loadMirror(state.selectedMirrorId);
+    } else if (state.mirrors.length > 0) {
+        loadMirror(state.mirrors[0].id);
+    } else {
+        createNew();
+    }
+
+    // Adicionar animações CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
+// Inicializar quando o DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
 }
+
+// Expor funções necessárias globalmente
+window.openEditModal = openEditModal;
+window.saveEditModal = saveEditModal;
+window.closeEditModal = closeEditModal;
+window.openFieldConfigModal = openFieldConfigModal;
+window.closeFieldConfigModal = closeFieldConfigModal;
+window.saveFieldConfig = saveFieldConfig;
+window.updateConfig = updateConfig;
+window.updateCustomValue = updateCustomValue;
+window.handleLogoUpload = handleLogoUpload;
+window.removeLogo = removeLogo;
+window.saveMirror = saveMirror;
+window.createNew = createNew;
+window.loadMirror = loadMirror;
+window.deleteMirror = deleteMirror;
