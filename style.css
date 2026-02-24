@@ -998,6 +998,11 @@ body {
     animation: slideIn 200ms ease-out;
 }
 
+/* Estilo específico para o modal de configuração (largura maior) */
+.modal-content.config-modal {
+    max-width: 500px;
+}
+
 .modal-header {
     margin-bottom: var(--spacing-lg);
     text-align: center;
@@ -1019,13 +1024,76 @@ body {
     display: flex;
     gap: var(--spacing-md);
     justify-content: flex-end;
+    margin-top: var(--spacing-xl);
+}
+
+/* Container de configurações com scroll */
+.modal-config-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Textos explicativos das configurações */
+.config-helper-text {
+    margin-left: 24px;
+    margin-top: -8px;
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+/* Container do limite de caracteres */
+.max-length-container {
+    margin-left: 24px;
+    display: none;
+}
+
+.max-length-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.max-length-input {
+    width: 100px;
+}
+
+/* Container de alinhamento */
+.alignment-container {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Preview das configurações */
+.config-preview-container {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+}
+
+.config-preview-label {
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.config-preview-content {
+    font-size: 13px;
+    padding: 8px;
+    background: white;
+    border-radius: 4px;
+    min-height: 40px;
+    border: 1px solid var(--color-border);
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
     }
-
     to {
         opacity: 1;
     }
@@ -1036,7 +1104,6 @@ body {
         opacity: 0;
         transform: translateY(-20px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1093,8 +1160,12 @@ body {
         flex-direction: column;
         gap: var(--spacing-sm);
     }
-}
 
+    .alignment-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
 
 .preview-logo-wrapper {
     display: flex;
@@ -1129,7 +1200,6 @@ body {
     color: #000;
     background: #fff;
     width: 100%;
-    /* Garante que a caixa não estoure a largura do pai */
     max-width: 100%;
     box-sizing: border-box;
 }
@@ -1146,7 +1216,6 @@ body {
 
 /* COLUNAS TRAVADAS */
 .senac-col-label {
-    /* TRAVA a largura em 28%. Não cresce, não diminui. */
     flex: 0 0 28%;
     max-width: 28%;
     padding: 4px 8px;
@@ -1155,11 +1224,9 @@ body {
     align-items: center;
     background-color: #fff;
     overflow: hidden;
-    /* Se o texto for gigante, ele corta em vez de empurrar */
 }
 
 .senac-col-value {
-    /* Ocupa o restante do espaço (72%) */
     flex: 1;
     padding: 4px 8px;
     display: flex;
@@ -1174,7 +1241,6 @@ body {
     font-size: 11px;
     text-transform: uppercase;
     white-space: nowrap;
-    /* Texto não quebra linha no rótulo */
 }
 
 .senac-value {
@@ -1183,7 +1249,6 @@ body {
     text-align: center;
     font-weight: bold;
     word-break: break-word;
-    /* Se for um código gigante, quebra a linha */
 }
 
 /* TEXTO CENTRAL QUEBRA DE LINHA */
@@ -1194,26 +1259,19 @@ body {
     padding: 8px;
     min-height: 200px;
     width: 100%;
-
-    /* O segredo para não estourar a folha: */
     white-space: pre-wrap;
-    /* Respeita enter, mas quebra linha se chegar na margem */
     word-wrap: break-word;
-    /* Palavras muito longas quebram */
     overflow-wrap: break-word;
-    /* Compatibilidade moderna */
     word-break: break-word;
-    /* Garante a quebra em qualquer cenário */
 }
 
-/* Estilos da Tabela do Rodapé (Mantido igual pois você disse que está perfeito) */
+/* Estilos da Tabela do Rodapé */
 .senac-footer-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 11px;
     text-align: center;
     table-layout: fixed;
-    /* Força colunas iguais na tabela */
 }
 
 .senac-footer-table td,
