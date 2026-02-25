@@ -61,11 +61,11 @@ const fieldTypeMap = {
     'line4_value': FieldType.CLASSIFICATION,
     'line5_value': FieldType.CLASSIFICATION,
     'line6_value': FieldType.CLASSIFICATION,
-    
+
     // Campos de ano
     'data_1_value': FieldType.YEAR,
     'data_2_value': FieldType.YEAR,
-    
+
     // Demais campos são texto normal
     'main_text': FieldType.TEXT,
     'interm_value': FieldType.TEXT,
@@ -483,24 +483,24 @@ function showToast(message, type = 'success') {
 function getFieldType(fieldKey) {
     const config = state.currentConfig;
     const modelName = config.name;
-    
+
     // Verificar se é um campo que deve ser tratado como classificação baseado na label
-    if (fieldKey === 'top_value' || fieldKey === 'title_value' || fieldKey === 'extra_value' || 
+    if (fieldKey === 'top_value' || fieldKey === 'title_value' || fieldKey === 'extra_value' ||
         fieldKey === 'line4_value' || fieldKey === 'line5_value' || fieldKey === 'line6_value') {
-        
+
         const labelKey = fieldKey.replace('_value', '_label');
         if (config.customValues && config.customValues[labelKey] === 'CLASSIFICAÇÃO - C12') {
             return FieldType.CLASSIFICATION;
         }
     }
-    
+
     // Verificar se tem força de classificação na configuração
     if (modelName && modelFieldConfigs[modelName] && modelFieldConfigs[modelName][fieldKey]) {
         if (modelFieldConfigs[modelName][fieldKey].forceClassification) {
             return FieldType.CLASSIFICATION;
         }
     }
-    
+
     return fieldTypeMap[fieldKey] || FieldType.TEXT;
 }
 
@@ -508,14 +508,14 @@ function initializeFieldConfigs(modelName) {
     if (!modelFieldConfigs[modelName]) {
         modelFieldConfigs[modelName] = {};
     }
-    
+
     const allFields = [
         'top_value', 'title_value', 'extra_value', 'line4_value', 'line5_value',
         'line6_value', 'line7_value', 'line8_value', 'line9_value', 'line10_value',
         'main_text', 'data_1_value', 'data_2_value', 'interm_value', 'dest_value',
         'barcode_value'
     ];
-    
+
     allFields.forEach(field => {
         if (!modelFieldConfigs[modelName][field]) {
             modelFieldConfigs[modelName][field] = { ...defaultFieldConfig };
@@ -548,31 +548,31 @@ function updateFieldConfig(modelName, fieldKey, configChanges) {
 function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
     const config = getFieldConfig(modelName, fieldKey);
     const fieldType = getFieldType(fieldKey);
-    
+
     let value = rawValue || '';
     let displayValue = value;
     let displayLabel = fieldLabel || '';
-    
+
     // Se não tem valor, retorna vazio
     if (!value) {
         return { html: '', shouldRender: false };
     }
-    
+
     // Aplicar caixa alta
     if (config.uppercase) {
         displayValue = displayValue.toUpperCase();
         displayLabel = displayLabel.toUpperCase();
     }
-    
+
     let formattedText = '';
-    
+
     // Formatação específica por tipo de campo
     if (fieldType === FieldType.CLASSIFICATION) {
         // Para classificação, assumimos que o valor pode ser "código|assunto" ou similar
         const parts = displayValue.split('|').map(p => p.trim());
         const code = parts[0] || '';
         const subject = parts[1] || '';
-        
+
         const mode = config.classificationMode || 'both';
         const separatorMap = {
             'pipe': ' | ',
@@ -582,7 +582,7 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
             'space': ' '
         };
         const separator = separatorMap[config.classificationSeparator || 'pipe'];
-        
+
         if (mode === 'code') {
             formattedText = code;
         } else if (mode === 'subject') {
@@ -590,12 +590,12 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
         } else {
             formattedText = code + separator + subject;
         }
-        
+
     } else if (fieldType === FieldType.YEAR) {
         // Para ano, formatamos como ano inicial/ano final
         const mode = config.yearMode || 'both';
         const separator = config.yearSeparator || ' - ';
-        
+
         if (mode === 'initial') {
             formattedText = displayValue;
         } else if (mode === 'final') {
@@ -605,24 +605,31 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
             const years = displayValue.split('-').map(y => y.trim());
             formattedText = years.join(separator);
         }
-        
+
     } else {
         // Formatação padrão para texto
-        if (!config.showLabel) {
-            formattedText = displayValue;
-        } else if (config.usePipe) {
-            formattedText = `${displayLabel} | ${displayValue}`;
+        formattedText = displayValue;
+    }
+
+    // Aplicar label, pipe e caixa alta (para todos os tipos)
+    if (config.showLabel) {
+        if (config.usePipe) {
+            formattedText = `${displayLabel} | ${formattedText}`;
         } else {
-            formattedText = `${displayLabel}: ${displayValue}`;
+            formattedText = `${displayLabel}: ${formattedText}`;
         }
     }
-    
+
+    if (config.uppercase) {
+        formattedText = formattedText.toUpperCase();
+    }
+
     // Aplicar negrito e alinhamento
     const fontWeight = config.bold ? 'bold' : 'normal';
     const textAlign = config.alignment || 'left';
-    
+
     const html = `<span style="font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; word-break: break-word;">${formattedText}</span>`;
-    
+
     return { html, shouldRender: true };
 }
 
@@ -636,37 +643,37 @@ function openFieldConfigModal(key, label) {
     const config = state.currentConfig;
     const modelName = config.name;
     currentConfigField = { key, label, modelName };
-    
+
     const modal = document.getElementById('field-config-modal');
     const title = document.getElementById('field-config-title');
     const fieldType = getFieldType(key);
-    
+
     if (!modal) return;
-    
+
     title.textContent = `Configurar: ${label}`;
-    
+
     const fieldConfig = getFieldConfig(modelName, key);
-    
+
     // Elementos do modal
     const basicLayout = document.querySelector('#field-config-modal > div > div > div:nth-child(1)'); // Layout em 2 colunas
     const classificationDiv = document.getElementById('classification-config');
     const yearDiv = document.getElementById('year-config');
     const alignmentDiv = document.querySelector('#field-config-modal > div > div > div:nth-child(4)'); // Alinhamento
     const previewDiv = document.querySelector('#field-config-modal > div > div > div:nth-child(5)'); // Preview
-    
-    // Esconder tudo primeiro
-    if (basicLayout) basicLayout.style.display = 'none';
+
+    // Mostrar elementos básicos para todos os tipos
+    if (basicLayout) basicLayout.style.display = 'grid';
+    if (alignmentDiv) alignmentDiv.style.display = 'block';
+    if (previewDiv) previewDiv.style.display = 'block';
+
+    // Esconder seções específicas primeiro
     if (classificationDiv) classificationDiv.style.display = 'none';
     if (yearDiv) yearDiv.style.display = 'none';
-    if (alignmentDiv) alignmentDiv.style.display = 'none';
-    if (previewDiv) previewDiv.style.display = 'none';
-    
-    // Mostrar apenas o necessário baseado no tipo
+
+    // Mostrar seção específica baseada no tipo
     if (fieldType === FieldType.CLASSIFICATION) {
-        // Apenas classificação e preview
         if (classificationDiv) classificationDiv.style.display = 'block';
-        if (previewDiv) previewDiv.style.display = 'block';
-        
+
         // Configurar valores de classificação
         const modeRadios = document.querySelectorAll('input[name="config-classification-mode"]');
         modeRadios.forEach(radio => {
@@ -674,17 +681,15 @@ function openFieldConfigModal(key, label) {
                 radio.checked = true;
             }
         });
-        
+
         const separatorSelect = document.getElementById('config-classification-separator');
         if (separatorSelect) {
             separatorSelect.value = fieldConfig.classificationSeparator || 'pipe';
         }
-        
+
     } else if (fieldType === FieldType.YEAR) {
-        // Apenas ano e preview
         if (yearDiv) yearDiv.style.display = 'block';
-        if (previewDiv) previewDiv.style.display = 'block';
-        
+
         // Configurar modo de ano
         const modeRadios = document.querySelectorAll('input[name="config-year-mode"]');
         modeRadios.forEach(radio => {
@@ -692,37 +697,31 @@ function openFieldConfigModal(key, label) {
                 radio.checked = true;
             }
         });
-        
+
         // Configurar separador de anos
         const separatorSelect = document.getElementById('config-year-separator');
         if (separatorSelect) {
             separatorSelect.value = fieldConfig.yearSeparator || ' - ';
         }
-        
-    } else {
-        // Texto normal: layout básico, alinhamento e preview
-        if (basicLayout) basicLayout.style.display = 'grid';
-        if (alignmentDiv) alignmentDiv.style.display = 'block';
-        if (previewDiv) previewDiv.style.display = 'block';
-        
-        // Configurar valores básicos
-        document.getElementById('config-show-label').checked = fieldConfig.showLabel;
-        document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
-        document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
-        document.getElementById('config-bold').checked = fieldConfig.bold;
     }
-    
-    // Alinhamento (para todos os tipos, exceto classificação que não precisa)
+
+    // Configurar valores básicos para todos os tipos
+    document.getElementById('config-show-label').checked = fieldConfig.showLabel;
+    document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
+    document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
+    document.getElementById('config-bold').checked = fieldConfig.bold;
+
+    // Alinhamento
     const alignmentRadios = document.querySelectorAll('input[name="config-alignment"]');
     alignmentRadios.forEach(radio => {
         if (radio.value === fieldConfig.alignment) {
             radio.checked = true;
         }
     });
-    
+
     setupPreviewListeners();
     updateFieldPreview();
-    
+
     modal.style.display = 'flex';
 }
 
@@ -739,7 +738,7 @@ function setupPreviewListeners() {
         'config-uppercase',
         'config-bold'
     ];
-    
+
     inputs.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
@@ -749,23 +748,23 @@ function setupPreviewListeners() {
             element.addEventListener('change', updateFieldPreview);
         }
     });
-    
+
     // Listeners para classificação
     document.querySelectorAll('input[name="config-classification-mode"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
         radio.addEventListener('change', updateFieldPreview);
     });
-    
+
     document.getElementById('config-classification-separator')?.addEventListener('change', updateFieldPreview);
-    
+
     // Listeners para ano
     document.querySelectorAll('input[name="config-year-mode"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
         radio.addEventListener('change', updateFieldPreview);
     });
-    
+
     document.getElementById('config-year-separator')?.addEventListener('change', updateFieldPreview);
-    
+
     // Alinhamento
     document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
@@ -776,12 +775,20 @@ function setupPreviewListeners() {
 function updateFieldPreview() {
     const preview = document.getElementById('field-config-preview');
     if (!preview) return;
-    
+
     const fieldType = getFieldType(currentConfigField.key);
-    
+
+    // Valores básicos
+    const showLabel = document.getElementById('config-show-label')?.checked || false;
+    const usePipe = document.getElementById('config-use-pipe')?.checked || false;
+    const uppercase = document.getElementById('config-uppercase')?.checked || false;
+    const bold = document.getElementById('config-bold')?.checked || false;
+
+    const fieldName = currentConfigField.label || 'Campo';
+
     let previewText = '';
     let style = '';
-    
+
     if (fieldType === FieldType.CLASSIFICATION) {
         // Preview para classificação
         const mode = document.querySelector('input[name="config-classification-mode"]:checked')?.value || 'both';
@@ -793,7 +800,7 @@ function updateFieldPreview() {
             'space': ' '
         };
         const separator = separatorMap[document.getElementById('config-classification-separator')?.value || 'pipe'];
-        
+
         if (mode === 'code') {
             previewText = '041.2';
         } else if (mode === 'subject') {
@@ -801,12 +808,12 @@ function updateFieldPreview() {
         } else {
             previewText = `041.2${separator}Assunto da Classificação`;
         }
-        
+
     } else if (fieldType === FieldType.YEAR) {
         // Preview para ano
         const mode = document.querySelector('input[name="config-year-mode"]:checked')?.value || 'both';
         const separator = document.getElementById('config-year-separator')?.value || ' - ';
-        
+
         if (mode === 'initial') {
             previewText = '2020';
         } else if (mode === 'final') {
@@ -814,74 +821,61 @@ function updateFieldPreview() {
         } else {
             previewText = `2020${separator}2021`;
         }
-        
+
     } else {
         // Preview para texto normal
-        const showLabel = document.getElementById('config-show-label')?.checked || false;
-        const usePipe = document.getElementById('config-use-pipe')?.checked || false;
-        const uppercase = document.getElementById('config-uppercase')?.checked || false;
-        const bold = document.getElementById('config-bold')?.checked || false;
-        
-        const fieldName = currentConfigField.label || 'Campo';
-        
         previewText = '041.2';
-        
-        if (showLabel) {
-            if (usePipe) {
-                previewText = `${fieldName} | ${previewText}`;
-            } else {
-                previewText = `${fieldName}: ${previewText}`;
-            }
-        }
-        
-        if (uppercase) {
-            previewText = previewText.toUpperCase();
-        }
-        
-        if (bold) style += 'font-weight: bold; ';
     }
-    
-    // Alinhamento (para todos os tipos)
+
+    // Aplicar formatação básica para todos os tipos
+    if (showLabel) {
+        if (usePipe) {
+            previewText = `${fieldName} | ${previewText}`;
+        } else {
+            previewText = `${fieldName}: ${previewText}`;
+        }
+    }
+
+    if (uppercase) {
+        previewText = previewText.toUpperCase();
+    }
+
+    if (bold) style += 'font-weight: bold; ';
+
+    // Alinhamento
     const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
     style += `text-align: ${alignment};`;
-    
+
     preview.innerHTML = `<span style="${style}">${previewText}</span>`;
 }
 
 function saveFieldConfig() {
     const { key, modelName } = currentConfigField;
     if (!key || !modelName) return;
-    
+
     const fieldType = getFieldType(key);
-    
+
+    // Configurações básicas (para todos os tipos)
     const config = {
+        showLabel: document.getElementById('config-show-label')?.checked || false,
+        usePipe: document.getElementById('config-use-pipe')?.checked || false,
+        uppercase: document.getElementById('config-uppercase')?.checked || false,
+        bold: document.getElementById('config-bold')?.checked || false,
         alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left'
     };
-    
+
+    // Configurações específicas
     if (fieldType === FieldType.CLASSIFICATION) {
         config.classificationMode = document.querySelector('input[name="config-classification-mode"]:checked')?.value || 'both';
         config.classificationSeparator = document.getElementById('config-classification-separator')?.value || 'pipe';
         config.forceClassification = true;
-        config.showLabel = true;
-        config.usePipe = true;
-        config.uppercase = false;
-        config.bold = false;
-        
+
     } else if (fieldType === FieldType.YEAR) {
         config.yearMode = document.querySelector('input[name="config-year-mode"]:checked')?.value || 'both';
         config.yearSeparator = document.getElementById('config-year-separator')?.value || ' - ';
-        config.showLabel = false;
-        config.usePipe = false;
-        config.uppercase = false;
-        config.bold = false;
-        
-    } else {
-        config.showLabel = document.getElementById('config-show-label')?.checked || false;
-        config.usePipe = document.getElementById('config-use-pipe')?.checked || false;
-        config.uppercase = document.getElementById('config-uppercase')?.checked || false;
-        config.bold = document.getElementById('config-bold')?.checked || false;
     }
-    
+
+    // Salvar configuração
     if (!modelFieldConfigs[modelName]) {
         modelFieldConfigs[modelName] = {};
     }
@@ -889,12 +883,12 @@ function saveFieldConfig() {
         ...modelFieldConfigs[modelName][key],
         ...config
     };
-    
+
     saveToLocalStorage();
     closeFieldConfigModal();
     renderPreview();
     renderForm();
-    
+
     showToast('Configuração do campo aplicada!');
 }
 
@@ -966,20 +960,20 @@ function renderPencilButton(key, label) {
     const modelName = config.name;
     const fieldConfig = getFieldConfig(modelName, key);
     const hasValue = config.customValues[key]?.length > 0;
-    
+
     let btnClass = 'btn-outline';
     if (hasValue) {
         btnClass = 'btn-primary';
     }
-    
+
     const hasCustomConfig = Object.keys(defaultFieldConfig).some(k => {
-        if (k === 'classificationMode' || k === 'classificationSeparator' || 
+        if (k === 'classificationMode' || k === 'classificationSeparator' ||
             k === 'yearMode' || k === 'yearSeparator' || k === 'forceClassification') {
             return fieldConfig[k] !== undefined && fieldConfig[k] !== defaultFieldConfig[k];
         }
         return fieldConfig[k] !== defaultFieldConfig[k];
     });
-    
+
     return `
         <button type="button" 
                 class="btn ${btnClass}" 
@@ -987,9 +981,9 @@ function renderPencilButton(key, label) {
                 onclick="openFieldConfigModal('${key}', '${label}')" 
                 title="Configurar ${label}">
             ⚙️
-            ${hasCustomConfig ? 
-                '<span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#10b981;border-radius:50%;"></span>' : 
-                ''}
+            ${hasCustomConfig ?
+            '<span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#10b981;border-radius:50%;"></span>' :
+            ''}
         </button>
     `;
 }
@@ -1017,13 +1011,13 @@ function renderHeaderSelect(lineKey, valueKey) {
 
 function handleHeaderLabelChange(key, value) {
     updateCustomValue(key, value);
-    
+
     if (value === 'CLASSIFICAÇÃO - C12') {
         const valueKey = key.replace('_label', '_value');
-        
+
         const config = state.currentConfig;
         const modelName = config.name;
-        
+
         if (!modelFieldConfigs[modelName]) {
             modelFieldConfigs[modelName] = {};
         }
@@ -1031,7 +1025,7 @@ function handleHeaderLabelChange(key, value) {
             modelFieldConfigs[modelName][valueKey] = { ...defaultFieldConfig };
         }
         modelFieldConfigs[modelName][valueKey].forceClassification = true;
-        
+
         setTimeout(() => {
             openFieldConfigModal(valueKey, 'Valor da Classificação');
         }, 100);
@@ -1239,7 +1233,7 @@ function renderPreview() {
         const numeroCaixaResult = formatFieldValue(modelName, 'title_value', 'Nº CAIXA', vals.title_value);
         const departamentoResult = formatFieldValue(modelName, 'extra_value', 'DEPARTAMENTO', vals.extra_value);
         const tipoDocumentalResult = formatFieldValue(modelName, 'line4_value', 'TIPO DOCUMENTAL', vals.line4_value);
-        
+
         const linhasPaciente = (vals.main_text || '')
             .split('\n')
             .filter(l => l.trim())
@@ -1307,7 +1301,7 @@ function renderPreview() {
         const topResult = formatFieldValue(modelName, 'top_value', vals.top_label || (isDiretoria ? 'DIRETORIA / ORGÃO' : 'DEPARTAMENTO'), vals.top_value);
         const titleResult = formatFieldValue(modelName, 'title_value', vals.title_label || 'CÓDIGO', vals.title_value);
         const extraResult = formatFieldValue(modelName, 'extra_value', vals.extra_label || 'CÓDIGO', vals.extra_value);
-        
+
         html += `
             <div class="senac-row" style="min-height:35px;">
                 <div class="senac-col-label" style="${labelStyle}">
@@ -1339,7 +1333,7 @@ function renderPreview() {
     if (isHMAB) {
         const topResult = formatFieldValue(modelName, 'top_value', 'CÓDIGO', vals.top_value);
         const titleResult = formatFieldValue(modelName, 'title_value', 'CÓDIGO', vals.title_value);
-        
+
         html += `
             <div class="senac-row" style="min-height:35px;">
                 <div class="senac-col-label" style="${labelStyle}">
@@ -1380,7 +1374,7 @@ function renderPreview() {
         const extraResult = formatFieldValue(modelName, 'extra_value', 'CÓDIGO', vals.extra_value);
         const line4Result = formatFieldValue(modelName, 'line4_value', 'CÓDIGO', vals.line4_value);
         const line5Result = formatFieldValue(modelName, 'line5_value', 'CÓDIGO', vals.line5_value);
-        
+
         html += `
             <div class="senac-row" style="min-height:35px;">
                 <div class="senac-col-label" style="${labelStyle}">
@@ -1437,7 +1431,7 @@ function renderPreview() {
     if (!isHomeAssistence) {
         const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
         const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
-        
+
         html += `
             <div class="senac-row" style="padding:0;display:block;border-bottom:2px solid #000;">
                 <table class="senac-footer-table">
@@ -1604,11 +1598,11 @@ function saveMirror() {
 }
 
 function createNew() {
-    state.currentConfig = { 
-        ...defaultMirrorConfig, 
+    state.currentConfig = {
+        ...defaultMirrorConfig,
         id: '',
         name: 'Novo Modelo',
-        customValues: { ...defaultMirrorConfig.customValues } 
+        customValues: { ...defaultMirrorConfig.customValues }
     };
     state.selectedMirrorId = null;
     renderMirrorList();
@@ -1679,7 +1673,7 @@ function init() {
     });
 
     renderMirrorList();
-    
+
     if (state.selectedMirrorId) {
         loadMirror(state.selectedMirrorId);
     } else if (state.mirrors.length > 0) {
