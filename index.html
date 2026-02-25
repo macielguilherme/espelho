@@ -115,142 +115,175 @@
         </div>
     </div>
 
-    <!-- Modal de Configuração de Campo (com CSS inline apenas nos novos elementos) -->
-<div class="modal-overlay" id="field-config-modal" style="display:none;">
-    <div class="modal-content" style="max-width: 700px; width: 90%;">
-        <div class="modal-header">
-            <h2 class="modal-title" id="field-config-title">Configurar Campo</h2>
-            <p class="modal-description text-xs text-muted-foreground">
-                Configure as opções de exibição para este campo.
-            </p>
-        </div>
+    <!-- Modal de Configuração de Campo (ATUALIZADO) -->
+    <div class="modal-overlay" id="field-config-modal" style="display:none;">
+        <div class="modal-content" style="max-width: 700px; width: 90%;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="field-config-title">Configurar Campo</h2>
+                <p class="modal-description text-xs text-muted-foreground">
+                    Configure as opções de exibição para este campo.
+                </p>
+            </div>
 
-        <div style="max-height: 70vh; overflow-y: auto; padding-right: 10px;">
-            <!-- Layout em 2 colunas -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                
-                <!-- COLUNA ESQUERDA -->
-                <div class="space-y-4">
+            <div style="max-height: 70vh; overflow-y: auto; padding-right: 10px;">
+                <!-- Layout em 2 colunas -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     
-                    <!-- Checkbox: Exibir Nome do Campo -->
-                    <div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-show-label" checked>
-                            <label for="config-show-label">Exibir Nome do Campo</label>
-                        </div>
-                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                            Ex: "Código: 041.2" vs "041.2"
-                        </div>
-                    </div>
-
-                    <!-- Checkbox: Separador por Pipe -->
-                    <div style="margin-top: 16px;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-use-pipe" checked>
-                            <label for="config-use-pipe">Separador por Pipe ( | )</label>
-                        </div>
-                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                            Ex: "Código | 041.2" vs "Código 041.2"
-                        </div>
-                    </div>
-
-                    <!-- Checkbox: Ordem da Informação -->
-                    <div style="margin-top: 16px;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-invert-order">
-                            <label for="config-invert-order">Inverter Ordem</label>
-                        </div>
-                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                            Ex: "041.2: Código" vs "Código: 041.2"
-                        </div>
-                    </div>
-
-                    <!-- Checkbox: Caixa Alta -->
-                    <div style="margin-top: 16px;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-uppercase">
-                            <label for="config-uppercase">Caixa Alta</label>
-                        </div>
-                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                            Ex: "CÓDIGO: 041.2" vs "código: 041.2"
-                        </div>
-                    </div>
-                </div>
-
-                <!-- COLUNA DIREITA -->
-                <div class="space-y-4">
-                    
-                    <!-- Checkbox: Negrito -->
-                    <div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-bold">
-                            <label for="config-bold">Negrito</label>
-                        </div>
-                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                            Aplica negrito ao texto
-                        </div>
-                    </div>
-
-                    <!-- Checkbox: Exibição Condicional -->
-                    <div style="margin-top: 16px;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-conditional">
-                            <label for="config-conditional">Exibir mesmo sem valor</label>
-                        </div>
-                        <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                            Quando vazio: "Departamento | Sem Informação"
-                        </div>
-                    </div>
-
-                    <!-- Checkbox: Tamanho Máximo -->
-                    <div style="margin-top: 16px;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="config-max-length-enable">
-                            <label for="config-max-length-enable">Limitar tamanho</label>
-                        </div>
+                    <!-- COLUNA ESQUERDA -->
+                    <div class="space-y-4">
                         
-                        <div id="max-length-container" style="margin-left: 24px; display: none; margin-top: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="number" id="config-max-length" class="form-input" 
-                                       placeholder="Limite" min="1" max="500" style="width: 100px;">
-                                <span class="text-xs text-muted-foreground">caracteres</span>
+                        <!-- Checkbox: Exibir Nome do Campo -->
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="config-show-label" checked>
+                                <label for="config-show-label">Exibir Nome do Campo</label>
+                            </div>
+                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                                Ex: "Código: 041.2" vs "041.2"
+                            </div>
+                        </div>
+
+                        <!-- Checkbox: Separador por Pipe -->
+                        <div style="margin-top: 16px;">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="config-use-pipe" checked>
+                                <label for="config-use-pipe">Separador por Pipe ( | )</label>
+                            </div>
+                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                                Ex: "Código | 041.2" vs "Código 041.2"
+                            </div>
+                        </div>
+
+                        <!-- Checkbox: Caixa Alta -->
+                        <div style="margin-top: 16px;">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="config-uppercase">
+                                <label for="config-uppercase">Caixa Alta</label>
+                            </div>
+                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                                Ex: "CÓDIGO: 041.2" vs "código: 041.2"
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA DIREITA -->
+                    <div class="space-y-4">
+                        
+                        <!-- Checkbox: Negrito -->
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="config-bold">
+                                <label for="config-bold">Negrito</label>
+                            </div>
+                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
+                                Aplica negrito ao texto
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Alinhamento (ocupa as 2 colunas) -->
-            <div style="margin-top: 24px; grid-column: span 2;">
-                <label class="form-label">Alinhamento no Bloco:</label>
-                <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
-                    <label class="radio-item">
-                        <input type="radio" name="config-alignment" value="left" checked> Esquerda
-                    </label>
-                    <label class="radio-item">
-                        <input type="radio" name="config-alignment" value="center"> Centro
-                    </label>
-                    <label class="radio-item">
-                        <input type="radio" name="config-alignment" value="right"> Direita
-                    </label>
+                <!-- CONFIGURAÇÕES ESPECÍFICAS PARA CLASSIFICAÇÃO -->
+                <div id="classification-config" style="margin-top: 24px; display: none;">
+                    <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
+                        <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">Configuração de Classificação</h4>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de Exibição:</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label class="radio-item">
+                                    <input type="radio" name="config-classification-mode" value="both" checked> 
+                                    Código e Assunto (ex: 041.2 | Assunto)
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="config-classification-mode" value="code"> 
+                                    Apenas Código (ex: 041.2)
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="config-classification-mode" value="subject"> 
+                                    Apenas Assunto (ex: Assunto)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre Código e Assunto:</label>
+                            <select id="config-classification-separator" class="form-input" style="width: 100%;">
+                                <option value="pipe">Pipe ( | )</option>
+                                <option value="comma">Vírgula ( , )</option>
+                                <option value="semicolon">Ponto e vírgula ( ; )</option>
+                                <option value="hyphen">Hífen ( - )</option>
+                                <option value="space">Espaço ( )</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIGURAÇÕES ESPECÍFICAS PARA ANO -->
+                <div id="year-config" style="margin-top: 24px; display: none;">
+                    <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
+                        <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">Configuração de Ano</h4>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de Exibição:</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label class="radio-item">
+                                    <input type="radio" name="config-year-mode" value="both" checked> 
+                                    Ano Inicial e Final (ex: 2020-2021)
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="config-year-mode" value="initial"> 
+                                    Apenas Ano Inicial (ex: 2020)
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="config-year-mode" value="final"> 
+                                    Apenas Ano Final (ex: 2021)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre Anos:</label>
+                            <select id="config-year-separator" class="form-input" style="width: 100%;">
+                                <option value=" - ">Hífen com espaços ( - )</option>
+                                <option value="-">Hífen sem espaços (-)</option>
+                                <option value=" a ">"a" (2020 a 2021)</option>
+                                <option value="/">Barra (/)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alinhamento (ocupa as 2 colunas) -->
+                <div style="margin-top: 24px; grid-column: span 2;">
+                    <label class="form-label">Alinhamento no Bloco:</label>
+                    <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
+                        <label class="radio-item">
+                            <input type="radio" name="config-alignment" value="left" checked> Esquerda
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-alignment" value="center"> Centro
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-alignment" value="right"> Direita
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Preview do formato (ocupa as 2 colunas) -->
+                <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview:</div>
+                    <div id="field-config-preview" style="font-size: 14px; padding: 12px; background: white; border-radius: 4px; min-height: 50px; border: 1px solid #e2e8f0;">
+                        Código | 041.2
+                    </div>
                 </div>
             </div>
 
-            <!-- Preview do formato (ocupa as 2 colunas) -->
-            <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview:</div>
-                <div id="field-config-preview" style="font-size: 14px; padding: 12px; background: white; border-radius: 4px; min-height: 50px; border: 1px solid #e2e8f0;">
-                    Código | 041.2
-                </div>
+            <div class="modal-footer" style="margin-top: 24px;">
+                <button class="btn btn-outline" onclick="closeFieldConfigModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveFieldConfig()">Aplicar Configuração</button>
             </div>
-        </div>
-
-        <div class="modal-footer" style="margin-top: 24px;">
-            <button class="btn btn-outline" onclick="closeFieldConfigModal()">Cancelar</button>
-            <button class="btn btn-primary" onclick="saveFieldConfig()">Aplicar Configuração</button>
         </div>
     </div>
-</div>
 
     <!-- Modal de Exclusão -->
     <div class="modal-overlay" id="delete-modal" style="display: none;">
