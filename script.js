@@ -152,7 +152,7 @@ const defaultMirrorConfig = {
         'interm_value': '',
         'dest_label': 'DESTINAÇÃO FINAL',
         'dest_value': '',
-        'barcode_value': '' // Apenas o valor, sem label
+        'barcode_value': 'CÓDIGO DE BARRAS' // Valor fixo de exemplo
     },
     layoutOption: 2
 };
@@ -173,7 +173,7 @@ const igesMirrorConfig = {
         line4_label: 'TIPO DOCUMENTAL',
         line4_value: '',
         main_text: 'PACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -197,7 +197,7 @@ const codigoUnicoMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -223,7 +223,7 @@ const diretoriaMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -249,7 +249,7 @@ const novacapMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -273,7 +273,7 @@ const mteMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -297,7 +297,7 @@ const cadeMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -323,7 +323,7 @@ const hmabMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -347,7 +347,7 @@ const homeAssistenceMirrorConfig = {
         interm_value: '',
         dest_label: '',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -377,7 +377,7 @@ const equatorialEnergiaMirrorConfig = {
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
-        barcode_value: ''
+        barcode_value: 'Código de Barras'
     }
 };
 
@@ -1179,22 +1179,20 @@ function renderForm() {
                         </div>
 
                         <div class="col-span-2">
-                            <input type="text" class="form-input" 
-                                   placeholder="Código de Barras"
-                                   value="${values.barcode_value || ''}" 
-                                   oninput="updateCustomValue('barcode_value', this.value)">
-                            <!-- Apenas input, sem dropdown e sem engrenagem -->
+                            <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0;">
+                                ${values.barcode_value || 'Código de Barras'}
+                            </div>
+                            <!-- Campo apenas visual, não editável, sem função -->
                         </div>
                     </div>
                 </div>
             ` : `
                 <div class="space-y-3">
                     <h3 class="section-header">Código de Barras</h3>
-                    <input type="text" class="form-input" 
-                           placeholder="Código de Barras"
-                           value="${values.barcode_value || ''}" 
-                           oninput="updateCustomValue('barcode_value', this.value)">
-                    <!-- Apenas input, sem dropdown e sem engrenagem -->
+                    <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0;">
+                        ${values.barcode_value || 'Código de Barras'}
+                    </div>
+                    <!-- Campo apenas visual, não editável, sem função -->
                 </div>
             `}
         </div>
@@ -1463,13 +1461,11 @@ function renderPreview() {
     }
 
     // Código de barras - formato FIXO, apenas o valor
-    const barcodeValue = vals.barcode_value || '';
+    const barcodeValue = vals.barcode_value || 'DCXXXXXXXXXSOS';
     html += `
         <div class="senac-barcode-container" style="min-height:80px;">
-            ${barcodeValue ? `
-                <div style="font-family:'Libre Barcode 39';font-size:48px;">*${barcodeValue}*</div>
-                <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
-            ` : '&nbsp;'}
+            <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeValue}*</div>
+            <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
         </div>
     </div>`;
 
@@ -1529,6 +1525,7 @@ function updateCustomValue(key, value) {
         state.currentConfig.customValues = {};
     }
 
+    // Tratamento especial para IGES
     if (state.currentConfig.name === 'Modelo IGES' && key === 'line6_value') {
         state.currentConfig.customValues.main_text = value;
     } else {
@@ -1537,6 +1534,9 @@ function updateCustomValue(key, value) {
 
     renderForm();
     renderPreview();
+
+    // Salvar automaticamente
+    saveToLocalStorage();
 }
 
 function handleLogoUpload(event) {
