@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espelho Personalizado - DocZ</title>
-    
+
     <link rel="stylesheet" href="style.css">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
 </head>
 
@@ -63,7 +63,7 @@
                 </svg>
                 Cancelar
             </button>
-            
+
             <button class="btn btn-outline" id="print-button">
                 <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
                     <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
@@ -73,14 +73,15 @@
                 </svg>
                 Imprimir
             </button>
-            
+
             <button class="btn btn-outline" id="default-button">
                 <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
-                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
                 Novo
             </button>
-            
+
             <button class="btn btn-primary" id="save-button">
                 <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor"
@@ -104,8 +105,8 @@
             </div>
 
             <div class="space-y-3">
-                <textarea id="edit-modal-input" class="form-input" 
-                          style="height: 150px; resize: vertical; padding: 10px; font-family: monospace; line-height: 1.5;"></textarea>
+                <textarea id="edit-modal-input" class="form-input"
+                    style="height: 150px; resize: vertical; padding: 10px; font-family: monospace; line-height: 1.5;"></textarea>
             </div>
 
             <div class="modal-footer">
@@ -128,10 +129,10 @@
             <div style="max-height: 70vh; overflow-y: auto; padding-right: 10px;">
                 <!-- Layout em 2 colunas -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    
+
                     <!-- COLUNA ESQUERDA -->
                     <div class="space-y-4">
-                        
+
                         <!-- Checkbox: Exibir Nome do Campo -->
                         <div>
                             <div class="checkbox-item">
@@ -168,7 +169,7 @@
 
                     <!-- COLUNA DIREITA -->
                     <div class="space-y-4">
-                        
+
                         <!-- Checkbox: Negrito -->
                         <div>
                             <div class="checkbox-item">
@@ -183,30 +184,33 @@
                 </div>
 
                 <!-- CONFIGURAÇÕES ESPECÍFICAS PARA CLASSIFICAÇÃO -->
-                <div id="classification-config" style="margin-top: 24px; display: none;">
+                <div id="classification-config" style="margin-top: 24px;">
                     <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
-                        <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">Configuração de Classificação</h4>
-                        
+                        <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
+                            Configuração de Classificação</h4>
+
                         <div style="margin-bottom: 16px;">
-                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de Exibição:</label>
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de
+                                Exibição:</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <label class="radio-item">
-                                    <input type="radio" name="config-classification-mode" value="both" checked> 
+                                    <input type="radio" name="config-classification-mode" value="both" checked>
                                     Código e Assunto (ex: 041.2 | Assunto)
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="config-classification-mode" value="code"> 
+                                    <input type="radio" name="config-classification-mode" value="code">
                                     Apenas Código (ex: 041.2)
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="config-classification-mode" value="subject"> 
+                                    <input type="radio" name="config-classification-mode" value="subject">
                                     Apenas Assunto (ex: Assunto)
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre Código e Assunto:</label>
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre Código
+                                e Assunto:</label>
                             <select id="config-classification-separator" class="form-input" style="width: 100%;">
                                 <option value="pipe">Pipe ( | )</option>
                                 <option value="comma">Vírgula ( , )</option>
@@ -221,28 +225,31 @@
                 <!-- CONFIGURAÇÕES ESPECÍFICAS PARA ANO -->
                 <div id="year-config" style="margin-top: 24px; display: none;">
                     <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
-                        <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">Configuração de Ano</h4>
-                        
+                        <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
+                            Configuração de Ano</h4>
+
                         <div style="margin-bottom: 16px;">
-                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de Exibição:</label>
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de
+                                Exibição:</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <label class="radio-item">
-                                    <input type="radio" name="config-year-mode" value="both" checked> 
+                                    <input type="radio" name="config-year-mode" value="both" checked>
                                     Ano Inicial e Final (ex: 2020-2021)
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="config-year-mode" value="initial"> 
+                                    <input type="radio" name="config-year-mode" value="initial">
                                     Apenas Ano Inicial (ex: 2020)
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="config-year-mode" value="final"> 
+                                    <input type="radio" name="config-year-mode" value="final">
                                     Apenas Ano Final (ex: 2021)
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre Anos:</label>
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre
+                                Anos:</label>
                             <select id="config-year-separator" class="form-input" style="width: 100%;">
                                 <option value=" - ">Hífen com espaços ( - )</option>
                                 <option value="-">Hífen sem espaços (-)</option>
@@ -270,9 +277,11 @@
                 </div>
 
                 <!-- Preview do formato (ocupa as 2 colunas) -->
-                <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div
+                    style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
                     <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview:</div>
-                    <div id="field-config-preview" style="font-size: 14px; padding: 12px; background: white; border-radius: 4px; min-height: 50px; border: 1px solid #e2e8f0;">
+                    <div id="field-config-preview"
+                        style="font-size: 14px; padding: 12px; background: white; border-radius: 4px; min-height: 50px; border: 1px solid #e2e8f0;">
                         Código | 041.2
                     </div>
                 </div>
