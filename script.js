@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURAÇÕES E CONSTANTES
 // ==========================================
-const STORAGE_KEY = 'docz_mirrors_v10';
+const STORAGE_KEY = 'docz_mirrors_v11';
 
 const MirrorType = {
     CAIXA: 'caixa',
@@ -23,7 +23,7 @@ const headerLinesByModel = {
 };
 
 // ==========================================
-// CONFIGURAÇÕES DE CAMPO
+// CONFIGURAÇÕES DE CAMPO (ATUALIZADO)
 // ==========================================
 
 const defaultFieldConfig = {
@@ -32,6 +32,12 @@ const defaultFieldConfig = {
     uppercase: false,          // Caixa alta
     bold: false,               // Negrito
     alignment: 'left',          // left, center, right
+
+    // NOVOS CAMPOS - RN11.8 e RN11.9
+    fontSize: 'medium',        // 'small', 'medium', 'large'
+    overflowRule: 'wrap',      // 'truncate', 'wrap', 'reduce-font'
+    maxChars: 0,                // 0 = sem limite
+
     // Campos específicos para Classificação
     classificationMode: 'both', // 'code', 'subject', 'both'
     classificationSeparator: 'pipe', // 'pipe', 'comma', 'semicolon'
@@ -40,6 +46,19 @@ const defaultFieldConfig = {
     yearSeparator: ' - ', // Separador entre anos
     // Forçar classificação
     forceClassification: false
+};
+
+// Mapeamento de tamanhos de fonte para valores em pixels
+const fontSizeMap = {
+    'small': '9px',
+    'medium': '11px',
+    'large': '14px'
+};
+
+const headerFontSizeMap = {
+    'small': '10px',
+    'medium': '12px',
+    'large': '16px'
 };
 
 // Cache para configurações por modelo
@@ -152,7 +171,7 @@ const defaultMirrorConfig = {
         'interm_value': '',
         'dest_label': 'DESTINAÇÃO FINAL',
         'dest_value': '',
-        'barcode_value': 'CÓDIGO DE BARRAS' // Valor fixo de exemplo
+        'barcode_value': 'CÓDIGO DE BARRAS'
     },
     layoutOption: 2
 };
@@ -423,8 +442,6 @@ const destOptions = [
     { value: 'AÇÃO FINAL', label: 'Ação Final' }
 ];
 
-// NOTA: barcodeOptions foi removido - código de barras não tem dropdown
-
 let state = {
     mirrors: [],
     currentConfig: { ...defaultMirrorConfig },
@@ -500,7 +517,6 @@ function initializeFieldConfigs(modelName) {
         'top_value', 'title_value', 'extra_value', 'line4_value', 'line5_value',
         'line6_value', 'line7_value', 'line8_value', 'line9_value', 'line10_value',
         'main_text', 'data_1_value', 'data_2_value', 'interm_value', 'dest_value'
-        // 'barcode_value' excluído - não tem configuração
     ];
 
     allFields.forEach(field => {
@@ -511,7 +527,6 @@ function initializeFieldConfigs(modelName) {
 }
 
 function getFieldConfig(modelName, fieldKey) {
-    // Código de barras não tem configuração
     if (fieldKey === 'barcode_value') {
         return null;
     }
@@ -523,7 +538,7 @@ function getFieldConfig(modelName, fieldKey) {
 }
 
 function updateFieldConfig(modelName, fieldKey, configChanges) {
-    if (fieldKey === 'barcode_value') return; // Não configura código de barras
+    if (fieldKey === 'barcode_value') return;
 
     if (!modelFieldConfigs[modelName]) {
         initializeFieldConfigs(modelName);
@@ -536,11 +551,10 @@ function updateFieldConfig(modelName, fieldKey, configChanges) {
 }
 
 // ==========================================
-// FUNÇÃO DE FORMATAÇÃO DE CAMPO
+// FUNÇÃO DE FORMATAÇÃO DE CAMPO (ATUALIZADA)
 // ==========================================
 
 function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
-    // Código de barras tem formatação FIXA - retorna apenas o valor
     if (fieldKey === 'barcode_value') {
         return {
             html: rawValue || '',
@@ -555,12 +569,10 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
     let displayValue = value;
     let displayLabel = fieldLabel || '';
 
-    // Se não tem valor, retorna vazio
     if (!value) {
         return { html: '', shouldRender: false };
     }
 
-    // Aplicar caixa alta
     if (config.uppercase) {
         displayValue = displayValue.toUpperCase();
         displayLabel = displayLabel.toUpperCase();
@@ -568,9 +580,7 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
 
     let formattedText = '';
 
-    // Formatação específica por tipo de campo
     if (fieldType === FieldType.CLASSIFICATION) {
-        // Para classificação, assumimos que o valor pode ser "código|assunto" ou similar
         const parts = displayValue.split('|').map(p => p.trim());
         const code = parts[0] || '';
         const subject = parts[1] || '';
@@ -594,7 +604,6 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
         }
 
     } else if (fieldType === FieldType.YEAR) {
-        // Para ano, formatamos como ano inicial/ano final
         const mode = config.yearMode || 'both';
         const separator = config.yearSeparator || ' - ';
 
@@ -603,17 +612,14 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
         } else if (mode === 'final') {
             formattedText = displayValue;
         } else {
-            // Se temos os dois anos, espera-se que estejam no formato "ano1-ano2"
             const years = displayValue.split('-').map(y => y.trim());
             formattedText = years.join(separator);
         }
 
     } else {
-        // Formatação padrão para texto
         formattedText = displayValue;
     }
 
-    // Aplicar label, pipe e caixa alta (para todos os tipos)
     if (config.showLabel) {
         if (config.usePipe) {
             formattedText = `${displayLabel} | ${formattedText}`;
@@ -626,23 +632,48 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
         formattedText = formattedText.toUpperCase();
     }
 
-    // Aplicar negrito e alinhamento
+    // APLICAR LIMITE DE CARACTERES (RN11.8)
+    if (config.maxChars && config.maxChars > 0 && formattedText.length > config.maxChars) {
+        if (config.overflowRule === 'truncate') {
+            formattedText = formattedText.substring(0, config.maxChars) + '...';
+        }
+        // Para 'wrap' e 'reduce-font', não truncamos o texto, apenas aplicamos estilo
+    }
+
+    // DEFINIR TAMANHO DA FONTE (RN11.9)
+    const fontSize = fontSizeMap[config.fontSize || 'medium'];
+
+    // REGRA DE OVERFLOW (RN11.8)
+    let overflowStyle = '';
+    if (config.overflowRule === 'wrap') {
+        overflowStyle = 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;';
+    } else if (config.overflowRule === 'truncate') {
+        overflowStyle = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+    } else if (config.overflowRule === 'reduce-font') {
+        // Para reduce-font, usamos fonte um tamanho menor se exceder
+        // Por simplicidade, vamos reduzir em 2px
+        const currentSize = parseInt(fontSize) || 11;
+        const reducedSize = Math.max(7, currentSize - 2);
+        overflowStyle = `font-size: ${reducedSize}px; white-space: normal; word-wrap: break-word;`;
+    } else {
+        overflowStyle = 'white-space: normal; word-wrap: break-word;';
+    }
+
     const fontWeight = config.bold ? 'bold' : 'normal';
     const textAlign = config.alignment || 'left';
 
-    const html = `<span style="font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; word-break: break-word;">${formattedText}</span>`;
+    const html = `<span style="font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; font-size: ${fontSize}; ${overflowStyle}">${formattedText}</span>`;
 
     return { html, shouldRender: true };
 }
 
 // ==========================================
-// MODAL DE CONFIGURAÇÃO DE CAMPO
+// MODAL DE CONFIGURAÇÃO DE CAMPO (ATUALIZADO)
 // ==========================================
 
 let currentConfigField = { key: null, label: '', modelName: '' };
 
 function openFieldConfigModal(key, label) {
-    // Código de barras não abre modal
     if (key === 'barcode_value') {
         showToast('Campo de código de barras não possui configurações', 'info');
         return;
@@ -654,35 +685,58 @@ function openFieldConfigModal(key, label) {
 
     const modal = document.getElementById('field-config-modal');
     const title = document.getElementById('field-config-title');
-    const fieldType = getFieldType(key);
 
     if (!modal) return;
 
     title.textContent = `Configurar: ${label}`;
 
     const fieldConfig = getFieldConfig(modelName, key);
+    const fieldType = getFieldType(key);
 
-    // Elementos do modal
-    const basicLayout = document.querySelector('#field-config-modal > div > div > div:nth-child(1)'); // Layout em 2 colunas
+    // Configurar valores básicos
+    document.getElementById('config-show-label').checked = fieldConfig.showLabel;
+    document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
+    document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
+    document.getElementById('config-bold').checked = fieldConfig.bold;
+
+    // NOVAS CONFIGURAÇÕES - RN11.8 e RN11.9
+    // Tamanho da fonte
+    const fontSizeRadios = document.querySelectorAll('input[name="config-font-size"]');
+    fontSizeRadios.forEach(radio => {
+        if (radio.value === (fieldConfig.fontSize || 'medium')) {
+            radio.checked = true;
+        }
+    });
+
+    // Regra de overflow
+    const overflowRadios = document.querySelectorAll('input[name="config-overflow-rule"]');
+    overflowRadios.forEach(radio => {
+        if (radio.value === (fieldConfig.overflowRule || 'wrap')) {
+            radio.checked = true;
+        }
+    });
+
+    // Limite de caracteres
+    document.getElementById('config-max-chars').value = fieldConfig.maxChars || 0;
+
+    // Alinhamento
+    const alignmentRadios = document.querySelectorAll('input[name="config-alignment"]');
+    alignmentRadios.forEach(radio => {
+        if (radio.value === fieldConfig.alignment) {
+            radio.checked = true;
+        }
+    });
+
+    // Mostrar/esconder seções específicas
     const classificationDiv = document.getElementById('classification-config');
     const yearDiv = document.getElementById('year-config');
-    const alignmentDiv = document.querySelector('#field-config-modal > div > div > div:nth-child(4)'); // Alinhamento
-    const previewDiv = document.querySelector('#field-config-modal > div > div > div:nth-child(5)'); // Preview
 
-    // Mostrar elementos básicos para todos os tipos
-    if (basicLayout) basicLayout.style.display = 'grid';
-    if (alignmentDiv) alignmentDiv.style.display = 'block';
-    if (previewDiv) previewDiv.style.display = 'block';
-
-    // Esconder seções específicas primeiro
     if (classificationDiv) classificationDiv.style.display = 'none';
     if (yearDiv) yearDiv.style.display = 'none';
 
-    // Mostrar seção específica baseada no tipo
     if (fieldType === FieldType.CLASSIFICATION) {
         if (classificationDiv) classificationDiv.style.display = 'block';
 
-        // Configurar valores de classificação
         const modeRadios = document.querySelectorAll('input[name="config-classification-mode"]');
         modeRadios.forEach(radio => {
             if (radio.value === (fieldConfig.classificationMode || 'both')) {
@@ -698,7 +752,6 @@ function openFieldConfigModal(key, label) {
     } else if (fieldType === FieldType.YEAR) {
         if (yearDiv) yearDiv.style.display = 'block';
 
-        // Configurar modo de ano
         const modeRadios = document.querySelectorAll('input[name="config-year-mode"]');
         modeRadios.forEach(radio => {
             if (radio.value === (fieldConfig.yearMode || 'both')) {
@@ -706,26 +759,11 @@ function openFieldConfigModal(key, label) {
             }
         });
 
-        // Configurar separador de anos
         const separatorSelect = document.getElementById('config-year-separator');
         if (separatorSelect) {
             separatorSelect.value = fieldConfig.yearSeparator || ' - ';
         }
     }
-
-    // Configurar valores básicos para todos os tipos
-    document.getElementById('config-show-label').checked = fieldConfig.showLabel;
-    document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
-    document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
-    document.getElementById('config-bold').checked = fieldConfig.bold;
-
-    // Alinhamento
-    const alignmentRadios = document.querySelectorAll('input[name="config-alignment"]');
-    alignmentRadios.forEach(radio => {
-        if (radio.value === fieldConfig.alignment) {
-            radio.checked = true;
-        }
-    });
 
     setupPreviewListeners();
     updateFieldPreview();
@@ -744,7 +782,8 @@ function setupPreviewListeners() {
         'config-show-label',
         'config-use-pipe',
         'config-uppercase',
-        'config-bold'
+        'config-bold',
+        'config-max-chars'
     ];
 
     inputs.forEach(id => {
@@ -757,7 +796,22 @@ function setupPreviewListeners() {
         }
     });
 
-    // Listeners para classificação
+    // Listeners para radio buttons
+    document.querySelectorAll('input[name="config-font-size"]').forEach(radio => {
+        radio.removeEventListener('change', updateFieldPreview);
+        radio.addEventListener('change', updateFieldPreview);
+    });
+
+    document.querySelectorAll('input[name="config-overflow-rule"]').forEach(radio => {
+        radio.removeEventListener('change', updateFieldPreview);
+        radio.addEventListener('change', updateFieldPreview);
+    });
+
+    document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
+        radio.removeEventListener('change', updateFieldPreview);
+        radio.addEventListener('change', updateFieldPreview);
+    });
+
     document.querySelectorAll('input[name="config-classification-mode"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
         radio.addEventListener('change', updateFieldPreview);
@@ -765,19 +819,12 @@ function setupPreviewListeners() {
 
     document.getElementById('config-classification-separator')?.addEventListener('change', updateFieldPreview);
 
-    // Listeners para ano
     document.querySelectorAll('input[name="config-year-mode"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
         radio.addEventListener('change', updateFieldPreview);
     });
 
     document.getElementById('config-year-separator')?.addEventListener('change', updateFieldPreview);
-
-    // Alinhamento
-    document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
-        radio.removeEventListener('change', updateFieldPreview);
-        radio.addEventListener('change', updateFieldPreview);
-    });
 }
 
 function updateFieldPreview() {
@@ -791,14 +838,17 @@ function updateFieldPreview() {
     const usePipe = document.getElementById('config-use-pipe')?.checked || false;
     const uppercase = document.getElementById('config-uppercase')?.checked || false;
     const bold = document.getElementById('config-bold')?.checked || false;
+    const fontSize = document.querySelector('input[name="config-font-size"]:checked')?.value || 'medium';
+    const overflowRule = document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap';
+    const maxChars = parseInt(document.getElementById('config-max-chars')?.value) || 0;
 
     const fieldName = currentConfigField.label || 'Campo';
 
     let previewText = '';
     let style = '';
 
+    // Gerar texto de preview baseado no tipo
     if (fieldType === FieldType.CLASSIFICATION) {
-        // Preview para classificação
         const mode = document.querySelector('input[name="config-classification-mode"]:checked')?.value || 'both';
         const separatorMap = {
             'pipe': ' | ',
@@ -818,7 +868,6 @@ function updateFieldPreview() {
         }
 
     } else if (fieldType === FieldType.YEAR) {
-        // Preview para ano
         const mode = document.querySelector('input[name="config-year-mode"]:checked')?.value || 'both';
         const separator = document.getElementById('config-year-separator')?.value || ' - ';
 
@@ -831,11 +880,10 @@ function updateFieldPreview() {
         }
 
     } else {
-        // Preview para texto normal
-        previewText = '041.2';
+        previewText = 'Texto de exemplo para preview';
     }
 
-    // Aplicar formatação básica para todos os tipos
+    // Aplicar formatação básica
     if (showLabel) {
         if (usePipe) {
             previewText = `${fieldName} | ${previewText}`;
@@ -848,9 +896,31 @@ function updateFieldPreview() {
         previewText = previewText.toUpperCase();
     }
 
+    // Aplicar limite de caracteres no preview
+    if (maxChars > 0 && previewText.length > maxChars) {
+        if (overflowRule === 'truncate') {
+            previewText = previewText.substring(0, maxChars) + '...';
+        }
+    }
+
+    // Estilos
     if (bold) style += 'font-weight: bold; ';
 
-    // Alinhamento
+    const fontSizeMap = {
+        'small': '9px',
+        'medium': '11px',
+        'large': '14px'
+    };
+    style += `font-size: ${fontSizeMap[fontSize] || '11px'}; `;
+
+    if (overflowRule === 'truncate') {
+        style += 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+    } else if (overflowRule === 'wrap') {
+        style += 'white-space: normal; word-wrap: break-word;';
+    } else if (overflowRule === 'reduce-font') {
+        style += 'white-space: normal; word-wrap: break-word; font-size: 9px;'; // Simula redução
+    }
+
     const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
     style += `text-align: ${alignment};`;
 
@@ -863,13 +933,18 @@ function saveFieldConfig() {
 
     const fieldType = getFieldType(key);
 
-    // Configurações básicas (para todos os tipos)
+    // Configurações básicas
     const config = {
         showLabel: document.getElementById('config-show-label')?.checked || false,
         usePipe: document.getElementById('config-use-pipe')?.checked || false,
         uppercase: document.getElementById('config-uppercase')?.checked || false,
         bold: document.getElementById('config-bold')?.checked || false,
-        alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left'
+        alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left',
+
+        // NOVAS CONFIGURAÇÕES
+        fontSize: document.querySelector('input[name="config-font-size"]:checked')?.value || 'medium',
+        overflowRule: document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap',
+        maxChars: parseInt(document.getElementById('config-max-chars')?.value) || 0
     };
 
     // Configurações específicas
@@ -964,7 +1039,6 @@ function loadFromLocalStorage() {
 // ==========================================
 
 function renderPencilButton(key, label) {
-    // Código de barras não tem botão de configuração
     if (key === 'barcode_value') {
         return '';
     }
@@ -981,7 +1055,8 @@ function renderPencilButton(key, label) {
 
     const hasCustomConfig = Object.keys(defaultFieldConfig).some(k => {
         if (k === 'classificationMode' || k === 'classificationSeparator' ||
-            k === 'yearMode' || k === 'yearSeparator') {
+            k === 'yearMode' || k === 'yearSeparator' ||
+            k === 'fontSize' || k === 'overflowRule' || k === 'maxChars') {
             return fieldConfig[k] !== undefined && fieldConfig[k] !== defaultFieldConfig[k];
         }
         return fieldConfig[k] !== defaultFieldConfig[k];
@@ -1182,7 +1257,6 @@ function renderForm() {
                             <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0;">
                                 ${values.barcode_value || 'Código de Barras'}
                             </div>
-                            <!-- Campo apenas visual, não editável, sem função -->
                         </div>
                     </div>
                 </div>
@@ -1192,7 +1266,6 @@ function renderForm() {
                     <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0;">
                         ${values.barcode_value || 'Código de Barras'}
                     </div>
-                    <!-- Campo apenas visual, não editável, sem função -->
                 </div>
             `}
         </div>
@@ -1460,7 +1533,6 @@ function renderPreview() {
         `;
     }
 
-    // Código de barras - formato FIXO, apenas o valor
     const barcodeValue = vals.barcode_value || 'DCXXXXXXXXXSOS';
     html += `
         <div class="senac-barcode-container" style="min-height:80px;">
@@ -1525,7 +1597,6 @@ function updateCustomValue(key, value) {
         state.currentConfig.customValues = {};
     }
 
-    // Tratamento especial para IGES
     if (state.currentConfig.name === 'Modelo IGES' && key === 'line6_value') {
         state.currentConfig.customValues.main_text = value;
     } else {
@@ -1535,7 +1606,6 @@ function updateCustomValue(key, value) {
     renderForm();
     renderPreview();
 
-    // Salvar automaticamente
     saveToLocalStorage();
 }
 
