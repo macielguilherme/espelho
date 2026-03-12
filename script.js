@@ -35,6 +35,7 @@ const defaultFieldConfig = {
 
     // NOVOS CAMPOS - RN11.8 e RN11.9
     fontSize: 'medium',        // 'small', 'medium', 'large'
+    columnLayout: 'single',    // 'single', 'two-columns', 'three-columns'
     overflowRule: 'wrap',      // 'truncate', 'wrap', 'reduce-font'
     maxChars: 0,                // 0 = sem limite
 
@@ -46,13 +47,6 @@ const defaultFieldConfig = {
     yearSeparator: ' - ', // Separador entre anos
     // Forçar classificação
     forceClassification: false
-};
-
-// Mapeamento de tamanhos de fonte para valores em pixels
-const fontSizeMap = {
-    'small': '9px',
-    'medium': '11px',
-    'large': '14px'
 };
 
 const headerFontSizeMap = {
@@ -151,6 +145,9 @@ const defaultMirrorConfig = {
     includeLogo: true,
     logoImage: null,
     logoSize: 2,
+    logoPosition: 'center',
+    logoDisplayMode: 'fit',
+    barcodeSource: 'client-code',
     customValues: {
         'top_label': 'SETOR',
         'top_value': '',
@@ -640,8 +637,14 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
         // Para 'wrap' e 'reduce-font', não truncamos o texto, apenas aplicamos estilo
     }
 
-    // DEFINIR TAMANHO DA FONTE (RN11.9)
-    const fontSize = fontSizeMap[config.fontSize || 'medium'];
+    // DEFINIR CLASSE DE TAMANHO DA FONTE (RN11.9)
+    const fontSizeClass = `${config.fontSize || 'medium'}-font`;
+    const columnLayoutClassMap = {
+        'single': 'layout-single',
+        'two-columns': 'layout-two-columns',
+        'three-columns': 'layout-three-columns'
+    };
+    const columnLayoutClass = columnLayoutClassMap[config.columnLayout || 'single'] || 'layout-single';
 
     // REGRA DE OVERFLOW (RN11.8)
     let overflowStyle = '';
@@ -650,11 +653,7 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
     } else if (config.overflowRule === 'truncate') {
         overflowStyle = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
     } else if (config.overflowRule === 'reduce-font') {
-        // Para reduce-font, usamos fonte um tamanho menor se exceder
-        // Por simplicidade, vamos reduzir em 2px
-        const currentSize = parseInt(fontSize) || 11;
-        const reducedSize = Math.max(7, currentSize - 2);
-        overflowStyle = `font-size: ${reducedSize}px; white-space: normal; word-wrap: break-word;`;
+        overflowStyle = 'white-space: normal; word-wrap: break-word; transform: scale(0.95); transform-origin: left top;';
     } else {
         overflowStyle = 'white-space: normal; word-wrap: break-word;';
     }
@@ -662,7 +661,7 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
     const fontWeight = config.bold ? 'bold' : 'normal';
     const textAlign = config.alignment || 'left';
 
-    const html = `<span style="font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; font-size: ${fontSize}; ${overflowStyle}">${formattedText}</span>`;
+    const html = `<span class="${fontSizeClass} ${columnLayoutClass}" style="font-weight: ${fontWeight}; text-align: ${textAlign}; width: 100%; ${overflowStyle}">${formattedText}</span>`;
 
     return { html, shouldRender: true };
 }
@@ -708,16 +707,21 @@ function openFieldConfigModal(key, label) {
         }
     });
 
-    // Regra de overflow
-    const overflowRadios = document.querySelectorAll('input[name="config-overflow-rule"]');
-    overflowRadios.forEach(radio => {
-        if (radio.value === (fieldConfig.overflowRule || 'wrap')) {
+    const columnLayoutRadios = document.querySelectorAll('input[name="config-column-layout"]');
+    columnLayoutRadios.forEach(radio => {
+        if (radio.value === (fieldConfig.columnLayout || 'single')) {
             radio.checked = true;
         }
     });
 
-    // Limite de caracteres
+    // Controle de conteúdo (RN11.8)
+    const overflowRule = fieldConfig.overflowRule || 'wrap';
+    const hasCharLimiter = (fieldConfig.maxChars || 0) > 0 || overflowRule === 'truncate';
+    document.getElementById('config-enable-limiter').checked = hasCharLimiter;
+    document.getElementById('config-wrap-line').checked = overflowRule === 'wrap';
+    document.getElementById('config-auto-reduce-font').checked = overflowRule === 'reduce-font';
     document.getElementById('config-max-chars').value = fieldConfig.maxChars || 0;
+    toggleCharLimitInput();
 
     // Alinhamento
     const alignmentRadios = document.querySelectorAll('input[name="config-alignment"]');
@@ -777,6 +781,13 @@ function closeFieldConfigModal() {
     currentConfigField = { key: null, label: '', modelName: '' };
 }
 
+function toggleCharLimitInput() {
+    const limiter = document.getElementById('config-enable-limiter');
+    const maxCharsWrapper = document.getElementById('max-chars-wrapper');
+    if (!limiter || !maxCharsWrapper) return;
+    maxCharsWrapper.style.display = limiter.checked ? 'block' : 'none';
+}
+
 function setupPreviewListeners() {
     const inputs = [
         'config-show-label',
@@ -802,10 +813,17 @@ function setupPreviewListeners() {
         radio.addEventListener('change', updateFieldPreview);
     });
 
-    document.querySelectorAll('input[name="config-overflow-rule"]').forEach(radio => {
+    document.querySelectorAll('input[name="config-column-layout"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
         radio.addEventListener('change', updateFieldPreview);
     });
+
+    document.getElementById('config-enable-limiter')?.addEventListener('change', () => {
+        toggleCharLimitInput();
+        updateFieldPreview();
+    });
+    document.getElementById('config-wrap-line')?.addEventListener('change', updateFieldPreview);
+    document.getElementById('config-auto-reduce-font')?.addEventListener('change', updateFieldPreview);
 
     document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
@@ -839,8 +857,20 @@ function updateFieldPreview() {
     const uppercase = document.getElementById('config-uppercase')?.checked || false;
     const bold = document.getElementById('config-bold')?.checked || false;
     const fontSize = document.querySelector('input[name="config-font-size"]:checked')?.value || 'medium';
-    const overflowRule = document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap';
+    const columnLayout = document.querySelector('input[name="config-column-layout"]:checked')?.value || 'single';
+    const hasCharLimiter = document.getElementById('config-enable-limiter')?.checked || false;
+    const wrapLine = document.getElementById('config-wrap-line')?.checked || false;
+    const autoReduceFont = document.getElementById('config-auto-reduce-font')?.checked || false;
     const maxChars = parseInt(document.getElementById('config-max-chars')?.value) || 0;
+
+    let overflowRule = 'wrap';
+    if (autoReduceFont) {
+        overflowRule = 'reduce-font';
+    } else if (wrapLine) {
+        overflowRule = 'wrap';
+    } else if (hasCharLimiter) {
+        overflowRule = 'truncate';
+    }
 
     const fieldName = currentConfigField.label || 'Campo';
 
@@ -897,21 +927,12 @@ function updateFieldPreview() {
     }
 
     // Aplicar limite de caracteres no preview
-    if (maxChars > 0 && previewText.length > maxChars) {
-        if (overflowRule === 'truncate') {
-            previewText = previewText.substring(0, maxChars) + '...';
-        }
+    if (hasCharLimiter && maxChars > 0 && previewText.length > maxChars) {
+        previewText = previewText.substring(0, maxChars) + '...';
     }
 
     // Estilos
     if (bold) style += 'font-weight: bold; ';
-
-    const fontSizeMap = {
-        'small': '9px',
-        'medium': '11px',
-        'large': '14px'
-    };
-    style += `font-size: ${fontSizeMap[fontSize] || '11px'}; `;
 
     if (overflowRule === 'truncate') {
         style += 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
@@ -924,7 +945,14 @@ function updateFieldPreview() {
     const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
     style += `text-align: ${alignment};`;
 
-    preview.innerHTML = `<span style="${style}">${previewText}</span>`;
+    const columnLayoutClassMap = {
+        'single': 'layout-single',
+        'two-columns': 'layout-two-columns',
+        'three-columns': 'layout-three-columns'
+    };
+    const fontSizeClass = `${fontSize}-font`;
+    const columnLayoutClass = columnLayoutClassMap[columnLayout] || 'layout-single';
+    preview.innerHTML = `<span class="${fontSizeClass} ${columnLayoutClass}" style="${style}">${previewText}</span>`;
 }
 
 function saveFieldConfig() {
@@ -943,9 +971,26 @@ function saveFieldConfig() {
 
         // NOVAS CONFIGURAÇÕES
         fontSize: document.querySelector('input[name="config-font-size"]:checked')?.value || 'medium',
-        overflowRule: document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap',
-        maxChars: parseInt(document.getElementById('config-max-chars')?.value) || 0
+        columnLayout: document.querySelector('input[name="config-column-layout"]:checked')?.value || 'single',
+        overflowRule: 'wrap',
+        maxChars: 0
     };
+
+    const hasCharLimiter = document.getElementById('config-enable-limiter')?.checked || false;
+    const wrapLine = document.getElementById('config-wrap-line')?.checked || false;
+    const autoReduceFont = document.getElementById('config-auto-reduce-font')?.checked || false;
+
+    if (autoReduceFont) {
+        config.overflowRule = 'reduce-font';
+    } else if (wrapLine) {
+        config.overflowRule = 'wrap';
+    } else if (hasCharLimiter) {
+        config.overflowRule = 'truncate';
+    }
+
+    if (hasCharLimiter) {
+        config.maxChars = parseInt(document.getElementById('config-max-chars')?.value) || 0;
+    }
 
     // Configurações específicas
     if (fieldType === FieldType.CLASSIFICATION) {
@@ -1136,23 +1181,72 @@ function renderForm() {
                 <input type="text" class="form-input" placeholder="Nome do Modelo (ex: Padrão RH)" 
                        value="${config.name || ''}" oninput="updateConfig('name', this.value)">
                 
-                <div class="flex items-center justify-between">
+                <div class="logo-config-section">
+                    <h4 class="logo-config-title">Configuração da Logo</h4>
+
                     <div class="checkbox-item">
                         <input type="checkbox" id="includeLogo" ${config.includeLogo ? 'checked' : ''}
                                onchange="updateConfig('includeLogo', this.checked)">
-                        <label for="includeLogo">Incluir Logo</label>
+                        <label for="includeLogo">Exibir logo no espelho</label>
                     </div>
-                    
+
                     ${config.includeLogo ? `
-                        <div class="flex items-center gap-2">
-                            ${config.logoImage ?
-                `<img src="${config.logoImage}" style="height:30px; border:1px solid #ccc; border-radius:4px;">
-                             <button type="button" class="btn btn-outline btn-sm" onclick="removeLogo()">❌</button>` :
-                `<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Selecionar Logo</button>`
-            }
-                            <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
+                        <div class="space-y-3 logo-config-content">
+                            <div class="flex items-center gap-2">
+                                ${config.logoImage ?
+                    `<img src="${config.logoImage}" class="logo-preview" alt="Logo carregada">
+                                 <button type="button" class="btn btn-outline btn-sm" onclick="removeLogo()">Remover</button>` :
+                    `<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('logoUpload').click()">Upload da logo</button>`
+                }
+                                <input type="file" id="logoUpload" hidden accept="image/*" onchange="handleLogoUpload(event)">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="form-label" for="logoPosition">Posição da logo</label>
+                                <select id="logoPosition" class="form-input" onchange="updateConfig('logoPosition', this.value)">
+                                    <option value="left" ${config.logoPosition === 'left' ? 'selected' : ''}>Esquerda</option>
+                                    <option value="center" ${(!config.logoPosition || config.logoPosition === 'center') ? 'selected' : ''}>Centro</option>
+                                    <option value="right" ${config.logoPosition === 'right' ? 'selected' : ''}>Direita</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="form-label">Modo de exibição</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="logo-display-mode" value="fit"
+                                            ${(config.logoDisplayMode || 'fit') === 'fit' ? 'checked' : ''}
+                                            onchange="updateConfig('logoDisplayMode', this.value)">
+                                        Espaço padrão
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="logo-display-mode" value="fill"
+                                            ${config.logoDisplayMode === 'fill' ? 'checked' : ''}
+                                            onchange="updateConfig('logoDisplayMode', this.value)">
+                                        Preencher espaço
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     ` : ''}
+                </div>
+
+                <div class="barcode-config-section">
+                    <h4 class="barcode-config-title">Código de Barras</h4>
+                    <div class="barcode-config-options">
+                        <label class="radio-item">
+                            <input type="radio" name="barcode-source" value="client-code"
+                                ${(config.barcodeSource || 'client-code') === 'client-code' ? 'checked' : ''}
+                                onchange="updateConfig('barcodeSource', this.value)">
+                            Código do Cliente
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="barcode-source" value="sos-code"
+                                ${config.barcodeSource === 'sos-code' ? 'checked' : ''}
+                                onchange="updateConfig('barcodeSource', this.value)">
+                            Código SOS
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -1303,8 +1397,21 @@ function renderPreview() {
 
     let logoHtml = '';
     if (config.includeLogo && config.logoImage) {
-        if (config.logoImage.startsWith('data:image') || config.logoImage.startsWith('./') || config.logoImage.includes('.png')) {
-            logoHtml = `<img src="${config.logoImage}" style="max-height:60px; max-width:100%; object-fit: contain;" alt="Logo">`;
+        if (config.logoImage.startsWith('data:image') || config.logoImage.startsWith('blob:') || config.logoImage.startsWith('./') || config.logoImage.includes('.png')) {
+            const logoPositionClassMap = {
+                left: 'logo-left',
+                center: 'logo-center',
+                right: 'logo-right'
+            };
+            const logoModeClass = (config.logoDisplayMode || 'fit') === 'fill' ? 'logo-fill' : 'logo-fit';
+            const logoPositionClass = logoPositionClassMap[config.logoPosition || 'center'] || 'logo-center';
+            logoHtml = `
+                <div class="preview-logo-wrapper ${logoPositionClass}">
+                    <div class="preview-logo-box ${logoModeClass}">
+                        <img src="${config.logoImage}" alt="Logo" class="${logoModeClass}">
+                    </div>
+                </div>
+            `;
         }
     }
 
@@ -1533,7 +1640,9 @@ function renderPreview() {
         `;
     }
 
-    const barcodeValue = vals.barcode_value || 'DCXXXXXXXXXSOS';
+    const barcodeValue = (config.barcodeSource || 'client-code') === 'sos-code'
+        ? 'SOS'
+        : (vals.barcode_value || 'DCXXXXXXXXXSOS');
     html += `
         <div class="senac-barcode-container" style="min-height:80px;">
             <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeValue}*</div>
@@ -1612,11 +1721,8 @@ function updateCustomValue(key, value) {
 function handleLogoUpload(event) {
     const file = event.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            updateConfig('logoImage', e.target.result);
-        };
-        reader.readAsDataURL(file);
+        const temporaryUrl = URL.createObjectURL(file);
+        updateConfig('logoImage', temporaryUrl);
     }
 }
 
