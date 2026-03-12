@@ -116,7 +116,7 @@
         </div>
     </div>
 
-    <!-- Modal de Configuração de Campo (ATUALIZADO) -->
+    <!-- Modal de Configuração de Campo (ATUALIZADO - RN11.8 e RN11.9) -->
     <div class="modal-overlay" id="field-config-modal" style="display:none;">
         <div class="modal-content" style="max-width: 700px; width: 90%;">
             <div class="modal-header">
@@ -180,6 +180,63 @@
                                 Aplica negrito ao texto
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- NOVA SEÇÃO: Tamanho da Fonte (RN11.9) -->
+                <div
+                    style="margin-top: 24px; background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
+                    <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
+                        Tamanho da Fonte
+                    </h4>
+
+                    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                        <label class="radio-item">
+                            <input type="radio" name="config-font-size" value="small"> Pequeno
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-font-size" value="medium" checked> Médio
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-font-size" value="large"> Grande
+                        </label>
+                    </div>
+                    <div class="text-xs text-muted-foreground" style="margin-top: 8px;">
+                        Define o tamanho da fonte para este campo específico.
+                    </div>
+                </div>
+
+                <!-- NOVA SEÇÃO: Regra de Overflow (RN11.8) -->
+                <div
+                    style="margin-top: 24px; background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
+                    <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
+                        Quando o texto exceder o espaço
+                    </h4>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label class="radio-item">
+                            <input type="radio" name="config-overflow-rule" value="wrap" checked> Quebrar linha (wrap)
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-overflow-rule" value="truncate"> Limitador de caracteres
+                            (cortar com ...)
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-overflow-rule" value="reduce-font"> Reduzir tamanho da
+                            fonte
+                        </label>
+                    </div>
+
+                    <div style="margin-top: 16px;">
+                        <label class="form-label" style="margin-bottom: 8px; display: block;">
+                            Limite máximo de caracteres (0 = sem limite):
+                        </label>
+                        <input type="number" id="config-max-chars" class="form-input" min="0" max="500" value="0"
+                            style="width: 120px;">
+                    </div>
+                    <div class="text-xs text-muted-foreground" style="margin-top: 8px;">
+                        Se definido, o texto será limitado a este número de caracteres antes de aplicar a regra de
+                        overflow.
                     </div>
                 </div>
 
