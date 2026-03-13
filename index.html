@@ -116,7 +116,7 @@
         </div>
     </div>
 
-    <!-- Modal de Configuração de Campo (ATUALIZADO - RN11.8 e RN11.9) -->
+    <!-- Modal de Configuração de Campo -->
     <div class="modal-overlay" id="field-config-modal" style="display:none;">
         <div class="modal-content" style="max-width: 700px; width: 90%;">
             <div class="modal-header">
@@ -127,13 +127,8 @@
             </div>
 
             <div style="max-height: 70vh; overflow-y: auto; padding-right: 10px;">
-                <!-- Layout em 2 colunas -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-
-                    <!-- COLUNA ESQUERDA -->
                     <div class="space-y-4">
-
-                        <!-- Checkbox: Exibir Nome do Campo -->
                         <div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="config-show-label" checked>
@@ -144,7 +139,6 @@
                             </div>
                         </div>
 
-                        <!-- Checkbox: Separador por Pipe -->
                         <div style="margin-top: 16px;">
                             <div class="checkbox-item">
                                 <input type="checkbox" id="config-use-pipe" checked>
@@ -155,7 +149,6 @@
                             </div>
                         </div>
 
-                        <!-- Checkbox: Caixa Alta -->
                         <div style="margin-top: 16px;">
                             <div class="checkbox-item">
                                 <input type="checkbox" id="config-uppercase">
@@ -167,10 +160,7 @@
                         </div>
                     </div>
 
-                    <!-- COLUNA DIREITA -->
                     <div class="space-y-4">
-
-                        <!-- Checkbox: Negrito -->
                         <div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="config-bold">
@@ -183,7 +173,6 @@
                     </div>
                 </div>
 
-                <!-- NOVA SEÇÃO: Tamanho da Fonte (RN11.9) -->
                 <div
                     style="margin-top: 24px; background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
                     <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
@@ -206,7 +195,6 @@
                     </div>
                 </div>
 
-                <!-- NOVA SEÇÃO: Regra de Overflow (RN11.8) -->
                 <div
                     style="margin-top: 24px; background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
                     <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
@@ -240,7 +228,52 @@
                     </div>
                 </div>
 
-                <!-- CONFIGURAÇÕES ESPECÍFICAS PARA CLASSIFICAÇÃO -->
+                <div class="config-section">
+                    <h4 class="config-section-title">Controle de Conteúdo</h4>
+                    <div class="config-section-body">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="config-limit-characters">
+                            <span>Limitador de caracteres</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="config-break-line">
+                            <span>Quebrar linha</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="config-auto-reduce-font">
+                            <span>Reduzir fonte automaticamente</span>
+                        </label>
+                    </div>
+                    <div class="content-limit-wrapper" id="content-limit-wrapper">
+                        <label class="form-label" style="margin-bottom: 8px; display: block;">
+                            Limite de caracteres
+                        </label>
+                        <input type="number" id="content-limit-input" class="form-input content-limit-input" min="0"
+                            value="0">
+                        <div class="text-xs text-muted-foreground" style="margin-top: 6px;">
+                            Controle visual para definir o limite.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h4 class="config-section-title">Exibição em Colunas</h4>
+                    <div class="config-section-body">
+                        <label class="radio-item">
+                            <input type="radio" name="config-column-layout" value="single" checked> Linha única
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-column-layout" value="two-columns"> 2 colunas
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="config-column-layout" value="three-columns"> 3 colunas
+                        </label>
+                    </div>
+                    <div class="text-xs text-muted-foreground" style="margin-top: 8px;">
+                        Define como os campos serão distribuídos no preview.
+                    </div>
+                </div>
+
                 <div id="classification-config" style="margin-top: 24px;">
                     <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
                         <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
@@ -279,7 +312,6 @@
                     </div>
                 </div>
 
-                <!-- CONFIGURAÇÕES ESPECÍFICAS PARA ANO -->
                 <div id="year-config" style="margin-top: 24px; display: none;">
                     <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
                         <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
@@ -317,7 +349,6 @@
                     </div>
                 </div>
 
-                <!-- Alinhamento (ocupa as 2 colunas) -->
                 <div style="margin-top: 24px; grid-column: span 2;">
                     <label class="form-label">Alinhamento no Bloco:</label>
                     <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
@@ -333,7 +364,6 @@
                     </div>
                 </div>
 
-                <!-- Preview do formato (ocupa as 2 colunas) -->
                 <div
                     style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
                     <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview:</div>
@@ -347,6 +377,45 @@
             <div class="modal-footer" style="margin-top: 24px;">
                 <button class="btn btn-outline" onclick="closeFieldConfigModal()">Cancelar</button>
                 <button class="btn btn-primary" onclick="saveFieldConfig()">Aplicar Configuração</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuração de Colunas (NOVO) -->
+    <div class="modal-overlay" id="column-config-modal" style="display:none;">
+        <div class="modal-content" style="max-width: 800px; width: 90%;">
+            <div class="modal-header">
+                <h2 class="modal-title">Configurar Colunas</h2>
+                <p class="modal-description text-xs text-muted-foreground">
+                    Configure como os campos serão organizados em colunas neste modelo.
+                </p>
+            </div>
+
+            <div style="padding: 16px; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 16px;">
+                    <label class="checkbox-item" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="column-enabled" checked>
+                        <span>Habilitar exibição em colunas</span>
+                    </label>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label class="form-label" style="display: block; margin-bottom: 8px;">Número padrão de
+                        colunas:</label>
+                    <input type="number" id="column-count" class="form-input" min="1" max="4" value="2"
+                        style="width: 100px;">
+                </div>
+
+                <hr style="margin: 16px 0; border-color: var(--color-border);">
+
+                <div id="column-field-groups" class="space-y-4">
+                    <!-- Será preenchido dinamicamente pelo JavaScript -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeColumnConfigModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveColumnConfig()">Salvar Configuração</button>
             </div>
         </div>
     </div>
