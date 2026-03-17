@@ -508,7 +508,7 @@ function normalizeMirrorConfig(config) {
 
 function getBarcodeDisplayValue(config) {
     const source = config.barcodeSource || 'cliente';
-    return source === 'sos' ? 'SOS-001' : 'CLI-001';
+    return source === 'sos' ? 'SOS-00' : 'CLI-001';
 }
 
 function buildLogoHtml(config) {
@@ -1347,8 +1347,17 @@ function loadFromLocalStorage() {
 // ==========================================
 
 function renderPencilButton(key, label) {
+    // Caso especial para o código de barras
     if (key === 'barcode_value') {
-        return '';
+        return `
+            <button type="button" 
+                    class="btn btn-outline" 
+                    style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;" 
+                    onclick="openBarcodeConfigModal()" 
+                    title="Configurar Código de Barras">
+                &#9881;
+            </button>
+        `;
     }
 
     const config = state.currentConfig;
@@ -1495,17 +1504,7 @@ function renderForm() {
                     </div>
                 ` : ''}
 
-                <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <label class="form-label" style="margin-bottom: 8px; display: block;">Código de barras gerado a partir de:</label>
-                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                        <label class="radio-item">
-                            <input type="radio" name="config-barcode-source" value="cliente" ${(!config.barcodeSource || config.barcodeSource === 'cliente') ? 'checked' : ''} onchange="updateConfig('barcodeSource', this.value)"> Código do Cliente
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="config-barcode-source" value="sos" ${config.barcodeSource === 'sos' ? 'checked' : ''} onchange="updateConfig('barcodeSource', this.value)"> Código SOS
-                        </label>
-                    </div>
-                </div>
+                
 
                 ${columnConfig.maxColumns > 1 ? `
                     <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
@@ -1618,8 +1617,11 @@ function renderForm() {
                         </div>
 
                         <div class="col-span-2">
-                            <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0;">
-                                ${values.barcode_value || 'Código de Barras'}
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0; flex: 1;">
+                                    Código de Barras
+                                </div>
+                                ${renderPencilButton('barcode_value', 'Código de Barras')}
                             </div>
                         </div>
                     </div>
@@ -1627,8 +1629,11 @@ function renderForm() {
             ` : `
                 <div class="space-y-3">
                     <h3 class="section-header">Código de Barras</h3>
-                    <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0;">
-                        ${values.barcode_value || 'Código de Barras'}
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0; flex: 1;">
+                            Código de Barras
+                        </div>
+                        ${renderPencilButton('barcode_value', 'Código de Barras')}
                     </div>
                 </div>
             `}
@@ -2320,6 +2325,70 @@ if (document.readyState === 'loading') {
 }
 
 // ==========================================
+// MODAL DE CONFIGURAÇÃO DO CÓDIGO DE BARRAS
+// ==========================================
+
+function openBarcodeConfigModal() {
+    const modal = document.getElementById('barcode-config-modal');
+    if (!modal) return;
+
+    const config = state.currentConfig;
+    const currentSource = config.barcodeSource || 'cliente';
+
+    // Selecionar o radio button correto
+    const radios = document.querySelectorAll('input[name="modal-barcode-source"]');
+    radios.forEach(radio => {
+        if (radio.value === currentSource) {
+            radio.checked = true;
+        }
+    });
+
+    // Atualizar preview
+    updateBarcodePreview();
+
+    modal.style.display = 'flex';
+}
+
+function closeBarcodeConfigModal() {
+    const modal = document.getElementById('barcode-config-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function updateBarcodePreview() {
+    const preview = document.getElementById('barcode-config-preview');
+    if (!preview) return;
+
+    const selectedSource = document.querySelector('input[name="modal-barcode-source"]:checked')?.value || 'cliente';
+    const barcodeValue = selectedSource === 'sos' ? 'SOS-001' : 'CLI-001';
+
+    preview.innerHTML = `
+        <div style="font-family:'Libre Barcode 39';font-size:36px; margin-bottom:5px;">*${barcodeValue}*</div>
+        <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
+    `;
+}
+
+function saveBarcodeConfig() {
+    const selectedSource = document.querySelector('input[name="modal-barcode-source"]:checked')?.value || 'cliente';
+
+    // Atualizar a configuração
+    updateConfig('barcodeSource', selectedSource);
+
+    // Fechar o modal
+    closeBarcodeConfigModal();
+
+    // Mostrar toast de confirmação
+    showToast('Configuração do código de barras salva!');
+}
+
+// Adicionar listener para atualizar preview quando mudar a seleção
+document.addEventListener('DOMContentLoaded', function () {
+    const radios = document.querySelectorAll('input[name="modal-barcode-source"]');
+    radios.forEach(radio => {
+        radio.addEventListener('change', updateBarcodePreview);
+    });
+});
+
+// ==========================================
 // EXPORTAÇÃO DAS FUNÇÕES PARA O ESCOPO GLOBAL
 // ==========================================
 
@@ -2348,51 +2417,7 @@ window.removeFieldGroup = removeFieldGroup;
 window.assignFieldToGroup = assignFieldToGroup;
 window.updateGroupColumns = updateGroupColumns;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Adicione estas linhas na seção de exportação de funções
+window.openBarcodeConfigModal = openBarcodeConfigModal;
+window.closeBarcodeConfigModal = closeBarcodeConfigModal;
+window.saveBarcodeConfig = saveBarcodeConfig;
