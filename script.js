@@ -57,7 +57,7 @@ const defaultFieldConfig = {
     uppercase: false,
     bold: false,
     alignment: 'left',
-    fontSize: 'medium',
+    fontSize: 11, // ALTERADO: agora é número (pixels) em vez de string
     columnLayout: 'single',
     overflowRule: 'wrap',
     maxChars: 0,
@@ -68,17 +68,7 @@ const defaultFieldConfig = {
     forceClassification: false
 };
 
-const fontSizeMap = {
-    'small': '9px',
-    'medium': '11px',
-    'large': '14px'
-};
 
-const headerFontSizeMap = {
-    'small': '10px',
-    'medium': '12px',
-    'large': '16px'
-};
 
 let modelFieldConfigs = {};
 
@@ -984,6 +974,13 @@ function openFieldConfigModal(key, label) {
     document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
     document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
     document.getElementById('config-bold').checked = fieldConfig.bold;
+    
+    // NOVO: input numérico para tamanho da fonte
+    const fontSizeInput = document.getElementById('config-font-size');
+    if (fontSizeInput) {
+        fontSizeInput.value = fieldConfig.fontSize || 11;
+    }
+    
     const limitCharactersToggle = document.getElementById('config-limit-characters');
     if (limitCharactersToggle) limitCharactersToggle.checked = false;
     const breakLineToggle = document.getElementById('config-break-line');
@@ -991,12 +988,13 @@ function openFieldConfigModal(key, label) {
     const autoReduceToggle = document.getElementById('config-auto-reduce-font');
     if (autoReduceToggle) autoReduceToggle.checked = false;
 
-    const fontSizeRadios = document.querySelectorAll('input[name="config-font-size"]');
-    fontSizeRadios.forEach(radio => {
-        if (radio.value === (fieldConfig.fontSize || 'medium')) {
-            radio.checked = true;
-        }
-    });
+    // REMOVA este bloco dos radios de fonte:
+    // const fontSizeRadios = document.querySelectorAll('input[name="config-font-size"]');
+    // fontSizeRadios.forEach(radio => {
+    //     if (radio.value === (fieldConfig.fontSize || 'medium')) {
+    //         radio.checked = true;
+    //     }
+    // });
 
     const overflowRadios = document.querySelectorAll('input[name="config-overflow-rule"]');
     overflowRadios.forEach(radio => {
@@ -1077,6 +1075,7 @@ function setupPreviewListeners() {
         'config-use-pipe',
         'config-uppercase',
         'config-bold',
+        'config-font-size', // ADICIONAR esta linha (está faltando!)
         'config-max-chars',
         'config-limit-characters',
         'config-break-line',
@@ -1094,11 +1093,8 @@ function setupPreviewListeners() {
         }
     });
 
-    document.querySelectorAll('input[name="config-font-size"]').forEach(radio => {
-        radio.removeEventListener('change', updateFieldPreview);
-        radio.addEventListener('change', updateFieldPreview);
-    });
-
+    
+    // O resto continua igual...
     document.querySelectorAll('input[name="config-overflow-rule"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
         radio.addEventListener('change', updateFieldPreview);
@@ -1141,7 +1137,10 @@ function updateFieldPreview() {
     const usePipe = document.getElementById('config-use-pipe')?.checked || false;
     const uppercase = document.getElementById('config-uppercase')?.checked || false;
     const bold = document.getElementById('config-bold')?.checked || false;
-    const fontSize = document.querySelector('input[name="config-font-size"]:checked')?.value || 'medium';
+    
+    // NOVO: pegar o valor numérico da fonte
+    const fontSize = parseInt(document.getElementById('config-font-size')?.value) || 11;
+    
     const overflowRule = document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap';
     const maxChars = parseInt(document.getElementById('config-max-chars')?.value) || 0;
 
@@ -1150,6 +1149,7 @@ function updateFieldPreview() {
     let previewText = '';
     let style = '';
 
+    // Gerar texto de preview baseado no tipo do campo
     if (fieldType === FieldType.CLASSIFICATION) {
         const mode = document.querySelector('input[name="config-classification-mode"]:checked')?.value || 'both';
         const separatorMap = {
@@ -1185,6 +1185,7 @@ function updateFieldPreview() {
         previewText = 'Texto de exemplo para preview';
     }
 
+    // Aplicar label se necessário
     if (showLabel) {
         if (usePipe) {
             previewText = `${fieldName} | ${previewText}`;
@@ -1193,91 +1194,152 @@ function updateFieldPreview() {
         }
     }
 
+    // Aplicar caixa alta
     if (uppercase) {
         previewText = previewText.toUpperCase();
     }
 
+    // Aplicar limite de caracteres
     if (maxChars > 0 && previewText.length > maxChars) {
         if (overflowRule === 'truncate') {
             previewText = previewText.substring(0, maxChars) + '...';
         }
     }
 
+    // Construir estilos CSS
     if (bold) style += 'font-weight: bold; ';
+    
+    // NOVO: usar o valor numérico da fonte
+    style += `font-size: ${fontSize}px; `;
 
+    // Aplicar regras de overflow
     if (overflowRule === 'truncate') {
         style += 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
     } else if (overflowRule === 'wrap') {
-        style += 'white-space: normal; word-wrap: break-word;';
+        style += 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;';
     } else if (overflowRule === 'reduce-font') {
+        style += 'white-space: normal; word-wrap: break-word;';
+    } else {
         style += 'white-space: normal; word-wrap: break-word;';
     }
 
+    // Aplicar alinhamento
     const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
     style += `text-align: ${alignment};`;
 
-    const fontClass = overflowRule === 'reduce-font' ? 'small-font' : `${fontSize}-font`;
-    preview.innerHTML = `<span class="${fontClass}" style="${style}">${previewText}</span>`;
+    // Atualizar o preview
+    preview.innerHTML = `<span style="${style}">${previewText}</span>`;
 }
 
-function saveFieldConfig() {
-    const { key, modelName } = currentConfigField;
-    if (!key || !modelName) return;
-
-    const fieldType = getFieldType(key);
-
-    const limitCharacters = document.getElementById('config-limit-characters')?.checked || false;
-    const breakLine = document.getElementById('config-break-line')?.checked || false;
-    const autoReduce = document.getElementById('config-auto-reduce-font')?.checked || false;
-    const limitInputValue = parseInt(document.getElementById('content-limit-input')?.value) || 0;
-
-    let overflowRule = document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap';
-    if (limitCharacters) {
-        overflowRule = 'truncate';
-    } else if (breakLine) {
-        overflowRule = 'wrap';
-    } else if (autoReduce) {
-        overflowRule = 'reduce-font';
+function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
+    if (fieldKey === 'barcode_value') {
+        return {
+            html: rawValue || '',
+            shouldRender: !!rawValue
+        };
     }
 
-    const maxCharsValue = limitCharacters ? limitInputValue : (parseInt(document.getElementById('config-max-chars')?.value) || 0);
+    const config = getFieldConfig(modelName, fieldKey);
+    const fieldType = getFieldType(fieldKey);
 
-    const config = {
-        showLabel: document.getElementById('config-show-label')?.checked || false,
-        usePipe: document.getElementById('config-use-pipe')?.checked || false,
-        uppercase: document.getElementById('config-uppercase')?.checked || false,
-        bold: document.getElementById('config-bold')?.checked || false,
-        alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left',
-        fontSize: document.querySelector('input[name="config-font-size"]:checked')?.value || 'medium',
-        columnLayout: document.querySelector('input[name="config-column-layout"]:checked')?.value || 'single',
-        overflowRule: overflowRule,
-        maxChars: maxCharsValue
-    };
+    let value = rawValue || '';
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+        return { html: '', shouldRender: false };
+    }
+
+    let displayValue = value;
+    let displayLabel = fieldLabel || '';
+
+    if (config.uppercase) {
+        displayValue = displayValue.toUpperCase();
+        displayLabel = displayLabel.toUpperCase();
+    }
+
+    let formattedText = '';
 
     if (fieldType === FieldType.CLASSIFICATION) {
-        config.classificationMode = document.querySelector('input[name="config-classification-mode"]:checked')?.value || 'both';
-        config.classificationSeparator = document.getElementById('config-classification-separator')?.value || 'pipe';
-        config.forceClassification = true;
+        const parts = displayValue.split('|').map(p => p.trim());
+        const code = parts[0] || '';
+        const subject = parts[1] || '';
+
+        const mode = config.classificationMode || 'both';
+        const separatorMap = {
+            'pipe': ' | ',
+            'comma': ', ',
+            'semicolon': '; ',
+            'hyphen': ' - ',
+            'space': ' '
+        };
+        const separator = separatorMap[config.classificationSeparator || 'pipe'];
+
+        if (mode === 'code') {
+            formattedText = code;
+        } else if (mode === 'subject') {
+            formattedText = subject;
+        } else {
+            formattedText = code + separator + subject;
+        }
 
     } else if (fieldType === FieldType.YEAR) {
-        config.yearMode = document.querySelector('input[name="config-year-mode"]:checked')?.value || 'both';
-        config.yearSeparator = document.getElementById('config-year-separator')?.value || ' - ';
+        const mode = config.yearMode || 'both';
+        const separator = config.yearSeparator || ' - ';
+
+        if (mode === 'initial') {
+            formattedText = displayValue;
+        } else if (mode === 'final') {
+            formattedText = displayValue;
+        } else {
+            const years = displayValue.split('-').map(y => y.trim());
+            formattedText = years.join(separator);
+        }
+
+    } else {
+        formattedText = displayValue;
     }
 
-    if (!modelFieldConfigs[modelName]) {
-        modelFieldConfigs[modelName] = {};
+    const showLabel = fieldKey === 'main_text' ? false : config.showLabel;
+    const usePipe = config.usePipe;
+
+    if (showLabel) {
+        if (usePipe) {
+            formattedText = `${displayLabel} | ${formattedText}`;
+        } else {
+            formattedText = `${displayLabel}: ${formattedText}`;
+        }
     }
-    modelFieldConfigs[modelName][key] = {
-        ...modelFieldConfigs[modelName][key],
-        ...config
-    };
 
-    saveToLocalStorage();
-    closeFieldConfigModal();
-    renderPreview();
-    renderForm();
+    if (config.uppercase) {
+        formattedText = formattedText.toUpperCase();
+    }
 
-    showToast('Configuração do campo aplicada!');
+    if (config.maxChars && config.maxChars > 0 && formattedText.length > config.maxChars) {
+        if (config.overflowRule === 'truncate') {
+            formattedText = formattedText.substring(0, config.maxChars) + '...';
+        }
+    }
+
+    let overflowStyle = '';
+    if (config.overflowRule === 'wrap') {
+        overflowStyle = 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;';
+    } else if (config.overflowRule === 'truncate') {
+        overflowStyle = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+    } else if (config.overflowRule === 'reduce-font') {
+        overflowStyle = 'white-space: normal; word-wrap: break-word;';
+    } else {
+        overflowStyle = 'white-space: normal; word-wrap: break-word;';
+    }
+
+    const fontWeight = config.bold ? 'bold' : 'normal';
+    const textAlign = config.alignment || 'left';
+    
+    // CORRIGIR esta parte - usar o valor numérico da fonte
+    const fontSize = config.fontSize || 11; // Agora é número
+    
+    // REMOVER a linha do fontClass e usar estilo direto
+    const html = `<span style="font-size: ${fontSize}px; font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; ${overflowStyle}">${formattedText}</span>`;
+
+    return { html, shouldRender: true };
 }
 
 // ==========================================
