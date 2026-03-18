@@ -100,7 +100,7 @@ const headerLabelOptionsByModel = {
         top: ['CLASSIFICACAO - C12']
     },
     'Modelo 2': {
-        top: ['CLASSIFICACAO - C12'],
+        top: ['DEPARTAMENTO - C7'],
         title: ['CLASSIFICACAO - C12'],
         extra: ['CLASSIFICACAO - C12']
     },
@@ -168,14 +168,14 @@ const igesMirrorConfig = {
     logoImage: './logo9.png',
     customValues: {
         top_label: 'UNIDADE',
-        top_value: '',
+        top_value: 'Unidade: IGESDF-HOSPITAL DE BASE',
         title_label: 'Nº CAIXA',
-        title_value: '',
+        title_value: 'Nº Caixa:',
         extra_label: 'DEPARTAMENTO',
-        extra_value: '',
+        extra_value: 'Departamento:',
         line4_label: 'TIPO DOCUMENTAL',
-        line4_value: '',
-        main_text: 'PACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE\nPACIENTE',
+        line4_value: 'Tipo Documental: Prontuário Médico',
+        main_text: 'CID TORRES - 186023\nMARCILENE DA SILVA PINTO - 326023\nMARCIO CASSIANO RODRIGUES - 366023\nVITORIA LAZARA LIMA DO NORTE - 386023\nWESLEY SILVA SANTOS - 396023\nJOSE LEAO DE SOUZA FILHO - 406023\nANTONIO PEREIRA DA SILVA - 416023\nROSIANE DA SILVA DARES - 845923\nANTONIO LAILSON RIBEIRO LIMA - 905923',
         barcode_value: 'Código de Barras'
     }
 };
@@ -187,8 +187,8 @@ const codigoUnicoMirrorConfig = {
     includeLogo: true,
     logoImage: './logo1.png',
     customValues: {
-        top_label: 'DEPARTAMENTO:',
-        top_value: 'DMED',
+        top_label: '024.1',
+        top_value: 'FOLHAS DE PAGAMENTO. FICHAS FINANCEIRAS',
         title_label: '',
         title_value: '',
         main_text: '',
@@ -197,9 +197,9 @@ const codigoUnicoMirrorConfig = {
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
         interm_label: 'INTERMEDIÁRIO',
-        interm_value: 'aaaaaaaaaaaa',
+        interm_value: '95 ANOS',
         dest_label: 'DESTINAÇÃO FINAL',
-        dest_value: 'aaaaaaaaa',
+        dest_value: '',
         barcode_value: 'Código de Barras'
     }
 };
@@ -211,21 +211,21 @@ const diretoriaMirrorConfig = {
     includeLogo: true,
     logoImage: './logo2.png',
     customValues: {
-        top_label: 'DIRETORIA / ORGÃO',
-        top_value: '',
-        title_label: 'CÓDIGO',
-        title_value: '',
-        extra_label: 'CÓDIGO',
-        extra_value: '',
+        top_label: 'DEPARTAMENTO',
+        top_value: 'DAF - Diretoria de Administração Financeira',
+        title_label: '023.11',
+        title_value: 'FOLHAS DE PAGAMENTO',
+        extra_label: '024.11',
+        extra_value: 'TESTE DE PAGAMENTO',
         main_text: '',
         data_1_label: 'ANO PRODUÇÃO',
-        data_1_value: '',
+        data_1_value: '2025',
         data_2_label: 'ANO DESTINAÇÃO',
-        data_2_value: '',
+        data_2_value: '2026',
         interm_label: 'INTERMEDIÁRIO',
-        interm_value: '',
+        interm_value: '1',
         dest_label: 'DESTINAÇÃO FINAL',
-        dest_value: '',
+        dest_value: '5',
         barcode_value: 'Código de Barras'
     }
 };
@@ -2009,10 +2009,10 @@ function renderPreview() {
                     <strong>Conteúdo:</strong>
                 </div>
                 ${linhasPaciente.map(result => `
-                    <div style="border-bottom:2px solid #000; text-align:center; padding:8px;">
-                        ${result.shouldRender ? result.html : '&nbsp;'}
-                    </div>
-                `).join('')}
+        <div style="border-bottom:2px solid #000; text-align:center; padding:8px;">
+            ${result.shouldRender ? result.html : '&nbsp;'}
+        </div>
+    `).join('')}
                 
                 <!-- Código de barras para IGES -->
                 <div style="text-align:center; padding:10px; min-height:80px;">
@@ -2065,6 +2065,14 @@ function renderPreview() {
                 </div>
                 <div style="flex:1; padding:8px;">
                     ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
+                </div>
+            </div>
+            <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
+                <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
+                    ${vals.extra_label || 'CÓDIGO'}:
+                </div>
+                <div style="flex:1; padding:8px;">
+                    ${extraResult.shouldRender ? extraResult.html : '&nbsp;'}
                 </div>
             </div>
             
@@ -2164,10 +2172,10 @@ function renderPreview() {
 
     const mainTextResult = formatFieldValue(modelName, 'main_text', 'TEXTO', vals.main_text);
     html += `
-        <div style="border-bottom:2px solid #000; padding:8px; min-height:200px;">
-            ${mainTextResult.shouldRender ? mainTextResult.html : '&nbsp;'}
-        </div>
-    `;
+    <div style="border-bottom:2px solid #000; padding:8px; min-height:200px; text-align: center;">
+        ${mainTextResult.shouldRender ? mainTextResult.html : '&nbsp;'}
+    </div>
+`;
 
     // RODAPÉ NO FORMATO SOLICITADO
     // RODAPÉ NO FORMATO SOLICITADO
@@ -2178,8 +2186,8 @@ function renderPreview() {
 
         // Define o nome do rodapé baseado no modelo
         let nomeRodape = "RODAPÉ"; // padrão
-        if (modelName === 'Modelo 1') nomeRodape = "1";
-        else if (modelName === 'Modelo 2') nomeRodape = "2";
+        if (modelName === 'Modelo 1') nomeRodape = "PRAZO DE GUARDA";
+        else if (modelName === 'Modelo 2') nomeRodape = "PRAZO DE GUARDA";
         else if (modelName === 'Modelo 3') nomeRodape = "3";
         else if (modelName === 'Modelo 4') nomeRodape = "PRAZO DE GUARDA";
 
