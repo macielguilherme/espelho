@@ -284,18 +284,18 @@ body {
 
 
 .btn-outline {
-    
- background-color: transparent;
-    
- color: var(--color-text);
-    
- border-color: var(--color-border);
-    
+
+    background-color: transparent;
+
+    color: var(--color-text);
+
+    border-color: var(--color-border);
+
 
 }
 
 
- .btn-outline:hover {
+.btn-outline:hover {
 
     background-color: var(--color-muted);
 
@@ -369,16 +369,16 @@ body {
 
 
 .icon-button:hover {
-    
- background-color: var(--color-muted);
-    
- border-color: var(--color-text-secondary);
-    
+
+    background-color: var(--color-muted);
+
+    border-color: var(--color-text-secondary);
+
 
 }
 
 
- .icon {
+.icon {
     width: 1.25rem;
     height: 1.25rem;
 }
@@ -674,22 +674,22 @@ body {
 
 /* Upload Area */
 .upload-area {
-    
- padding: var(--spacing-lg);
-    
- border: 2px dashed var(--color-border);
-    
- border-radius: var(--radius-md);
-    
- text-align: center;
-    
- transition: all var(--transition-fast);
-    
+
+    padding: var(--spacing-lg);
+
+    border: 2px dashed var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    text-align: center;
+
+    transition: all var(--transition-fast);
+
 
 }
 
 
- .upload-area:hover {
+.upload-area:hover {
 
     border-color: var(--color-accent);
 
@@ -947,22 +947,22 @@ body {
 
 
 .preview-header {
-    
- padding: var(--spacing-md);
-    
- border-bottom: 1px solid var(--color-border);
-    
- display: flex;
-    
- flex-direction: column;
-    
- gap: var(--spacing-md);
-    
+
+    padding: var(--spacing-md);
+
+    border-bottom: 1px solid var(--color-border);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--spacing-md);
+
 
 }
 
 
- .font-bold {
+.font-bold {
     font-weight: var(--font-weight-bold);
 }
 
@@ -1544,4 +1544,13 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+}
+
+
+/* Garantir centralização do texto no Modelo 3 */
+.preview-mirror .senac-container div[style*="text-align:center"] span,
+.preview-mirror div[style*="text-align:center"] span {
+    text-align: center !important;
+    display: block;
+    width: 100%;
 }
