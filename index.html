@@ -56,6 +56,18 @@
 
     <div class="action-bar">
         <div class="action-container">
+            <!-- Botão para limpar localStorage (adicionar antes dos outros botões) -->
+            <button class="btn btn-outline" id="clear-storage-button"
+                style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca;" onclick="clearLocalStorage()">
+                <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M10 11v5M14 11v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Limpar Cache
+            </button>
+
             <button class="btn btn-outline" id="cancel-button">
                 <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
                     <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
