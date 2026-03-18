@@ -2599,6 +2599,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ==========================================
+// FUNÇÃO PARA LIMPAR LOCALSTORAGE
+// ==========================================
+function clearLocalStorage() {
+    if (confirm('Tem certeza que deseja limpar todo o cache? Isso irá resetar todas as configurações para o padrão.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        showToast('Cache limpo! A página será recarregada.', 'success');
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    }
+}
+
+
+
+// ==========================================
 // EXPORTAÇÃO DAS FUNÇÕES PARA O ESCOPO GLOBAL
 // ==========================================
 
@@ -2631,3 +2646,8 @@ window.updateGroupColumns = updateGroupColumns;
 window.openBarcodeConfigModal = openBarcodeConfigModal;
 window.closeBarcodeConfigModal = closeBarcodeConfigModal;
 window.saveBarcodeConfig = saveBarcodeConfig;
+
+// Exportar a função
+window.clearLocalStorage = clearLocalStorage;
+
+
