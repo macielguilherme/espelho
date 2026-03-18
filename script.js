@@ -14,7 +14,7 @@ const headerLinesByModel = {
     'Modelo 1': 1,
     'Modelo 2': 3,
     'Modelo 3': 6,
-    'Modelo 4': 3
+    'Modelo 4': 2
 };
 
 // Configuração de colunas por modelo
@@ -805,11 +805,13 @@ function initializeFieldConfigs(modelName) {
 
     allFields.forEach(field => {
         if (!modelFieldConfigs[modelName][field]) {
-            // GARANTIR que usePipe seja false por padrão
             modelFieldConfigs[modelName][field] = {
                 ...defaultFieldConfig,
                 usePipe: false // EXPLÍCITO: false
             };
+        } else {
+            // Garantir que mesmo os existentes tenham usePipe false
+            modelFieldConfigs[modelName][field].usePipe = false;
         }
     });
 }
@@ -865,6 +867,12 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
     }
 
     const config = getFieldConfig(modelName, fieldKey);
+
+    // FORÇAR usePipe = false para o Modelo 3 campo line6_value
+    if (modelName === 'Modelo 3' && fieldKey === 'line6_value') {
+        config.usePipe = false;
+    }
+
     const fieldType = getFieldType(fieldKey);
 
     let value = rawValue || '';
@@ -2045,38 +2053,62 @@ function renderPreview() {
         `;
     }
 
-    if (isDiretoria || isNovacap) {
-        const topResult = formatFieldValue(modelName, 'top_value', vals.top_label || (isDiretoria ? 'DIRETORIA / ORGÃO' : 'DEPARTAMENTO'), vals.top_value);
+    if (isDiretoria) {
+        const topResult = formatFieldValue(modelName, 'top_value', vals.top_label || 'DIRETORIA / ORGÃO', vals.top_value);
         const titleResult = formatFieldValue(modelName, 'title_value', vals.title_label || 'CÓDIGO', vals.title_value);
         const extraResult = formatFieldValue(modelName, 'extra_value', vals.extra_label || 'CÓDIGO', vals.extra_value);
 
         html += `
-            <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
-                <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
-                    ${vals.top_label || (isDiretoria ? 'DIRETORIA / ORGÃO' : 'DEPARTAMENTO')}:
-                </div>
-                <div style="flex:1; padding:8px;">
-                    ${topResult.shouldRender ? topResult.html : '&nbsp;'}
-                </div>
+        <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
+            <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
+                ${vals.top_label || 'DIRETORIA / ORGÃO'}:
             </div>
-            <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
-                <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
-                    ${vals.title_label || 'CÓDIGO'}:
-                </div>
-                <div style="flex:1; padding:8px;">
-                    ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
-                </div>
+            <div style="flex:1; padding:8px;">
+                ${topResult.shouldRender ? topResult.html : '&nbsp;'}
             </div>
-            <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
-                <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
-                    ${vals.extra_label || 'CÓDIGO'}:
-                </div>
-                <div style="flex:1; padding:8px;">
-                    ${extraResult.shouldRender ? extraResult.html : '&nbsp;'}
-                </div>
+        </div>
+        <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
+            <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
+                ${vals.title_label || 'CÓDIGO'}:
             </div>
-            
-        `;
+            <div style="flex:1; padding:8px;">
+                ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
+            </div>
+        </div>
+        <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
+            <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
+                ${vals.extra_label || 'CÓDIGO'}:
+            </div>
+            <div style="flex:1; padding:8px;">
+                ${extraResult.shouldRender ? extraResult.html : '&nbsp;'}
+            </div>
+        </div>
+        
+    `;
+    }
+
+    if (isNovacap) {
+        const topResult = formatFieldValue(modelName, 'top_value', vals.top_label || 'DEPARTAMENTO', vals.top_value);
+        const titleResult = formatFieldValue(modelName, 'title_value', vals.title_label || 'CÓDIGO', vals.title_value);
+
+        html += `
+        <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
+            <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
+                ${vals.top_label || 'DEPARTAMENTO'}:
+            </div>
+            <div style="flex:1; padding:8px;">
+                ${topResult.shouldRender ? topResult.html : '&nbsp;'}
+            </div>
+        </div>
+        <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
+            <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
+                ${vals.title_label || 'CÓDIGO'}:
+            </div>
+            <div style="flex:1; padding:8px;">
+                ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
+            </div>
+        </div>
+    `;
     }
 
     if (isHMAB) {
