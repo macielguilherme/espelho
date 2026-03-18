@@ -20,19 +20,19 @@ const headerLinesByModel = {
 // Configuração de colunas por modelo
 const columnConfigByModel = {
     'Modelo 3': {
-        enabled: false,
+        enabled: false, // JÁ ESTÁ false
         maxColumns: 2,
         defaultColumns: 2,
         fieldGroups: []
     },
     'Modelo 2': {
-        enabled: false,
+        enabled: false, // JÁ ESTÁ false
         maxColumns: 2,
         defaultColumns: 2,
         fieldGroups: []
     },
     'Modelo 4': {
-        enabled: false,
+        enabled: false, // JÁ ESTÁ false
         maxColumns: 2,
         defaultColumns: 2,
         fieldGroups: []
@@ -41,7 +41,7 @@ const columnConfigByModel = {
 
 // Configuração padrão de colunas
 const defaultColumnConfig = {
-    enabled: false,
+    enabled: false, // JÁ ESTÁ false
     columnCount: 1,
     maxColumns: 1,
     fieldGroups: []
@@ -52,20 +52,19 @@ const defaultColumnConfig = {
 // ==========================================
 
 const defaultFieldConfig = {
-    showLabel: true,
-    usePipe: true,
-    uppercase: false,
-    bold: false,
-    alignment: 'left',
-    fontSize: 11, // ALTERADO: agora é número (pixels) em vez de string
-    columnLayout: 'single',
-    overflowRule: 'wrap',
-    maxChars: 0,
-    classificationMode: 'both',
-    classificationSeparator: 'pipe',
-    yearMode: 'both',
-    yearSeparator: ' - ',
-    forceClassification: false
+    usePipe: false, // ALTERADO: de true para false
+    uppercase: false, // MANTIDO: false
+    bold: false, // MANTIDO: false
+    alignment: 'left', // MANTIDO: left
+    fontSize: 11, // MANTIDO: 11
+    columnLayout: 'single', // MANTIDO: single
+    overflowRule: 'wrap', // MANTIDO: wrap
+    maxChars: 0, // MANTIDO: 0
+    classificationMode: 'both', // MANTIDO: both
+    classificationSeparator: 'pipe', // MANTIDO: pipe
+    yearMode: 'both', // MANTIDO: both
+    yearSeparator: ' - ', // MANTIDO:  - 
+    forceClassification: false // MANTIDO: false
 };
 
 
@@ -107,16 +106,16 @@ const headerLabelOptionsByModel = {
     },
     'Modelo 3': {
         top: ['UNIDADE', 'CLASSIFICACAO - C12'],
-        title: ['N� CAIXA', 'CLASSIFICACAO - C12'],
+        title: ['Nº CAIXA', 'CLASSIFICACAO - C12'],
         extra: ['DEPARTAMENTO', 'CLASSIFICACAO - C12'],
         line4: ['TIPO DOCUMENTAL', 'CLASSIFICACAO - C12'],
         line5: ['CODIGO', 'CLASSIFICACAO - C12'],
         line6: ['PACIENTE', 'CLASSIFICACAO - C12']
     },
     'Modelo 4': {
-        top: ['CLASSIFICACAO - C12'],
-        title: ['CLASSIFICACAO - C12'],
-        extra: ['CLASSIFICACAO - C12']
+        top: ['DEPARTAMENTO - C7'],
+        title: ['CLASSIFICACAO - C12']
+
     }
 };
 
@@ -188,8 +187,8 @@ const codigoUnicoMirrorConfig = {
     includeLogo: true,
     logoImage: './logo1.png',
     customValues: {
-        top_label: 'CÓDIGO',
-        top_value: '',
+        top_label: 'DEPARTAMENTO:',
+        top_value: 'DMED',
         title_label: '',
         title_value: '',
         main_text: '',
@@ -198,9 +197,9 @@ const codigoUnicoMirrorConfig = {
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
         interm_label: 'INTERMEDIÁRIO',
-        interm_value: '',
+        interm_value: 'aaaaaaaaaaaa',
         dest_label: 'DESTINAÇÃO FINAL',
-        dest_value: '',
+        dest_value: 'aaaaaaaaa',
         barcode_value: 'Código de Barras'
     }
 };
@@ -238,21 +237,20 @@ const novacapMirrorConfig = {
     includeLogo: true,
     logoImage: './logo3.png',
     customValues: {
+        rodape: "lalala",
         top_label: 'DEPARTAMENTO',
-        top_value: '',
-        title_label: 'CÓDIGO',
-        title_value: '',
-        extra_label: 'CÓDIGO',
-        extra_value: '',
-        main_text: '',
+        top_value: 'DMED',
+        title_label: '026.15',
+        title_value: 'PRONTUÁRIOS MÉDICOS',
+        main_text: 'MATRÍCULA: 74541-3 | 74549-9 | 74544-8 | 74545-6',
         data_1_label: 'ANO PRODUÇÃO',
-        data_1_value: '',
+        data_1_value: '1998',
         data_2_label: 'ANO DESTINAÇÃO',
-        data_2_value: '',
+        data_2_value: '1998',
         interm_label: 'INTERMEDIÁRIO',
-        interm_value: '',
+        interm_value: '95 ANOS',
         dest_label: 'DESTINAÇÃO FINAL',
-        dest_value: '',
+        dest_value: 'ELIMINAÇÃO',
         barcode_value: 'Código de Barras'
     }
 };
@@ -401,15 +399,7 @@ const titleOptions = [
 ];
 
 const data1Options = [
-    { value: 'ANO PRODUÇÃO', label: 'Ano Produção' },
-    { value: 'DATA INICIAL', label: 'Data Inicial' },
-    { value: 'VIGÊNCIA', label: 'Vigência' }
-];
-
-const data2Options = [
-    { value: 'ANO DESTINAÇÃO', label: 'Ano Destinação' },
-    { value: 'DATA FINAL', label: 'Data Final' },
-    { value: 'VALIDADE', label: 'Validade' }
+    { value: 'ANO PRODUÇÃO', label: 'Ano Produção' }
 ];
 
 const intermOptions = [
@@ -483,7 +473,7 @@ function normalizeMirrorConfig(config) {
         ...config,
         logoPosition: config.logoPosition || 'center',
         logoFit: config.logoFit || 'default',
-        barcodeSource: config.barcodeSource || 'cliente',
+        barcodeSource: config.barcodeSource || 'cliente', // GARANTIR que barcodeSource seja preservado
         customValues: { ...defaultMirrorConfig.customValues, ...(config.customValues || {}) }
     };
 
@@ -497,8 +487,22 @@ function normalizeMirrorConfig(config) {
 }
 
 function getBarcodeDisplayValue(config) {
+    // Garantir que barcodeSource existe
     const source = config.barcodeSource || 'cliente';
-    return source === 'sos' ? 'SOS-00' : 'CLI-001';
+
+    console.log('getBarcodeDisplayValue - source:', source); // DEBUG
+
+    if (source === 'sos') {
+        return {
+            barcode: '12345689',
+            display: 'CB002966500002805OS'
+        };
+    } else {
+        return {
+            barcode: 'CLI-001',
+            display: 'CLI-001'
+        };
+    }
 }
 
 function buildLogoHtml(config) {
@@ -801,7 +805,11 @@ function initializeFieldConfigs(modelName) {
 
     allFields.forEach(field => {
         if (!modelFieldConfigs[modelName][field]) {
-            modelFieldConfigs[modelName][field] = { ...defaultFieldConfig };
+            // GARANTIR que usePipe seja false por padrão
+            modelFieldConfigs[modelName][field] = {
+                ...defaultFieldConfig,
+                usePipe: false // EXPLÍCITO: false
+            };
         }
     });
 }
@@ -814,7 +822,17 @@ function getFieldConfig(modelName, fieldKey) {
     if (!modelFieldConfigs[modelName]) {
         initializeFieldConfigs(modelName);
     }
-    return modelFieldConfigs[modelName][fieldKey] || { ...defaultFieldConfig };
+
+    // Garantir que se não existir, retorne com usePipe: false
+    const config = modelFieldConfigs[modelName][fieldKey];
+    if (!config) {
+        return {
+            ...defaultFieldConfig,
+            usePipe: false
+        };
+    }
+
+    return config;
 }
 
 function updateFieldConfig(modelName, fieldKey, configChanges) {
@@ -823,8 +841,12 @@ function updateFieldConfig(modelName, fieldKey, configChanges) {
     if (!modelFieldConfigs[modelName]) {
         initializeFieldConfigs(modelName);
     }
+
+    // Garantir que a configuração existente tenha usePipe false se não especificado
+    const existingConfig = modelFieldConfigs[modelName][fieldKey] || { ...defaultFieldConfig, usePipe: false };
+
     modelFieldConfigs[modelName][fieldKey] = {
-        ...modelFieldConfigs[modelName][fieldKey],
+        ...existingConfig,
         ...configChanges
     };
     saveToLocalStorage();
@@ -901,16 +923,12 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
         formattedText = displayValue;
     }
 
-    const showLabel = fieldKey === 'main_text' ? false : config.showLabel;
+    // REMOVIDO: não mostrar mais o nome do campo
+    // Apenas usar o pipe se configurado, mas sem o label
     const usePipe = config.usePipe;
 
-    if (showLabel) {
-        if (usePipe) {
-            formattedText = `${displayLabel} | ${formattedText}`;
-        } else {
-            formattedText = `${displayLabel}: ${formattedText}`;
-        }
-    }
+    // formattedText já contém o valor formatado
+    // Não adicionamos mais o label
 
     if (config.uppercase) {
         formattedText = formattedText.toUpperCase();
@@ -935,11 +953,9 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
 
     const fontWeight = config.bold ? 'bold' : 'normal';
     const textAlign = config.alignment || 'left';
-    const fontClass = config.overflowRule === 'reduce-font'
-        ? 'small-font'
-        : `${config.fontSize || 'medium'}-font`;
+    const fontSize = config.fontSize || 11;
 
-    const html = `<span class="${fontClass}" style="font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; ${overflowStyle}">${formattedText}</span>`;
+    const html = `<span style="font-size: ${fontSize}px; font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; ${overflowStyle}">${formattedText}</span>`;
 
     return { html, shouldRender: true };
 }
@@ -970,17 +986,17 @@ function openFieldConfigModal(key, label) {
     const fieldConfig = getFieldConfig(modelName, key);
     const fieldType = getFieldType(key);
 
-    document.getElementById('config-show-label').checked = fieldConfig.showLabel;
+
     document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
     document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
     document.getElementById('config-bold').checked = fieldConfig.bold;
-    
+
     // NOVO: input numérico para tamanho da fonte
     const fontSizeInput = document.getElementById('config-font-size');
     if (fontSizeInput) {
         fontSizeInput.value = fieldConfig.fontSize || 11;
     }
-    
+
     const limitCharactersToggle = document.getElementById('config-limit-characters');
     if (limitCharactersToggle) limitCharactersToggle.checked = false;
     const breakLineToggle = document.getElementById('config-break-line');
@@ -1093,7 +1109,7 @@ function setupPreviewListeners() {
         }
     });
 
-    
+
     // O resto continua igual...
     document.querySelectorAll('input[name="config-overflow-rule"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
@@ -1129,7 +1145,7 @@ function toggleContentLimitVisibility() {
 
 function updateFieldPreview() {
     const preview = document.getElementById('field-config-preview');
-    if (!preview) return;
+    if (!preview || !currentConfigField.key) return;
 
     const fieldType = getFieldType(currentConfigField.key);
 
@@ -1137,10 +1153,8 @@ function updateFieldPreview() {
     const usePipe = document.getElementById('config-use-pipe')?.checked || false;
     const uppercase = document.getElementById('config-uppercase')?.checked || false;
     const bold = document.getElementById('config-bold')?.checked || false;
-    
-    // NOVO: pegar o valor numérico da fonte
+
     const fontSize = parseInt(document.getElementById('config-font-size')?.value) || 11;
-    
     const overflowRule = document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap';
     const maxChars = parseInt(document.getElementById('config-max-chars')?.value) || 0;
 
@@ -1208,8 +1222,6 @@ function updateFieldPreview() {
 
     // Construir estilos CSS
     if (bold) style += 'font-weight: bold; ';
-    
-    // NOVO: usar o valor numérico da fonte
     style += `font-size: ${fontSize}px; `;
 
     // Aplicar regras de overflow
@@ -1231,116 +1243,55 @@ function updateFieldPreview() {
     preview.innerHTML = `<span style="${style}">${previewText}</span>`;
 }
 
-function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
-    if (fieldKey === 'barcode_value') {
-        return {
-            html: rawValue || '',
-            shouldRender: !!rawValue
-        };
+function saveFieldConfig() {
+    if (!currentConfigField.key) {
+        showToast('Nenhum campo selecionado', 'error');
+        return;
     }
 
-    const config = getFieldConfig(modelName, fieldKey);
-    const fieldType = getFieldType(fieldKey);
+    const { key, label, modelName } = currentConfigField;
 
-    let value = rawValue || '';
-    const trimmedValue = value.trim();
-    if (!trimmedValue) {
-        return { html: '', shouldRender: false };
-    }
+    // Coletar configurações básicas
+    const configChanges = {
 
-    let displayValue = value;
-    let displayLabel = fieldLabel || '';
+        usePipe: document.getElementById('config-use-pipe')?.checked || false,
+        uppercase: document.getElementById('config-uppercase')?.checked || false,
+        bold: document.getElementById('config-bold')?.checked || false,
+        fontSize: parseInt(document.getElementById('config-font-size')?.value) || 11,
+        alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left',
+        columnLayout: document.querySelector('input[name="config-column-layout"]:checked')?.value || 'single',
+        overflowRule: document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap',
+        maxChars: parseInt(document.getElementById('config-max-chars')?.value) || 0,
+    };
 
-    if (config.uppercase) {
-        displayValue = displayValue.toUpperCase();
-        displayLabel = displayLabel.toUpperCase();
-    }
-
-    let formattedText = '';
-
+    // Adicionar configurações específicas de CLASSIFICAÇÃO
+    const fieldType = getFieldType(key);
     if (fieldType === FieldType.CLASSIFICATION) {
-        const parts = displayValue.split('|').map(p => p.trim());
-        const code = parts[0] || '';
-        const subject = parts[1] || '';
-
-        const mode = config.classificationMode || 'both';
-        const separatorMap = {
-            'pipe': ' | ',
-            'comma': ', ',
-            'semicolon': '; ',
-            'hyphen': ' - ',
-            'space': ' '
-        };
-        const separator = separatorMap[config.classificationSeparator || 'pipe'];
-
-        if (mode === 'code') {
-            formattedText = code;
-        } else if (mode === 'subject') {
-            formattedText = subject;
-        } else {
-            formattedText = code + separator + subject;
-        }
-
-    } else if (fieldType === FieldType.YEAR) {
-        const mode = config.yearMode || 'both';
-        const separator = config.yearSeparator || ' - ';
-
-        if (mode === 'initial') {
-            formattedText = displayValue;
-        } else if (mode === 'final') {
-            formattedText = displayValue;
-        } else {
-            const years = displayValue.split('-').map(y => y.trim());
-            formattedText = years.join(separator);
-        }
-
-    } else {
-        formattedText = displayValue;
+        configChanges.classificationMode = document.querySelector('input[name="config-classification-mode"]:checked')?.value || 'both';
+        configChanges.classificationSeparator = document.getElementById('config-classification-separator')?.value || 'pipe';
     }
 
-    const showLabel = fieldKey === 'main_text' ? false : config.showLabel;
-    const usePipe = config.usePipe;
-
-    if (showLabel) {
-        if (usePipe) {
-            formattedText = `${displayLabel} | ${formattedText}`;
-        } else {
-            formattedText = `${displayLabel}: ${formattedText}`;
-        }
+    // Adicionar configurações específicas de ANO
+    if (fieldType === FieldType.YEAR) {
+        configChanges.yearMode = document.querySelector('input[name="config-year-mode"]:checked')?.value || 'both';
+        configChanges.yearSeparator = document.getElementById('config-year-separator')?.value || ' - ';
     }
 
-    if (config.uppercase) {
-        formattedText = formattedText.toUpperCase();
-    }
+    // Salvar as configurações
+    updateFieldConfig(modelName, key, configChanges);
 
-    if (config.maxChars && config.maxChars > 0 && formattedText.length > config.maxChars) {
-        if (config.overflowRule === 'truncate') {
-            formattedText = formattedText.substring(0, config.maxChars) + '...';
-        }
-    }
+    // Fechar o modal
+    closeFieldConfigModal();
 
-    let overflowStyle = '';
-    if (config.overflowRule === 'wrap') {
-        overflowStyle = 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;';
-    } else if (config.overflowRule === 'truncate') {
-        overflowStyle = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
-    } else if (config.overflowRule === 'reduce-font') {
-        overflowStyle = 'white-space: normal; word-wrap: break-word;';
-    } else {
-        overflowStyle = 'white-space: normal; word-wrap: break-word;';
-    }
+    // Atualizar a interface
+    renderForm();
+    renderPreview();
 
-    const fontWeight = config.bold ? 'bold' : 'normal';
-    const textAlign = config.alignment || 'left';
-    
-    // CORRIGIR esta parte - usar o valor numérico da fonte
-    const fontSize = config.fontSize || 11; // Agora é número
-    
-    // REMOVER a linha do fontClass e usar estilo direto
-    const html = `<span style="font-size: ${fontSize}px; font-weight: ${fontWeight}; text-align: ${textAlign}; display: block; width: 100%; ${overflowStyle}">${formattedText}</span>`;
-
-    return { html, shouldRender: true };
+    // Mostrar confirmação
+    showToast(`Configurações de "${label}" salvas com sucesso!`);
 }
+
+
 
 // ==========================================
 // FUNÇÕES DE PERSISTÊNCIA
@@ -1352,6 +1303,15 @@ function saveToLocalStorage() {
         fieldConfigs: modelFieldConfigs,
         columnConfigs: columnConfigByModel
     };
+
+    // Garantir que o currentConfig esteja atualizado nos mirrors
+    if (state.selectedMirrorId) {
+        const index = state.mirrors.findIndex(m => m.id === state.selectedMirrorId);
+        if (index >= 0) {
+            state.mirrors[index] = { ...state.currentConfig };
+        }
+    }
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
 }
 
@@ -1362,45 +1322,147 @@ function loadFromLocalStorage() {
         try {
             const parsed = JSON.parse(saved);
             state.mirrors = (parsed.mirrors || []).map(normalizeMirrorConfig);
-            modelFieldConfigs = parsed.fieldConfigs || {};
+
+            // NORMALIZAR configurações de campo carregadas
+            if (parsed.fieldConfigs) {
+                modelFieldConfigs = {};
+                Object.keys(parsed.fieldConfigs).forEach(modelName => {
+                    modelFieldConfigs[modelName] = {};
+                    Object.keys(parsed.fieldConfigs[modelName]).forEach(fieldKey => {
+                        // Garantir que usePipe seja false se não estiver definido
+                        // e que todas as configurações tenham valores padrão consistentes
+                        modelFieldConfigs[modelName][fieldKey] = {
+                            ...defaultFieldConfig,
+                            usePipe: false, // FORÇAR false para manter padrão
+                            ...parsed.fieldConfigs[modelName][fieldKey]
+                        };
+
+                        // Garantir que campos de classificação tenham forceClassification false por padrão
+                        if (fieldKey === 'top_value' || fieldKey === 'title_value' ||
+                            fieldKey === 'extra_value' || fieldKey === 'line4_value' ||
+                            fieldKey === 'line5_value' || fieldKey === 'line6_value') {
+
+                            // Se não tiver forceClassification definido, manter false
+                            if (modelFieldConfigs[modelName][fieldKey].forceClassification === undefined) {
+                                modelFieldConfigs[modelName][fieldKey].forceClassification = false;
+                            }
+                        }
+                    });
+                });
+            } else {
+                modelFieldConfigs = {};
+            }
+
+            // Filtrar apenas modelos permitidos (RN15 - Padronização de Modelos)
             state.mirrors = state.mirrors.filter(m => allowedModelNames.includes(m.name));
 
+            // Carregar configurações de colunas
             if (parsed.columnConfigs) {
                 Object.assign(columnConfigByModel, parsed.columnConfigs);
+
+                // Garantir que enabled seja false em todas as colunas por padrão
+                Object.keys(columnConfigByModel).forEach(key => {
+                    if (columnConfigByModel[key]) {
+                        columnConfigByModel[key].enabled = false;
+
+                        // Garantir que fieldGroups exista
+                        if (!columnConfigByModel[key].fieldGroups) {
+                            columnConfigByModel[key].fieldGroups = [];
+                        }
+
+                        // Garantir valores padrão para outras propriedades
+                        columnConfigByModel[key].maxColumns = columnConfigByModel[key].maxColumns || 2;
+                        columnConfigByModel[key].defaultColumns = columnConfigByModel[key].defaultColumns || 2;
+                    }
+                });
             }
+
         } catch (e) {
+            console.error('Erro ao carregar dados do localStorage:', e);
             state.mirrors = [];
             modelFieldConfigs = {};
         }
     } else {
+        // Se não há dados salvos, inicializar vazio
         state.mirrors = [];
         modelFieldConfigs = {};
     }
 
     // RN15 - Padronizacao de Modelos: manter apenas modelos predefinidos no prototipo.
-    const modelos = [
+    // Garantir que os modelos padrão existam
+    const modelosPadrao = [
         { type: MirrorType.DOCUMENTO_CODIGO, config: codigoUnicoMirrorConfig, name: 'Modelo 1' },
         { type: MirrorType.DOCUMENTO_DIRETORIA, config: diretoriaMirrorConfig, name: 'Modelo 2' },
         { type: MirrorType.DOCUMENTO, config: igesMirrorConfig, name: 'Modelo 3' },
         { type: MirrorType.DOCUMENTO_CODIGO, config: novacapMirrorConfig, name: 'Modelo 4' }
     ];
 
-    modelos.forEach(modelo => {
+    // Adicionar modelos padrão se não existirem
+    modelosPadrao.forEach(modelo => {
         if (!state.mirrors.some(m => m.name === modelo.name)) {
-            state.mirrors.push(normalizeMirrorConfig({
+            const novoModelo = normalizeMirrorConfig({
                 ...modelo.config,
                 id: generateId(),
                 customValues: { ...modelo.config.customValues }
-            }));
+            });
+
+            // Garantir que o novo modelo tenha configurações de campo com usePipe: false
+            const modelName = modelo.name;
+            if (!modelFieldConfigs[modelName]) {
+                modelFieldConfigs[modelName] = {};
+
+                // Inicializar campos do modelo com usePipe: false
+                const campos = [
+                    'top_value', 'title_value', 'extra_value', 'line4_value',
+                    'line5_value', 'line6_value', 'main_text', 'data_1_value',
+                    'data_2_value', 'interm_value', 'dest_value'
+                ];
+
+                campos.forEach(campo => {
+                    modelFieldConfigs[modelName][campo] = {
+                        ...defaultFieldConfig,
+                        usePipe: false
+                    };
+                });
+            }
+
+
+
+            state.mirrors.push(novoModelo);
         }
     });
 
+    // Selecionar o primeiro modelo se nenhum estiver selecionado
     if (!state.selectedMirrorId && state.mirrors.length > 0) {
         state.selectedMirrorId = state.mirrors[0].id;
         state.currentConfig = normalizeMirrorConfig(state.mirrors[0]);
     }
 
-    // RN18 - Politica de Transicao: espelhos antigos continuam funcionando; novo modelo vale para novos espelhos ou quando editados.
+    // Garantir que as configurações de campo existam para o modelo atual
+    if (state.selectedMirrorId) {
+        const currentModel = state.mirrors.find(m => m.id === state.selectedMirrorId);
+        if (currentModel && !modelFieldConfigs[currentModel.name]) {
+            modelFieldConfigs[currentModel.name] = {};
+
+            // Inicializar campos do modelo atual
+            const campos = [
+                'top_value', 'title_value', 'extra_value', 'line4_value',
+                'line5_value', 'line6_value', 'main_text', 'data_1_value',
+                'data_2_value', 'interm_value', 'dest_value'
+            ];
+
+            campos.forEach(campo => {
+                modelFieldConfigs[currentModel.name][campo] = {
+                    ...defaultFieldConfig,
+                    usePipe: false
+                };
+            });
+        }
+    }
+
+    // RN18 - Politica de Transicao: espelhos antigos continuam funcionando; 
+    // novo modelo vale para novos espelhos ou quando editados.
+    // Salvar estado normalizado de volta para o localStorage
     saveToLocalStorage();
 }
 
@@ -1422,15 +1484,46 @@ function renderPencilButton(key, label) {
         `;
     }
 
+    // Caso especial para o campo intermediário
+    if (key === 'interm_value') {
+        const config = state.currentConfig;
+        const modelName = config.name;
+        const fieldConfig = getFieldConfig(modelName, key);
+        const hasValue = config.customValues[key]?.length > 0;
+
+        // MODIFICADO: Sempre usar btn-outline (transparente), removido btn-primary
+        let btnClass = 'btn-outline';
+
+        const hasCustomConfig = Object.keys(defaultFieldConfig).some(k => {
+            if (k === 'classificationMode' || k === 'classificationSeparator' ||
+                k === 'yearMode' || k === 'yearSeparator' ||
+                k === 'fontSize' || k === 'overflowRule' || k === 'maxChars') {
+                return fieldConfig[k] !== undefined && fieldConfig[k] !== defaultFieldConfig[k];
+            }
+            return fieldConfig[k] !== defaultFieldConfig[k];
+        });
+
+        return `
+        <button type="button" 
+                class="btn ${btnClass}" 
+                style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; position: relative;" 
+                onclick="openFieldConfigModal('${key}', '${label}')" 
+                title="Configurar ${label}">
+            &#9881;
+            ${hasCustomConfig ?
+                '<span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#10b981;border-radius:50%;"></span>' :
+                ''}
+        </button>
+    `;
+    }
+
     const config = state.currentConfig;
     const modelName = config.name;
     const fieldConfig = getFieldConfig(modelName, key);
     const hasValue = config.customValues[key]?.length > 0;
 
+    // MODIFICADO: Sempre usar btn-outline (transparente), removida a lógica que alternava para btn-primary
     let btnClass = 'btn-outline';
-    if (hasValue) {
-        btnClass = 'btn-primary';
-    }
 
     const hasCustomConfig = Object.keys(defaultFieldConfig).some(k => {
         if (k === 'classificationMode' || k === 'classificationSeparator' ||
@@ -1651,14 +1744,7 @@ function renderForm() {
                             ${renderPencilButton('data_1_value', 'Valor Data 1')}
                         </div>
 
-                        <div class="flex gap-1 items-center">
-                            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_2_label', this.value)">
-                                ${data2Options.map(opt => `
-                                    <option value="${opt.value}" ${values.data_2_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                                `).join('')}
-                            </select>
-                            ${renderPencilButton('data_2_value', 'Valor Data 2')}
-                        </div>
+                       
 
                         <div class="flex gap-1 items-center">
                             <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('interm_label', this.value)">
@@ -1811,7 +1897,7 @@ function renderPreviewWithColumns() {
                 <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">                    <!-- Linha do cabecalho -->
                     <tr>
                         <th style="width:25%; border-right:2px solid #000; border-bottom:2px solid #000; padding:6px;">ANO</th>
-                        <th colspan="2" style="border-bottom:2px solid #000; padding:6px;">RODAPE</th>
+                        <th colspan="2" style="border-bottom:2px solid #000; padding:6px;">${ano}</th>
                     </tr>
                     
                     <!-- Linha dos sub-titulos -->
@@ -1833,13 +1919,13 @@ function renderPreviewWithColumns() {
         `;
     }
 
-    const barcodeValue = getBarcodeDisplayValue(config);
+    const barcodeData = getBarcodeDisplayValue(config);
     html += `
-        <div style="text-align:center; padding:10px; min-height:80px;">
-            <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeValue}*</div>
-            <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
-        </div>
-    </div>`;
+    <div style="text-align:center; padding:10px; min-height:80px;">
+        <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeData.barcode}*</div>
+        <div style="font-family:monospace;font-size:14px; font-weight: bold;">${barcodeData.display}</div>
+    </div>
+`;
 
     container.innerHTML = html;
 }
@@ -1894,7 +1980,7 @@ function renderPreview() {
             .filter(l => l.trim())
             .map(l => formatFieldValue(modelName, 'line6_value', 'PACIENTE', l));
 
-        const barcodeValue = getBarcodeDisplayValue(config);
+        const barcodeData = getBarcodeDisplayValue(config);
         container.innerHTML = `
             <div class="preview-mirror" style="border:2px solid #000; font-family: Arial, sans-serif; font-size:12px;">
                 <div style="border-bottom:2px solid #000; height:80px; display:flex; align-items:center; padding:10px;">
@@ -1930,10 +2016,9 @@ function renderPreview() {
                 
                 <!-- Código de barras para IGES -->
                 <div style="text-align:center; padding:10px; min-height:80px;">
-                    <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeValue}*</div>
-                    <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
-                </div>
-            </div>
+        <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeData.barcode}*</div>
+        <div style="font-family:monospace;font-size:14px; font-weight: bold;">${barcodeData.display}</div>
+    </div>
         `;
         return;
     }
@@ -1982,14 +2067,7 @@ function renderPreview() {
                     ${titleResult.shouldRender ? titleResult.html : '&nbsp;'}
                 </div>
             </div>
-            <div style="display:flex; border-bottom:2px solid #000; min-height:35px;">
-                <div style="flex:0 0 38%; border-right:2px solid #000; padding:8px; font-weight:bold;">
-                    ${vals.extra_label || 'CÓDIGO'}:
-                </div>
-                <div style="flex:1; padding:8px;">
-                    ${extraResult.shouldRender ? extraResult.html : '&nbsp;'}
-                </div>
-            </div>
+            
         `;
     }
 
@@ -2086,50 +2164,59 @@ function renderPreview() {
 
     const mainTextResult = formatFieldValue(modelName, 'main_text', 'TEXTO', vals.main_text);
     html += `
-        <div style="border-bottom:2px solid #000; padding:8px; min-height:60px;">
+        <div style="border-bottom:2px solid #000; padding:8px; min-height:200px;">
             ${mainTextResult.shouldRender ? mainTextResult.html : '&nbsp;'}
         </div>
     `;
 
     // RODAPÉ NO FORMATO SOLICITADO
+    // RODAPÉ NO FORMATO SOLICITADO
+    // RODAPÉ NO FORMATO SOLICITADO
     if (!isHomeAssistence) {
         const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
         const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
 
+        // Define o nome do rodapé baseado no modelo
+        let nomeRodape = "RODAPÉ"; // padrão
+        if (modelName === 'Modelo 1') nomeRodape = "1";
+        else if (modelName === 'Modelo 2') nomeRodape = "2";
+        else if (modelName === 'Modelo 3') nomeRodape = "3";
+        else if (modelName === 'Modelo 4') nomeRodape = "PRAZO DE GUARDA";
+
         html += `
-            <div style="border-bottom:2px solid #000;">
-                <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">                    <!-- Linha do cabecalho -->
-                    <tr>
-                        <th style="width:25%; border-right:2px solid #000; border-bottom:2px solid #000; padding:6px;">ANO</th>
-                        <th colspan="2" style="border-bottom:2px solid #000; padding:6px;">RODAPE</th>
-                    </tr>
-                    
-                    <!-- Linha dos sub-titulos -->
-                    <tr>
-                        <td style="border-right:2px solid #000; border-bottom:2px solid #000; padding:6px;" rowspan="3">${ano || '&nbsp;'}</td>
-                        <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:6px;"><b>INTERMEDIARIO</b></th>
-                        <th style="border-bottom:2px solid #000; padding:6px;"><b>DESTINACAO FINAL</b></th>
-                    </tr>
-                    <tr>
-                        <td style="border-right:2px solid #000; padding:6px; min-height:40px;">${intermResult.shouldRender ? intermResult.html : ""}</td>
-                        <td style="padding:6px; min-height:40px;">${destResult.shouldRender ? destResult.html : ""}</td>
-                    </tr>
-                    <tr>
-                        <td style="border-right:2px solid #000; padding:6px; min-height:40px;">&nbsp;</td>
-                        <td style="padding:6px; min-height:40px;">&nbsp;</td>
-                    </tr>
-                </table>
-            </div>
-        `;
+    <div style="border-bottom:2px solid #000;">
+        <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">                    <!-- Linha do cabecalho -->
+            <tr>
+                <th style="width:25%; border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;">ANO</th>
+                <th colspan="2" style="border-bottom:2px solid #000; padding:3px;">${nomeRodape}</th>
+            </tr>
+            
+            <!-- Linha dos sub-titulos -->
+            <tr>
+                <td style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;" rowspan="3">${ano || '&nbsp;'}</td>
+                <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;"><b>INTERMEDIARIO</b></th>
+                <th style="border-bottom:2px solid #000; padding:3px;"><b>DESTINACAO FINAL</b></th>
+            </tr>
+            <tr>
+                <td style="border-right:2px solid #000; padding:3px; min-height:20px;">${intermResult.shouldRender ? intermResult.html : ""}</td>
+                <td style="padding:3px; min-height:20px;">${destResult.shouldRender ? destResult.html : ""}</td>
+            </tr>
+            <tr>
+                <td style="border-right:2px solid #000; padding:3px; min-height:20px;">&nbsp;</td>
+                <td style="padding:3px; min-height:20px;">&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+`;
     }
 
-    const barcodeValue = getBarcodeDisplayValue(config);
+    const barcodeData = getBarcodeDisplayValue(config);
     html += `
-        <div style="text-align:center; padding:10px; min-height:80px;">
-            <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeValue}*</div>
-            <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
-        </div>
-    </div>`;
+    <div style="text-align:center; padding:10px; min-height:80px;">
+        <div style="font-family:'Libre Barcode 39';font-size:48px; margin-bottom:5px;">*${barcodeData.barcode}*</div>
+        <div style="font-family:monospace;font-size:14px; font-weight: bold;">${barcodeData.display}</div>
+    </div>
+`;
 
     container.innerHTML = html;
 }
@@ -2178,6 +2265,10 @@ function closeEditModal() {
 
 function updateConfig(key, value) {
     state.currentConfig[key] = value;
+
+    // IMPORTANTE: Salvar no localStorage imediatamente
+    saveToLocalStorage();
+
     renderForm();
     renderPreview();
 }
@@ -2293,6 +2384,11 @@ function loadMirror(id) {
     if (mirror) {
         state.currentConfig = normalizeMirrorConfig(mirror);
         state.selectedMirrorId = id;
+
+        // DEBUG: Verificar qual valor está sendo carregado
+        console.log('Carregando mirror:', mirror.name);
+        console.log('barcodeSource carregado:', mirror.barcodeSource);
+
         renderForm();
         renderPreview();
         renderMirrorList();
@@ -2421,18 +2517,27 @@ function updateBarcodePreview() {
     if (!preview) return;
 
     const selectedSource = document.querySelector('input[name="modal-barcode-source"]:checked')?.value || 'cliente';
-    const barcodeValue = selectedSource === 'sos' ? 'SOS-001' : 'CLI-001';
 
-    preview.innerHTML = `
-        <div style="font-family:'Libre Barcode 39';font-size:36px; margin-bottom:5px;">*${barcodeValue}*</div>
-        <div style="font-family:monospace;font-size:11px;">${barcodeValue}</div>
-    `;
+    if (selectedSource === 'sos') {
+        // SOS: código diferente para scanner e texto
+        preview.innerHTML = `
+            <div style="font-family:'Libre Barcode 39';font-size:36px; margin-bottom:5px;">*1234*</div>
+            <div style="font-family:monospace;font-size:14px; font-weight: bold; margin-bottom:2px;">CB002966500002805OS</div>
+            
+        `;
+    } else {
+        // Cliente: CLI-001 para ambos
+        preview.innerHTML = `
+            <div style="font-family:'Libre Barcode 39';font-size:36px; margin-bottom:5px;">*CLI-001*</div>
+            <div style="font-family:monospace;font-size:11px;">CLI-001</div>
+        `;
+    }
 }
 
 function saveBarcodeConfig() {
     const selectedSource = document.querySelector('input[name="modal-barcode-source"]:checked')?.value || 'cliente';
 
-    // Atualizar a configuração
+    // Atualizar a configuração - USAR updateConfig que já salva no localStorage
     updateConfig('barcodeSource', selectedSource);
 
     // Fechar o modal
@@ -2440,6 +2545,9 @@ function saveBarcodeConfig() {
 
     // Mostrar toast de confirmação
     showToast('Configuração do código de barras salva!');
+
+    // Forçar uma atualização do preview
+    renderPreview();
 }
 
 // Adicionar listener para atualizar preview quando mudar a seleção
