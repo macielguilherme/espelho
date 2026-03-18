@@ -130,23 +130,16 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="space-y-4">
                         <div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="config-show-label" checked>
-                                <label for="config-show-label">Exibir Nome do Campo</label>
-                            </div>
-                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                                Ex: "Código: 041.2" vs "041.2"
-                            </div>
+
+
                         </div>
 
                         <div style="margin-top: 16px;">
                             <div class="checkbox-item">
                                 <input type="checkbox" id="config-use-pipe" checked>
-                                <label for="config-use-pipe">Separador por Pipe ( | )</label>
+                                <label for="config-use-pipe">Separador por Pipe</label>
                             </div>
-                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                                Ex: "Código | 041.2" vs "Código 041.2"
-                            </div>
+
                         </div>
 
                         <div style="margin-top: 16px;">
@@ -154,9 +147,7 @@
                                 <input type="checkbox" id="config-uppercase">
                                 <label for="config-uppercase">Caixa Alta</label>
                             </div>
-                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                                Ex: "CÓDIGO: 041.2" vs "código: 041.2"
-                            </div>
+
                         </div>
                     </div>
 
@@ -166,26 +157,26 @@
                                 <input type="checkbox" id="config-bold">
                                 <label for="config-bold">Negrito</label>
                             </div>
-                            <div class="text-xs text-muted-foreground" style="margin-left: 24px; margin-top: 2px;">
-                                Aplica negrito ao texto
-                            </div>
+
                         </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 24px; background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
+                <div
+                    style="margin-top: 24px; background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
                     <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
-                        Tamanho da Fonte (px)
+                        Tamanho da Fonte
                     </h4>
 
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <input type="number" id="config-font-size" class="form-input" min="6" max="72" value="11" style="width: 100px;">
+                        <input type="number" id="config-font-size" class="form-input" min="6" max="72" value="11"
+                            style="width: 100px;">
                         <span class="text-sm text-muted-foreground">pixels</span>
                     </div>
                     <div class="text-xs text-muted-foreground" style="margin-top: 8px;">
-                        Define o tamanho da fonte em pixels para este campo específico (6px a 72px).
+                        Define o tamanho da fonte em pixels para este campo específico.
                     </div>
-                    
+
                 </div>
 
                 <div
@@ -196,29 +187,22 @@
 
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         <label class="radio-item">
-                            <input type="radio" name="config-overflow-rule" value="wrap" checked> Quebrar linha (wrap)
+                            <input type="radio" name="config-overflow-rule" value="wrap" checked> Quebrar linha
                         </label>
                         <label class="radio-item">
                             <input type="radio" name="config-overflow-rule" value="truncate"> Limitador de caracteres
-                            (cortar com ...)
                         </label>
-                        <label class="radio-item">
-                            <input type="radio" name="config-overflow-rule" value="reduce-font"> Reduzir tamanho da
-                            fonte
-                        </label>
+
                     </div>
 
                     <div style="margin-top: 16px;">
                         <label class="form-label" style="margin-bottom: 8px; display: block;">
-                            Limite máximo de caracteres (0 = sem limite):
+                            Limite máximo de caracteres:
                         </label>
                         <input type="number" id="config-max-chars" class="form-input" min="0" max="500" value="0"
                             style="width: 120px;">
                     </div>
-                    <div class="text-xs text-muted-foreground" style="margin-top: 8px;">
-                        Se definido, o texto será limitado a este número de caracteres antes de aplicar a regra de
-                        overflow.
-                    </div>
+
                 </div>
 
                 <div class="config-section">
@@ -278,15 +262,15 @@
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <label class="radio-item">
                                     <input type="radio" name="config-classification-mode" value="both" checked>
-                                    Código e Assunto (ex: 041.2 | Assunto)
+                                    Código e Assunto
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="config-classification-mode" value="code">
-                                    Apenas Código (ex: 041.2)
+                                    Apenas Código
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="config-classification-mode" value="subject">
-                                    Apenas Assunto (ex: Assunto)
+                                    Apenas Assunto
                                 </label>
                             </div>
                         </div>
@@ -295,11 +279,11 @@
                             <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre Código
                                 e Assunto:</label>
                             <select id="config-classification-separator" class="form-input" style="width: 100%;">
-                                <option value="pipe">Pipe ( | )</option>
-                                <option value="comma">Vírgula ( , )</option>
-                                <option value="semicolon">Ponto e vírgula ( ; )</option>
-                                <option value="hyphen">Hífen ( - )</option>
-                                <option value="space">Espaço ( )</option>
+                                <option value="pipe">Pipe</option>
+                                <option value="comma">Vírgula</option>
+                                <option value="semicolon">Ponto e vírgula</option>
+                                <option value="hyphen">Hífen</option>
+                                <option value="space">Espaço</option>
                             </select>
                         </div>
                     </div>
@@ -316,15 +300,15 @@
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <label class="radio-item">
                                     <input type="radio" name="config-year-mode" value="both" checked>
-                                    Ano Inicial e Final (ex: 2020-2021)
+                                    Ano de Produção Inicial e Ano de Produção Final
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="config-year-mode" value="initial">
-                                    Apenas Ano Inicial (ex: 2020)
+                                    Apenas Ano de Produção Inicial
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="config-year-mode" value="final">
-                                    Apenas Ano Final (ex: 2021)
+                                    ApenasAno de Produção Final
                                 </label>
                             </div>
                         </div>
@@ -428,7 +412,8 @@
                     <label class="form-label" style="margin-bottom: 12px; display: block; font-weight: 600;">
                         Código de barras gerado a partir de:
                     </label>
-                    <div style="display: flex; flex-direction: column; gap: 12px; background: #f8fafc; padding: 16px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <div
+                        style="display: flex; flex-direction: column; gap: 12px; background: #f8fafc; padding: 16px; border-radius: 6px; border: 1px solid #e2e8f0;">
                         <label class="radio-item" style="display: flex; align-items: center; gap: 8px;">
                             <input type="radio" name="modal-barcode-source" value="cliente" checked>
                             <span style="font-weight: 500;">Código do Cliente</span>
@@ -443,9 +428,11 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div
+                    style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
                     <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview do código:</div>
-                    <div id="barcode-config-preview" style="text-align: center; padding: 12px; background: white; border-radius: 4px; border: 1px solid #e2e8f0;">
+                    <div id="barcode-config-preview"
+                        style="text-align: center; padding: 12px; background: white; border-radius: 4px; border: 1px solid #e2e8f0;">
                         <div style="font-family:'Libre Barcode 39';font-size:36px; margin-bottom:5px;">*CLI-001*</div>
                         <div style="font-family:monospace;font-size:11px;">CLI-001</div>
                     </div>
