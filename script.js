@@ -2211,43 +2211,44 @@ function renderPreview() {
     // RODAPÉ NO FORMATO SOLICITADO
     // RODAPÉ NO FORMATO SOLICITADO
     // RODAPÉ NO FORMATO SOLICITADO
-    if (!isHomeAssistence) {
+    // RODAPÉ NO FORMATO SOLICITADO
+// RODAPÉ - Versão modificada para Modelo 3 (apenas código de barras)
+if (!isHomeAssistence) {
+    // SÓ RENDERIZA A TABELA DE RODAPÉ PARA MODELOS QUE NÃO SÃO O 3
+    if (modelName !== 'Modelo 3') {
         const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
         const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
 
-        // Define o nome do rodapé baseado no modelo
-        let nomeRodape = "RODAPÉ"; // padrão
+        let nomeRodape = "RODAPÉ";
         if (modelName === 'Modelo 1') nomeRodape = "PRAZO DE GUARDA";
         else if (modelName === 'Modelo 2') nomeRodape = "PRAZO DE GUARDA";
-        else if (modelName === 'Modelo 3') nomeRodape = "3";
         else if (modelName === 'Modelo 4') nomeRodape = "PRAZO DE GUARDA";
 
         html += `
-    <div style="border-bottom:2px solid #000;">
-        <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">                    <!-- Linha do cabecalho -->
-            <tr>
-                <th style="width:25%; border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;">ANO</th>
-                <th colspan="2" style="border-bottom:2px solid #000; padding:3px;">${nomeRodape}</th>
-            </tr>
-            
-            <!-- Linha dos sub-titulos -->
-            <tr>
-                <td style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;" rowspan="3">${ano || '&nbsp;'}</td>
-                <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;"><b>INTERMEDIARIO</b></th>
-                <th style="border-bottom:2px solid #000; padding:3px;"><b>DESTINACAO FINAL</b></th>
-            </tr>
-            <tr>
-                <td style="border-right:2px solid #000; padding:3px; min-height:20px;">${intermResult.shouldRender ? intermResult.html : ""}</td>
-                <td style="padding:3px; min-height:20px;">${destResult.shouldRender ? destResult.html : ""}</td>
-            </tr>
-            <tr>
-                <td style="border-right:2px solid #000; padding:3px; min-height:20px;">&nbsp;</td>
-                <td style="padding:3px; min-height:20px;">&nbsp;</td>
-            </tr>
-        </table>
-    </div>
+<div style="border-bottom:2px solid #000;">
+    <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">
+        <tr>
+            <th style="width:25%; border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;">ANO</th>
+            <th colspan="2" style="border-bottom:2px solid #000; padding:3px;">${nomeRodape}</th>
+        </tr>
+        <tr>
+            <td style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;" rowspan="3">${ano || '&nbsp;'}</td>
+            <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;"><b>INTERMEDIARIO</b></th>
+            <th style="border-bottom:2px solid #000; padding:3px;"><b>DESTINACAO FINAL</b></th>
+        </tr>
+        <tr>
+            <td style="border-right:2px solid #000; padding:3px; min-height:20px;">${intermResult.shouldRender ? intermResult.html : ""}</td>
+            <td style="padding:3px; min-height:20px;">${destResult.shouldRender ? destResult.html : ""}</td>
+        </tr>
+        <tr>
+            <td style="border-right:2px solid #000; padding:3px; min-height:20px;">&nbsp;</td>
+            <td style="padding:3px; min-height:20px;">&nbsp;</td>
+        </tr>
+    </table>
+</div>
 `;
     }
+}
 
     const barcodeData = getBarcodeDisplayValue(config);
     html += `
