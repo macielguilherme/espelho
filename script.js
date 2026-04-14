@@ -2208,21 +2208,16 @@ function renderPreview() {
     </div>
 `;
 
-    // RODAPÉ NO FORMATO SOLICITADO
-    // RODAPÉ NO FORMATO SOLICITADO
-    // RODAPÉ NO FORMATO SOLICITADO
-    // RODAPÉ NO FORMATO SOLICITADO
-// RODAPÉ - Versão modificada para Modelo 3 (apenas código de barras)
+   // RODAPÉ - Apenas código de barras para Modelo 3 e Modelo 4
 if (!isHomeAssistence) {
-    // SÓ RENDERIZA A TABELA DE RODAPÉ PARA MODELOS QUE NÃO SÃO O 3
-    if (modelName !== 'Modelo 3') {
+    // NÃO RENDERIZA A TABELA DE RODAPÉ PARA MODELOS 3 E 4
+    if (modelName !== 'Modelo 3' && modelName !== 'Modelo 4') {
         const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
         const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
 
         let nomeRodape = "RODAPÉ";
         if (modelName === 'Modelo 1') nomeRodape = "PRAZO DE GUARDA";
         else if (modelName === 'Modelo 2') nomeRodape = "PRAZO DE GUARDA";
-        else if (modelName === 'Modelo 4') nomeRodape = "PRAZO DE GUARDA";
 
         html += `
 <div style="border-bottom:2px solid #000;">
