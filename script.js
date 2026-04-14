@@ -13,7 +13,7 @@ const MirrorType = {
 const headerLinesByModel = {
     'Modelo 1': 1,
     'Modelo 2': 3,
-    'Modelo 3': 6,
+    'Modelo 3': 5,
     'Modelo 4': 2
 };
 
@@ -110,7 +110,6 @@ const headerLabelOptionsByModel = {
         extra: ['DEPARTAMENTO', 'CLASSIFICACAO - C12'],
         line4: ['TIPO DOCUMENTAL', 'CLASSIFICACAO - C12'],
         line5: ['CODIGO', 'CLASSIFICACAO - C12'],
-        line6: ['PACIENTE', 'CLASSIFICACAO - C12']
     },
     'Modelo 4': {
         top: ['DEPARTAMENTO - C7'],
