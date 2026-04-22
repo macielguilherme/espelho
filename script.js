@@ -132,7 +132,8 @@ const defaultMirrorConfig = {
     logoSize: 2,
     logoPosition: 'center',
     logoFit: 'default',
-    barcodeSource: 'cliente',
+    barcodeSource: 'sos', // Alterado de 'cliente' para 'sos' (padrão RN11)
+    barcodeCustomField: 'c5', // Padrão para quando for 'personalizado'
     customValues: {
         'top_label': 'SETOR',
         'top_value': '',
@@ -608,21 +609,15 @@ function normalizeMirrorConfig(config) {
 }
 
 function getBarcodeDisplayValue(config) {
-    // Garantir que barcodeSource existe
-    const source = config.barcodeSource || 'cliente';
-
-    console.log('getBarcodeDisplayValue - source:', source); // DEBUG
+    const source = config.barcodeSource || 'sos';
+    const customField = config.barcodeCustomField || 'c5';
 
     if (source === 'sos') {
-        return {
-            barcode: '12345689',
-            display: 'CB002966500002805OS'
-        };
+        return { barcode: 'SOS-12345', display: 'SOS-12345' };
     } else {
-        return {
-            barcode: 'CLI-001',
-            display: 'CLI-001'
-        };
+        // Simulação do valor baseado no campo escolhido
+        const val = customField === 'c5' ? 'CLI-C5-001' : 'CONC-C11-99';
+        return { barcode: val, display: val };
     }
 }
 
@@ -1137,7 +1132,7 @@ function openFieldConfigModal(key, label) {
         fontSizeInput.value = fieldConfig.fontSize || 11;
     }
 
-    
+
 
 
 
@@ -1187,7 +1182,7 @@ function openFieldConfigModal(key, label) {
 
     setupPreviewListeners();
     updateFieldPreview();
-    
+
 
     modal.style.display = 'flex';
 }
@@ -1204,7 +1199,7 @@ function setupPreviewListeners() {
         'config-uppercase',
         'config-bold',
         'config-font-size', // ADICIONAR esta linha (está faltando!)
-        
+
     ];
 
     inputs.forEach(id => {
@@ -1219,7 +1214,7 @@ function setupPreviewListeners() {
 
 
     // O resto continua igual...
-    
+
 
     document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
@@ -1250,12 +1245,12 @@ function updateFieldPreview() {
     const fieldType = getFieldType(currentConfigField.key);
 
     const showLabel = document.getElementById('config-show-label')?.checked || false;
-    
+
     const uppercase = document.getElementById('config-uppercase')?.checked || false;
     const bold = document.getElementById('config-bold')?.checked || false;
 
     const fontSize = parseInt(document.getElementById('config-font-size')?.value) || 11;
-    
+
 
     const fieldName = currentConfigField.label || 'Campo';
 
@@ -1318,13 +1313,13 @@ function updateFieldPreview() {
         previewText = previewText.toUpperCase();
     }
 
-    
+
 
     // Construir estilos CSS
     if (bold) style += 'font-weight: bold; ';
     style += `font-size: ${fontSize}px; `;
 
-    
+
 
     // Aplicar alinhamento
     const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
@@ -1346,12 +1341,12 @@ function saveFieldConfig() {
     const configChanges = {
 
         showLabel: document.getElementById('config-show-label')?.checked || false, // <-- ADICIONE AQUI
-        
+
         uppercase: document.getElementById('config-uppercase')?.checked || false,
         bold: document.getElementById('config-bold')?.checked || false,
         fontSize: parseInt(document.getElementById('config-font-size')?.value) || 11,
         alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left',
-        
+
     };
 
     // Adicionar configurações específicas de CLASSIFICAÇÃO
@@ -2591,25 +2586,26 @@ if (document.readyState === 'loading') {
 // ==========================================
 // MODAL DE CONFIGURAÇÃO DO CÓDIGO DE BARRAS
 // ==========================================
-
+// 2. Atualize a função openBarcodeConfigModal para lidar com o novo campo
 function openBarcodeConfigModal() {
     const modal = document.getElementById('barcode-config-modal');
     if (!modal) return;
 
     const config = state.currentConfig;
-    const currentSource = config.barcodeSource || 'cliente';
+    const currentSource = config.barcodeSource || 'sos';
 
-    // Selecionar o radio button correto
     const radios = document.querySelectorAll('input[name="modal-barcode-source"]');
     radios.forEach(radio => {
-        if (radio.value === currentSource) {
-            radio.checked = true;
-        }
+        radio.checked = (radio.value === currentSource);
     });
 
-    // Atualizar preview
-    updateBarcodePreview();
+    // Atualiza a visibilidade do select baseado na fonte
+    const customSelectDiv = document.getElementById('barcode-custom-select-container');
+    customSelectDiv.style.display = (currentSource === 'personalizado') ? 'block' : 'none';
 
+    document.getElementById('barcode-custom-field-select').value = config.barcodeCustomField || 'c5';
+
+    updateBarcodePreview();
     modal.style.display = 'flex';
 }
 
@@ -2641,18 +2637,14 @@ function updateBarcodePreview() {
 }
 
 function saveBarcodeConfig() {
-    const selectedSource = document.querySelector('input[name="modal-barcode-source"]:checked')?.value || 'cliente';
+    const selectedSource = document.querySelector('input[name="modal-barcode-source"]:checked').value;
+    const customField = document.getElementById('barcode-custom-field-select').value;
 
-    // Atualizar a configuração - USAR updateConfig que já salva no localStorage
     updateConfig('barcodeSource', selectedSource);
+    updateConfig('barcodeCustomField', customField);
 
-    // Fechar o modal
     closeBarcodeConfigModal();
-
-    // Mostrar toast de confirmação
     showToast('Configuração do código de barras salva!');
-
-    // Forçar uma atualização do preview
     renderPreview();
 }
 
