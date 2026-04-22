@@ -403,6 +403,125 @@ const data1Options = [
     { value: 'ANO FINAL - N2', label: 'Ano Final - n2' }
 ];
 
+const data1MultiSelectModels = new Set(['Modelo 1', 'Modelo 2', 'Modelo 4']);
+
+function parseData1Selections(rawValue) {
+    if (!rawValue) return [];
+
+    if (rawValue.includes('||')) {
+        return rawValue
+            .split('||')
+            .map(item => item.trim())
+            .filter(Boolean)
+            .slice(0, 2);
+    }
+
+    const matchesOption = data1Options.some(opt => opt.value === rawValue);
+    return matchesOption ? [rawValue] : [];
+}
+
+function serializeData1Selections(selections) {
+    return selections
+        .map(item => item.trim())
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('||');
+}
+
+function renderData1LabelField(modelName, values) {
+    if (!data1MultiSelectModels.has(modelName)) {
+        return `
+            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_1_label', this.value)">
+                ${data1Options.map(opt => `
+                    <option value="${opt.value}" ${values.data_1_label === opt.value ? 'selected' : ''}>${opt.label}</option>
+                `).join('')}
+            </select>
+        `;
+    }
+
+    const selectedValues = parseData1Selections(values.data_1_label);
+    const slots = Math.max(1, selectedValues.length);
+    const canAdd = selectedValues.length < 2;
+
+    return `
+        <div style="display: flex; align-items: center; gap: 4px; width: 100%;">
+            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1;">
+                ${Array.from({ length: slots }, (_, index) => {
+        const selectedValue = selectedValues[index] || '';
+        const otherSelected = selectedValues.filter((_, idx) => idx !== index);
+        const isLastRow = index === slots - 1;
+        const showAddInside = isLastRow && canAdd;
+        const showRemoveInside = slots > 1 && !showAddInside;
+        const actionSymbol = showAddInside ? '+' : '×';
+        const actionHandler = showAddInside ? 'addData1Selection()' : `removeData1Selection(${index})`;
+        const actionTitle = showAddInside ? 'Adicionar campo' : 'Remover campo';
+
+        return `
+                        <div style="position: relative; width: 100%;">
+                            <select class="form-input flex-1 text-xs" style="padding: 0 30px 0 4px; width: 100%;" onchange="handleData1SelectionChange(${index}, this.value)">
+                                <option value="">Selecione...</option>
+                                ${data1Options.map(opt => `
+                                    <option value="${opt.value}"
+                                        ${selectedValue === opt.value ? 'selected' : ''}
+                                        ${selectedValue !== opt.value && otherSelected.includes(opt.value) ? 'disabled' : ''}>
+                                        ${opt.label}
+                                    </option>
+                                `).join('')}
+                            </select>
+                            ${(showAddInside || showRemoveInside) ? `
+                                <button type="button"
+                                    class="btn btn-outline btn-sm"
+                                    style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0; width: 20px; height: 20px; min-width: 20px; font-size: 14px; line-height: 1; border-radius: 9999px; background: #fff;"
+                                    title="${actionTitle}"
+                                    onclick="${actionHandler}">${actionSymbol}</button>
+                            ` : ''}
+                        </div>
+                    `;
+    }).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function handleData1SelectionChange(index, selectedValue) {
+    const selections = parseData1Selections(state.currentConfig?.customValues?.data_1_label || '');
+
+    while (selections.length <= index) {
+        selections.push('');
+    }
+
+    selections[index] = selectedValue;
+
+    const uniqueSelections = [];
+    selections.forEach(value => {
+        if (value && !uniqueSelections.includes(value)) {
+            uniqueSelections.push(value);
+        }
+    });
+
+    updateCustomValue('data_1_label', serializeData1Selections(uniqueSelections));
+}
+
+function addData1Selection() {
+    const selections = parseData1Selections(state.currentConfig?.customValues?.data_1_label || '');
+    if (selections.length >= 2) return;
+
+    const nextOption = data1Options.find(opt => !selections.includes(opt.value));
+    if (nextOption) {
+        selections.push(nextOption.value);
+    }
+
+    updateCustomValue('data_1_label', serializeData1Selections(selections));
+}
+
+function removeData1Selection(index) {
+    const selections = parseData1Selections(state.currentConfig?.customValues?.data_1_label || '');
+    if (index < 0 || index >= selections.length) return;
+
+    selections.splice(index, 1);
+    updateCustomValue('data_1_label', serializeData1Selections(selections));
+}
+
 
 const data2Options = [
     { value: 'ANO INICIAL - N1', label: 'Ano Inicial - n1' },
@@ -1776,11 +1895,7 @@ function renderForm() {
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div class="flex gap-1 items-center">
-                            <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('data_1_label', this.value)">
-                                ${data1Options.map(opt => `
-                                    <option value="${opt.value}" ${values.data_1_label === opt.value ? 'selected' : ''}>${opt.label}</option>
-                                `).join('')}
-                            </select>
+                            ${renderData1LabelField(config.name, values)}
                             ${renderPencilButton('data_1_value', 'Valor Data 1')}
                         </div>
 
@@ -2669,5 +2784,8 @@ window.saveBarcodeConfig = saveBarcodeConfig;
 
 // Exportar a função
 window.clearLocalStorage = clearLocalStorage;
+window.handleData1SelectionChange = handleData1SelectionChange;
+window.addData1Selection = addData1Selection;
+window.removeData1Selection = removeData1Selection;
 
 
