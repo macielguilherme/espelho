@@ -52,6 +52,7 @@ const defaultColumnConfig = {
 // ==========================================
 
 const defaultFieldConfig = {
+    showLabel: false, // NOVO: Controle de exibição do rótulo (Nome do Campo)
     usePipe: false, // ALTERADO: de true para false
     uppercase: false, // MANTIDO: false
     bold: false, // MANTIDO: false
@@ -97,23 +98,23 @@ const fieldTypeMap = {
 
 const headerLabelOptionsByModel = {
     'Modelo 1': {
-        top: ['CLASSIFICACAO - C12']
+        top: ['Classificação - c17']
     },
     'Modelo 2': {
         top: ['DEPARTAMENTO - C7'],
-        title: ['CLASSIFICACAO - C12'],
-        extra: ['CLASSIFICACAO - C12']
+        title: ['Classificação - c17'],
+        extra: ['Classificação - c17']
     },
     'Modelo 3': {
-        top: ['UNIDADE', 'CLASSIFICACAO - C12'],
-        title: ['Nº CAIXA', 'CLASSIFICACAO - C12'],
-        extra: ['DEPARTAMENTO', 'CLASSIFICACAO - C12'],
-        line4: ['TIPO DOCUMENTAL', 'CLASSIFICACAO - C12'],
-        line5: ['CODIGO', 'CLASSIFICACAO - C12'],
+        top: ['UNIDADE', 'Classificação - c17'],
+        title: ['Nº CAIXA', 'Classificação - c17'],
+        extra: ['DEPARTAMENTO', 'Classificação - c17'],
+        line4: ['TIPO DOCUMENTAL', 'Classificação - c17'],
+        line5: ['CODIGO', 'Classificação - c17'],
     },
     'Modelo 4': {
         top: ['DEPARTAMENTO - C7'],
-        title: ['CLASSIFICACAO - C12']
+        title: ['Classificação - c17']
 
     }
 };
@@ -398,7 +399,14 @@ const titleOptions = [
 ];
 
 const data1Options = [
-    { value: 'ANO PRODUÇÃO', label: 'Ano Produção' }
+    { value: 'ANO INICIAL - N1', label: 'Ano Inicial - n1' },
+    { value: 'ANO FINAL - N2', label: 'Ano Final - n2' }
+];
+
+
+const data2Options = [
+    { value: 'ANO INICIAL - N1', label: 'Ano Inicial - n1' },
+    { value: 'ANO FINAL - N2', label: 'Ano Final - n2' } // <- NOVA OPÇÃO ADICIONADA
 ];
 
 const intermOptions = [
@@ -777,7 +785,7 @@ function getFieldType(fieldKey) {
         fieldKey === 'line4_value' || fieldKey === 'line5_value' || fieldKey === 'line6_value') {
 
         const labelKey = fieldKey.replace('_value', '_label');
-        if (config.customValues && config.customValues[labelKey] === 'CLASSIFICACAO - C12') {
+        if (config.customValues && config.customValues[labelKey] === 'Classificação - c17') {
             return FieldType.CLASSIFICATION;
         }
     }
@@ -934,6 +942,21 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
     // Apenas usar o pipe se configurado, mas sem o label
     const usePipe = config.usePipe;
 
+    // Aplicar o Nome do Campo (Label) se a opção estiver marcada
+    if (config.showLabel && displayLabel) {
+        if (config.usePipe) {
+            formattedText = `${displayLabel} | ${formattedText}`;
+        } else {
+            // Se for um campo de classificação, formata com as palavras exatas "Código" e "Assunto"
+            if (fieldType === FieldType.CLASSIFICATION && formattedText.includes(' | ')) {
+                const parts = formattedText.split(' | ');
+                formattedText = `Código: ${parts[0].trim()} | Assunto: ${parts[1].trim()}`;
+            } else {
+                formattedText = `${displayLabel}: ${formattedText}`;
+            }
+        }
+    }
+
     // formattedText já contém o valor formatado
     // Não adicionamos mais o label
 
@@ -992,6 +1015,9 @@ function openFieldConfigModal(key, label) {
 
     const fieldConfig = getFieldConfig(modelName, key);
     const fieldType = getFieldType(key);
+
+    const showLabelCheckbox = document.getElementById('config-show-label');
+    if (showLabelCheckbox) showLabelCheckbox.checked = !!fieldConfig.showLabel;
 
 
     document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
@@ -1211,7 +1237,13 @@ function updateFieldPreview() {
         if (usePipe) {
             previewText = `${fieldName} | ${previewText}`;
         } else {
-            previewText = `${fieldName}: ${previewText}`;
+            // Inteligência para formatar campos de classificação no preview
+            if (fieldType === FieldType.CLASSIFICATION && previewText.includes(' | ')) {
+                const parts = previewText.split(' | ');
+                previewText = `Código: ${parts[0].trim()} | Assunto: ${parts[1].trim()}`;
+            } else {
+                previewText = `${fieldName}: ${previewText}`;
+            }
         }
     }
 
@@ -1261,6 +1293,7 @@ function saveFieldConfig() {
     // Coletar configurações básicas
     const configChanges = {
 
+        showLabel: document.getElementById('config-show-label')?.checked || false, // <-- ADICIONE AQUI
         usePipe: document.getElementById('config-use-pipe')?.checked || false,
         uppercase: document.getElementById('config-uppercase')?.checked || false,
         bold: document.getElementById('config-bold')?.checked || false,
@@ -1579,7 +1612,7 @@ function renderHeaderSelect(lineKey, valueKey) {
 function handleHeaderLabelChange(key, value) {
     updateCustomValue(key, value);
 
-    if (value === 'CLASSIFICACAO - C12') {
+    if (value === 'Classificação - C12') {
         const valueKey = key.replace('_label', '_value');
 
         const config = state.currentConfig;
@@ -1675,7 +1708,7 @@ function renderForm() {
                                 <strong>Modo Colunas</strong>
                                 <p class="text-xs text-muted-foreground">Este modelo suporta exibição em colunas</p>
                             </div>
-                            <button class="btn btn-outline btn-sm" onclick="openColumnConfigModal()">&#9881; Configurar Colunas</button>
+                            <button class="btn btn-outline btn-sm" onclick="openColumnConfigModal()">&#9881; Configuração do Campo</button>
                         </div>
                     </div>
                 ` : ''}
@@ -1729,7 +1762,7 @@ function renderForm() {
                 <h3 class="section-header">Bloco Central</h3>
                 <div class="flex gap-2 items-center">
                     <select class="form-input flex-1" disabled style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155;">
-                        <option selected>Conteúdo do Bloco</option>
+                        <option selected>Identificador Cliente - c5</option>
                     </select>
                     ${renderPencilButton('main_text', 'Texto Central')}
                 </div>
