@@ -188,8 +188,8 @@ const codigoUnicoMirrorConfig = {
     includeLogo: true,
     logoImage: './logo1.png',
     customValues: {
-        top_label: '024.1',
-        top_value: 'FOLHAS DE PAGAMENTO. FICHAS FINANCEIRAS',
+        top_label: 'Classificação',
+        top_value: ' ',
         title_label: '',
         title_value: '',
         main_text: '',
