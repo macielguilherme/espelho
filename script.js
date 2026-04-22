@@ -1612,7 +1612,7 @@ function renderForm() {
     container.innerHTML = `
         <div class="space-y-6">
             <div class="space-y-4">
-                <h3 class="section-header">Configuração Geral</h3>
+                <h3 class="section-header">Bloco Superior</h3>
                 <input type="text" class="form-input" placeholder="Nome do Modelo (ex: Padrão RH)" 
                        value="${config.name || ''}" oninput="updateConfig('name', this.value)">
                 
@@ -1684,7 +1684,7 @@ function renderForm() {
             <hr style="border-color: var(--color-border);">
 
             <div class="space-y-3">
-                <h3 class="section-header">Cabeçalho</h3>
+                <h3 class="section-header">Bloco Secundário</h3>
 
                 ${totalHeaderLines >= 1 ? `
                     <div class="flex gap-2 items-center">
@@ -1726,7 +1726,7 @@ function renderForm() {
             <hr style="border-color: var(--color-border);">
 
             <div class="space-y-3">
-                <h3 class="section-header">Texto Central</h3>
+                <h3 class="section-header">Bloco de Conteúdo Central</h3>
                 <div class="flex gap-2 items-center">
                     <select class="form-input flex-1" disabled style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155;">
                         <option selected>Conteúdo do Bloco</option>
@@ -1739,7 +1739,7 @@ function renderForm() {
 
             ${!isHomeAssistence ? `
                 <div class="space-y-3">
-                    <h3 class="section-header">Rodapé</h3>
+                    <h3 class="section-header">Bloco da Temporalidade</h3>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div class="flex gap-1 items-center">
