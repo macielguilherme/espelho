@@ -52,20 +52,20 @@ const defaultColumnConfig = {
 // ==========================================
 
 const defaultFieldConfig = {
-    showLabel: false, // NOVO: Controle de exibição do rótulo (Nome do Campo)
-    usePipe: false, // ALTERADO: de true para false
-    uppercase: false, // MANTIDO: false
-    bold: false, // MANTIDO: false
-    alignment: 'left', // MANTIDO: left
-    fontSize: 11, // MANTIDO: 11
-    columnLayout: 'single', // MANTIDO: single
-    overflowRule: 'wrap', // MANTIDO: wrap
-    maxChars: 0, // MANTIDO: 0
-    classificationMode: 'both', // MANTIDO: both
-    classificationSeparator: 'pipe', // MANTIDO: pipe
-    yearMode: 'both', // MANTIDO: both
-    yearSeparator: ' - ', // MANTIDO:  - 
-    forceClassification: false // MANTIDO: false
+    showLabel: false,
+    usePipe: false,
+    uppercase: false,
+    bold: false,
+    alignment: 'left',
+    fontSize: 11,
+    columnLayout: 'single',
+    overflowRule: 'wrap',
+    maxChars: 0,
+    classificationMode: 'both',
+    classificationSeparator: 'space', // ALTERADO: de 'pipe' para 'space'
+    yearMode: 'both',
+    yearSeparator: ' - ',
+    forceClassification: false
 };
 
 
@@ -150,7 +150,7 @@ const defaultMirrorConfig = {
         'data_1_value': '',
         'data_2_label': 'ANO DESTINAÇÃO',
         'data_2_value': '',
-        'interm_label': 'INTERMEDIÁRIO',
+        'interm_label': ' FASE INTERMEDIÁRIA',
         'interm_value': '',
         'dest_label': 'DESTINAÇÃO FINAL',
         'dest_value': '',
@@ -169,14 +169,14 @@ const igesMirrorConfig = {
     logoImage: './logo9.png',
     customValues: {
         top_label: 'UNIDADE',
-        top_value: 'Unidade: IGESDF-HOSPITAL DE BASE',
+        top_value: 'UNIDADE: ',
         title_label: 'Nº CAIXA',
-        title_value: 'Nº Caixa:',
+        title_value: 'Nº CAIXA:',
         extra_label: 'DEPARTAMENTO',
-        extra_value: 'Departamento:',
+        extra_value: 'DEPARTAMENTO:',
         line4_label: 'TIPO DOCUMENTAL',
-        line4_value: 'Tipo Documental: Prontuário Médico',
-        main_text: 'CID TORRES - 186023\nMARCILENE DA SILVA PINTO - 326023\nMARCIO CASSIANO RODRIGUES - 366023\nVITORIA LAZARA LIMA DO NORTE - 386023\nWESLEY SILVA SANTOS - 396023\nJOSE LEAO DE SOUZA FILHO - 406023\nANTONIO PEREIRA DA SILVA - 416023\nROSIANE DA SILVA DARES - 845923\nANTONIO LAILSON RIBEIRO LIMA - 905923',
+        line4_value: 'TIPO DOCUMENTAL:  ',
+        main_text: 'PACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000\nPACIENTE - 000000',
         barcode_value: 'Código de Barras'
     }
 };
@@ -188,7 +188,7 @@ const codigoUnicoMirrorConfig = {
     includeLogo: true,
     logoImage: './logo1.png',
     customValues: {
-        top_label: 'Classificação',
+        top_label: 'CLASSIFICAÇÃO',
         top_value: ' ',
         title_label: '',
         title_value: '',
@@ -197,8 +197,8 @@ const codigoUnicoMirrorConfig = {
         data_1_value: '',
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
-        interm_label: 'INTERMEDIÁRIO',
-        interm_value: '95 ANOS',
+        interm_label: ' FASE INTERMEDIÁRIA',
+        interm_value: ' ',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
         barcode_value: 'Código de Barras'
@@ -213,20 +213,20 @@ const diretoriaMirrorConfig = {
     logoImage: './logo2.png',
     customValues: {
         top_label: 'DEPARTAMENTO',
-        top_value: 'DAF - Diretoria de Administração Financeira',
-        title_label: '023.11',
-        title_value: 'FOLHAS DE PAGAMENTO',
-        extra_label: '024.11',
-        extra_value: 'TESTE DE PAGAMENTO',
+        top_value: ' ',
+        title_label: 'CLASSIFICAÇÃO',
+        title_value: ' ',
+        extra_label: 'CLASSIFICAÇÃO',
+        extra_value: ' ',
         main_text: '',
         data_1_label: 'ANO PRODUÇÃO',
-        data_1_value: '2025',
+        data_1_value: ' ',
         data_2_label: 'ANO DESTINAÇÃO',
-        data_2_value: '2026',
-        interm_label: 'INTERMEDIÁRIO',
-        interm_value: '1',
+        data_2_value: ' ',
+        interm_label: 'FASE INTERMEDIÁRIA',
+        interm_value: ' ',
         dest_label: 'DESTINAÇÃO FINAL',
-        dest_value: '5',
+        dest_value: ' ',
         barcode_value: 'Código de Barras'
     }
 };
@@ -240,18 +240,18 @@ const novacapMirrorConfig = {
     customValues: {
         rodape: "lalala",
         top_label: 'DEPARTAMENTO',
-        top_value: 'DMED',
-        title_label: '026.15',
-        title_value: 'PRONTUÁRIOS MÉDICOS',
-        main_text: 'MATRÍCULA: 74541-3 | 74549-9 | 74544-8 | 74545-6',
+        top_value: ' ',
+        title_label: 'CLASSIFICAÇÃO',
+        title_value: ' ',
+        main_text: ' ',
         data_1_label: 'ANO PRODUÇÃO',
-        data_1_value: '1998',
+        data_1_value: ' ',
         data_2_label: 'ANO DESTINAÇÃO',
-        data_2_value: '1998',
-        interm_label: 'INTERMEDIÁRIO',
-        interm_value: '95 ANOS',
+        data_2_value: ' ',
+        interm_label: ' FASE INTERMEDIÁRIA',
+        interm_value: ' ',
         dest_label: 'DESTINAÇÃO FINAL',
-        dest_value: 'ELIMINAÇÃO',
+        dest_value: ' ',
         barcode_value: 'Código de Barras'
     }
 };
@@ -272,7 +272,7 @@ const mteMirrorConfig = {
         data_1_value: '',
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
-        interm_label: 'INTERMEDIÁRIO',
+        interm_label: ' FASE INTERMEDIÁRIA',
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
@@ -296,7 +296,7 @@ const cadeMirrorConfig = {
         data_1_value: '',
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
-        interm_label: 'INTERMEDIÁRIO',
+        interm_label: ' FASE INTERMEDIÁRIA',
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
@@ -322,7 +322,7 @@ const hmabMirrorConfig = {
         data_1_value: '',
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
-        interm_label: 'INTERMEDIÁRIO',
+        interm_label: ' FASE INTERMEDIÁRIA',
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
@@ -376,7 +376,7 @@ const equatorialEnergiaMirrorConfig = {
         data_1_value: '',
         data_2_label: 'ANO DESTINAÇÃO',
         data_2_value: '',
-        interm_label: 'INTERMEDIÁRIO',
+        interm_label: ' FASE INTERMEDIÁRIA',
         interm_value: '',
         dest_label: 'DESTINAÇÃO FINAL',
         dest_value: '',
@@ -387,7 +387,7 @@ const equatorialEnergiaMirrorConfig = {
 const labelOptions = [
     { value: 'SETOR', label: 'Setor' },
     { value: 'DEPARTAMENTO', label: 'Departamento' },
-    { value: 'UNIDADE', label: 'Unidade' },
+    { value: 'UNIDADE', label: 'UNIDADE' },
     { value: 'CLIENTE', label: 'Cliente' },
     { value: 'EMPRESA', label: 'Empresa' }
 ];
@@ -530,7 +530,7 @@ const data2Options = [
 ];
 
 const intermOptions = [
-    { value: 'INTERMEDIÁRIO', label: 'Fase Intermediária - c19' }
+    { value: ' FASE INTERMEDIÁRIA', label: 'Fase Intermediária - c19' }
 ];
 
 const destOptions = [
@@ -1024,7 +1024,7 @@ function formatFieldValue(modelName, fieldKey, fieldLabel, rawValue) {
             'comma': ', ',
             'semicolon': '; ',
             'hyphen': ' - ',
-            'space': ' '
+            'space': ' ' // Isso garante que o valor 'space' resulte em apenas um espaço em branco
         };
         const separator = separatorMap[config.classificationSeparator || 'pipe'];
 
@@ -1575,7 +1575,7 @@ function renderPencilButton(key, label) {
         `;
     }
 
-    // Caso especial para o campo intermediário
+    // Caso especial para o campo  FASE INTERMEDIÁRIA
     if (key === 'interm_value') {
         const config = state.currentConfig;
         const modelName = config.name;
@@ -1837,7 +1837,7 @@ function renderForm() {
                                     <option value="${opt.value}" ${values.interm_label === opt.value ? 'selected' : ''}>${opt.label}</option>
                                 `).join('')}
                             </select>
-                            ${renderPencilButton('interm_value', 'Valor Intermediário')}
+                            ${renderPencilButton('interm_value', 'Valor  FASE INTERMEDIÁRIA')}
                         </div>
 
                         <div class="flex gap-1 items-center">
@@ -1968,7 +1968,7 @@ function renderPreviewWithColumns() {
         const d2 = vals.data_2_value || '';
         const ano = d1 && d2 ? `${d1} - ${d2}` : d1 || d2;
 
-        const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
+        const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || ' FASE INTERMEDIÁRIA', vals.interm_value);
         const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
 
         html += `
@@ -1982,7 +1982,7 @@ function renderPreviewWithColumns() {
                     <!-- Linha dos sub-titulos -->
                     <tr>
                         <td style="border-right:2px solid #000; border-bottom:2px solid #000; padding:6px;" rowspan="3">${ano || '&nbsp;'}</td>
-                        <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:6px;"><b>INTERMEDIARIO</b></th>
+                        <th style="border-right:2px solid #000; border-bottom:2px solid #000; font-size:2px; padding:6px;"><b> FASE INTERMEDIÁRIA</b></th>
                         <th style="border-bottom:2px solid #000; padding:6px;"><b>DESTINACAO FINAL</b></th>
                     </tr>
                     <tr>
@@ -2049,7 +2049,7 @@ function renderPreview() {
     const layoutClass = getColumnLayoutClass(modelName);
 
     if (isIGES) {
-        const unidadeResult = formatFieldValue(modelName, 'top_value', 'UNIDADE', vals.top_value);
+        const UNIDADEResult = formatFieldValue(modelName, 'top_value', 'UNIDADE', vals.top_value);
         const numeroCaixaResult = formatFieldValue(modelName, 'title_value', 'Nº CAIXA', vals.title_value);
         const departamentoResult = formatFieldValue(modelName, 'extra_value', 'DEPARTAMENTO', vals.extra_value);
         const tipoDocumentalResult = formatFieldValue(modelName, 'line4_value', 'TIPO DOCUMENTAL', vals.line4_value);
@@ -2067,7 +2067,7 @@ function renderPreview() {
                 </div>
                 <div style="display:grid; grid-template-columns: 2fr 1fr;">
                     <div style="border-right:2px solid #000; border-bottom:2px solid #000; padding:8px;">
-                        ${unidadeResult.shouldRender ? unidadeResult.html : '&nbsp;'}
+                        ${UNIDADEResult.shouldRender ? UNIDADEResult.html : '&nbsp;'}
                     </div>
                     <div style="border-bottom:2px solid #000; padding:8px;">
                         ${numeroCaixaResult.shouldRender ? numeroCaixaResult.html : '&nbsp;'}
@@ -2081,11 +2081,11 @@ function renderPreview() {
                         ${tipoDocumentalResult.shouldRender ? tipoDocumentalResult.html : '&nbsp;'}
                     </div>
                     <div style="border-bottom:2px solid #000; padding:8px;">
-                        <strong>Código:</strong>
+                        <strong>CÓDIGO:</strong>
                     </div>
                 </div>
                 <div style="border-bottom:2px solid #000; padding:8px;">
-                    <strong>Conteúdo:</strong>
+                    <strong>CONTEÚDO:</strong>
                 </div>
                 ${linhasPaciente.map(result => `
         <div style="border-bottom:2px solid #000; text-align:center; padding:8px;">
@@ -2281,27 +2281,27 @@ function renderPreview() {
 `;
 
     // RODAPÉ - Apenas código de barras para Modelo 3 e Modelo 4
-    if (!isHomeAssistence) {
-        // NÃO RENDERIZA A TABELA DE RODAPÉ PARA MODELOS 3 E 4
-        if (modelName !== 'Modelo 3' && modelName !== 'Modelo 4') {
-            const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
-            const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
+    if (modelName !== 'Modelo 3') {
+        const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || ' FASE INTERMEDIÁRIA', vals.interm_value);
+        const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
 
-            let nomeRodape = "RODAPÉ";
-            if (modelName === 'Modelo 1') nomeRodape = "PRAZO DE GUARDA";
-            else if (modelName === 'Modelo 2') nomeRodape = "PRAZO DE GUARDA";
+        // Define o texto baseado no modelo
+        let nomeRodape = "PRAZO DE GUARDA";
+        if (modelName === 'Modelo 1' || modelName === 'Modelo 2') {
+            nomeRodape = "PRAZO DE GUARDA";
+        }
 
-            html += `
+        html += `
 <div style="border-bottom:2px solid #000;">
     <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">
         <tr>
             <th style="width:25%; border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;">ANO</th>
-            <th colspan="2" style="border-bottom:2px solid #000; padding:3px;">${nomeRodape}</th>
+            <th colspan="2" style="border-bottom:2px solid #000; padding:3px 3px 3px 50px;">${nomeRodape}</th>
         </tr>
         <tr>
             <td style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;" rowspan="3">${ano || '&nbsp;'}</td>
-            <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px;"><b>INTERMEDIARIO</b></th>
-            <th style="border-bottom:2px solid #000; padding:3px;"><b>DESTINACAO FINAL</b></th>
+            <th style="border-right:2px solid #000; border-bottom:2px solid #000; padding:3px; font-size:9px;"><b> FASE INTERMEDIÁRIA</b></th>
+            <th style="border-bottom:2px solid #000; padding:3px; font-size:9px;"><b>DESTINACAO FINAL</b></th>
         </tr>
         <tr>
             <td style="border-right:2px solid #000; padding:3px; min-height:20px;">${intermResult.shouldRender ? intermResult.html : ""}</td>
@@ -2314,7 +2314,6 @@ function renderPreview() {
     </table>
 </div>
 `;
-        }
     }
 
     const barcodeData = getBarcodeDisplayValue(config);
