@@ -1606,7 +1606,7 @@ function renderForm() {
     const config = state.currentConfig;
     const totalHeaderLines = headerLinesByModel[config.name] || 1;
     const values = config.customValues || {};
-    const isHomeAssistence = config.name === 'Modelo HOME ASSISTENCE';
+    const hideTemporalidade = config.name === 'Modelo HOME ASSISTENCE' || config.name === 'Modelo 3';
     const columnConfig = getColumnConfig(config.name);
 
     container.innerHTML = `
@@ -1726,7 +1726,7 @@ function renderForm() {
             <hr style="border-color: var(--color-border);">
 
             <div class="space-y-3">
-                <h3 class="section-header">Bloco de Conteúdo Central</h3>
+                <h3 class="section-header">Bloco Central</h3>
                 <div class="flex gap-2 items-center">
                     <select class="form-input flex-1" disabled style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155;">
                         <option selected>Conteúdo do Bloco</option>
@@ -1737,7 +1737,7 @@ function renderForm() {
 
             <hr style="border-color: var(--color-border);">
 
-            ${!isHomeAssistence ? `
+            ${!hideTemporalidade ? `
                 <div class="space-y-3">
                     <h3 class="section-header">Bloco da Temporalidade</h3>
                     
@@ -1750,8 +1750,6 @@ function renderForm() {
                             </select>
                             ${renderPencilButton('data_1_value', 'Valor Data 1')}
                         </div>
-
-                       
 
                         <div class="flex gap-1 items-center">
                             <select class="form-input flex-1 text-xs" style="padding: 0 4px;" onchange="updateCustomValue('interm_label', this.value)">
@@ -1770,28 +1768,22 @@ function renderForm() {
                             </select>
                             ${renderPencilButton('dest_value', 'Valor Destinação')}
                         </div>
+                    </div>
+                </div>
+                
+                <hr style="border-color: var(--color-border);">
+            ` : ''}
 
-                        <div class="col-span-2">
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0; flex: 1;">
-                                    Código de Barras
-                                </div>
-                                ${renderPencilButton('barcode_value', 'Código de Barras')}
-                            </div>
-                        </div>
+            <div class="space-y-3">
+                <h3 class="section-header">Bloco de Identificação</h3>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0; flex: 1;">
+                        Código de Barras
                     </div>
+                    ${renderPencilButton('barcode_value', 'Código de Barras')}
                 </div>
-            ` : `
-                <div class="space-y-3">
-                    <h3 class="section-header">Código de Barras</h3>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <div class="form-input" style="background-color: #f1f5f9; cursor: default; opacity: 1; color: #334155; display: flex; align-items: center; height: 2.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #e2e8f0; flex: 1;">
-                            Código de Barras
-                        </div>
-                        ${renderPencilButton('barcode_value', 'Código de Barras')}
-                    </div>
-                </div>
-            `}
+            </div>
+
         </div>
     `;
 }
@@ -2208,18 +2200,18 @@ function renderPreview() {
     </div>
 `;
 
-   // RODAPÉ - Apenas código de barras para Modelo 3 e Modelo 4
-if (!isHomeAssistence) {
-    // NÃO RENDERIZA A TABELA DE RODAPÉ PARA MODELOS 3 E 4
-    if (modelName !== 'Modelo 3' && modelName !== 'Modelo 4') {
-        const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
-        const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
+    // RODAPÉ - Apenas código de barras para Modelo 3 e Modelo 4
+    if (!isHomeAssistence) {
+        // NÃO RENDERIZA A TABELA DE RODAPÉ PARA MODELOS 3 E 4
+        if (modelName !== 'Modelo 3' && modelName !== 'Modelo 4') {
+            const intermResult = formatFieldValue(modelName, 'interm_value', vals.interm_label || 'INTERMEDIÁRIO', vals.interm_value);
+            const destResult = formatFieldValue(modelName, 'dest_value', vals.dest_label || 'DESTINAÇÃO FINAL', vals.dest_value);
 
-        let nomeRodape = "RODAPÉ";
-        if (modelName === 'Modelo 1') nomeRodape = "PRAZO DE GUARDA";
-        else if (modelName === 'Modelo 2') nomeRodape = "PRAZO DE GUARDA";
+            let nomeRodape = "RODAPÉ";
+            if (modelName === 'Modelo 1') nomeRodape = "PRAZO DE GUARDA";
+            else if (modelName === 'Modelo 2') nomeRodape = "PRAZO DE GUARDA";
 
-        html += `
+            html += `
 <div style="border-bottom:2px solid #000;">
     <table style="width:100%; border-collapse: collapse; font-size:12px; text-align:left;">
         <tr>
@@ -2242,8 +2234,8 @@ if (!isHomeAssistence) {
     </table>
 </div>
 `;
+        }
     }
-}
 
     const barcodeData = getBarcodeDisplayValue(config);
     html += `
