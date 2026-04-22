@@ -342,46 +342,48 @@
         <div class="modal-content" style="max-width: 500px; width: 90%;">
             <div class="modal-header">
                 <h2 class="modal-title">Configurar Código de Barras</h2>
-                <p class="modal-description text-xs text-muted-foreground">
-                    Configure as opções de exibição do código de barras.
-                </p>
+                <p class="modal-description text-xs text-muted-foreground">RN11 - Selecione a origem dos dados para o
+                    código.</p>
             </div>
 
             <div style="padding: 16px;">
                 <div style="margin-bottom: 20px;">
-                    <label class="form-label" style="margin-bottom: 12px; display: block; font-weight: 600;">
-                        Código de barras gerado a partir de:
-                    </label>
+                    <label class="form-label" style="font-weight: 600;">Gerar a partir de:</label>
                     <div
                         style="display: flex; flex-direction: column; gap: 12px; background: #f8fafc; padding: 16px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                        <label class="radio-item" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="radio" name="modal-barcode-source" value="cliente" checked>
-                            <span style="font-weight: 500;">Código do Cliente</span>
+                        <label class="radio-item">
+                            <input type="radio" name="modal-barcode-source" value="sos"
+                                onchange="document.getElementById('barcode-custom-select-container').style.display='none'">
+                            <span>Código SOS (Padrão)</span>
                         </label>
-                        <label class="radio-item" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="radio" name="modal-barcode-source" value="sos">
-                            <span style="font-weight: 500;">Código SOS</span>
+                        <label class="radio-item">
+                            <input type="radio" name="modal-barcode-source" value="personalizado"
+                                onchange="document.getElementById('barcode-custom-select-container').style.display='block'">
+                            <span>Personalizado</span>
                         </label>
                     </div>
-                    <div class="text-xs text-muted-foreground" style="margin-top: 8px;">
-                        Define qual código será exibido no código de barras.
-                    </div>
+                </div>
+
+                <div id="barcode-custom-select-container" style="display:none; margin-bottom: 20px;">
+                    <label class="form-label">Selecionar Campo:</label>
+                    <select id="barcode-custom-field-select" class="form-input">
+                        <option value="c5">C5 – Identificador do Cliente</option>
+                        <option value="c11">C11 – Número Concorrente</option>
+                    </select>
                 </div>
 
                 <div
                     style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <div class="text-xs text-muted-foreground" style="margin-bottom: 8px;">Preview do código:</div>
+                    <div class="text-xs text-muted-foreground">Preview:</div>
                     <div id="barcode-config-preview"
-                        style="text-align: center; padding: 12px; background: white; border-radius: 4px; border: 1px solid #e2e8f0;">
-                        <div style="font-family:'Libre Barcode 39';font-size:36px; margin-bottom:5px;">*CLI-001*</div>
-                        <div style="font-family:monospace;font-size:11px;">CLI-001</div>
+                        style="text-align: center; background: white; padding: 10px; border-radius: 4px;">
                     </div>
                 </div>
             </div>
 
-            <div class="modal-footer" style="margin-top: 24px;">
+            <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeBarcodeConfigModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveBarcodeConfig()">Salvar Configuração</button>
+                <button class="btn btn-primary" onclick="saveBarcodeConfig()">Salvar</button>
             </div>
         </div>
     </div>
