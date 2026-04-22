@@ -734,7 +734,13 @@ function renderColumnFieldGroups(modelName, columnConfig) {
                             ${columnConfig.maxColumns >= 3 ? '<option value="3">3 Colunas</option>' : ''}
                             ${columnConfig.maxColumns >= 4 ? '<option value="4">4 Colunas</option>' : ''}
                         </select>
-                        <button class="btn btn-outline btn-sm" onclick="removeFieldGroup(${groupIndex})" title="Remover grupo">&#128465;</button>
+                        // Procure por este trecho dentro de renderColumnFieldGroups e substitua o conteúdo do botão:
+<button class="btn btn-outline btn-sm" onclick="removeFieldGroup(${groupIndex})" title="Remover grupo">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    </svg>
+</button>
                     </div>
                 </div>
                 <div class="column-fields-container" style="display: grid; grid-template-columns: repeat(${group.columns}, 1fr); gap: 8px; min-height: 60px;">
@@ -2423,14 +2429,30 @@ function renderMirrorList() {
             ${state.mirrors.length === 0 ?
             '<div class="p-4 text-center text-muted-foreground text-sm">Nenhum modelo salvo</div>' :
             state.mirrors.map(mirror => `
-                    <div class="mirror-item ${state.selectedMirrorId === mirror.id ? 'mirror-item-selected' : ''}" 
-                         onclick="loadMirror('${mirror.id}')">
-                        <div class="mirror-info">
-                            <div class="mirror-name">${mirror.name || 'Sem nome'}</div>
-                        </div>
-                        <button type="button" class="action-button-destructive" onclick="deleteMirror('${mirror.id}', event)">&#128465;</button>
-                    </div>
-                `).join('')
+    <div class="mirror-item ${state.selectedMirrorId === mirror.id ? 'mirror-item-selected' : ''}" 
+         onclick="loadMirror('${mirror.id}')">
+        <div class="mirror-info">
+            <div class="mirror-name">${mirror.name || 'Sem nome'}</div>
+        </div>
+        <div class="mirror-actions" style="display: flex; gap: 4px;">
+            <button type="button" class="action-button" onclick="cloneMirror('${mirror.id}', event)" title="Clonar Modelo">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            </button>
+            
+            <button type="button" class="action-button-destructive" onclick="deleteMirror('${mirror.id}', event)" title="Excluir">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+`).join('')
         }
         </div>
     `;
@@ -2668,6 +2690,26 @@ function clearLocalStorage() {
         }, 1500);
     }
 }
+
+
+function cloneMirror(id, event) {
+    if (event) event.stopPropagation();
+
+    const original = state.mirrors.find(m => m.id === id);
+    if (!original) return;
+
+    const clone = JSON.parse(JSON.stringify(original));
+    clone.id = generateId();
+    clone.name = `${original.name} (Cópia)`;
+
+    state.mirrors.push(clone);
+    saveToLocalStorage();
+    renderMirrorList();
+    showToast('Modelo clonado com sucesso!');
+}
+
+// Não esqueça de exportar para o escopo global no final do arquivo
+window.cloneMirror = cloneMirror;
 
 
 
