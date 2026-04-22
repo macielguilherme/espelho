@@ -529,17 +529,12 @@ const data2Options = [
 ];
 
 const intermOptions = [
-    { value: 'INTERMEDIÁRIO', label: 'Intermediário' },
-    { value: 'PRAZO', label: 'Prazo' },
-    { value: 'CORRENTE', label: 'Fase Corrente' },
-    { value: 'F. INTERM.', label: 'F. Interm.' }
+    { value: 'INTERMEDIÁRIO', label: 'Fase Intermediária - c19' }
 ];
 
 const destOptions = [
-    { value: 'DESTINAÇÃO FINAL', label: 'Destinação Final' },
-    { value: 'DESTINAÇÃO', label: 'Destinação' },
-    { value: 'DESTINO', label: 'Destino' },
-    { value: 'AÇÃO FINAL', label: 'Ação Final' }
+    { value: 'DESTINAÇÃO FINAL', label: 'Destinação Final - c20' }
+
 ];
 
 let state = {
@@ -1134,13 +1129,6 @@ function openFieldConfigModal(key, label) {
 
     const fieldConfig = getFieldConfig(modelName, key);
     const fieldType = getFieldType(key);
-
-    const showLabelCheckbox = document.getElementById('config-show-label');
-    if (showLabelCheckbox) showLabelCheckbox.checked = !!fieldConfig.showLabel;
-
-
-    document.getElementById('config-use-pipe').checked = fieldConfig.usePipe;
-    document.getElementById('config-uppercase').checked = fieldConfig.uppercase;
     document.getElementById('config-bold').checked = fieldConfig.bold;
 
     // NOVO: input numérico para tamanho da fonte
@@ -1149,36 +1137,9 @@ function openFieldConfigModal(key, label) {
         fontSizeInput.value = fieldConfig.fontSize || 11;
     }
 
-    const limitCharactersToggle = document.getElementById('config-limit-characters');
-    if (limitCharactersToggle) limitCharactersToggle.checked = false;
-    const breakLineToggle = document.getElementById('config-break-line');
-    if (breakLineToggle) breakLineToggle.checked = false;
-    const autoReduceToggle = document.getElementById('config-auto-reduce-font');
-    if (autoReduceToggle) autoReduceToggle.checked = false;
+    
 
-    // REMOVA este bloco dos radios de fonte:
-    // const fontSizeRadios = document.querySelectorAll('input[name="config-font-size"]');
-    // fontSizeRadios.forEach(radio => {
-    //     if (radio.value === (fieldConfig.fontSize || 'medium')) {
-    //         radio.checked = true;
-    //     }
-    // });
 
-    const overflowRadios = document.querySelectorAll('input[name="config-overflow-rule"]');
-    overflowRadios.forEach(radio => {
-        if (radio.value === (fieldConfig.overflowRule || 'wrap')) {
-            radio.checked = true;
-        }
-    });
-
-    const columnLayoutRadios = document.querySelectorAll('input[name="config-column-layout"]');
-    columnLayoutRadios.forEach(radio => {
-        if (radio.value === (fieldConfig.columnLayout || 'single')) {
-            radio.checked = true;
-        }
-    });
-
-    document.getElementById('config-max-chars').value = fieldConfig.maxChars || 0;
 
     const alignmentRadios = document.querySelectorAll('input[name="config-alignment"]');
     alignmentRadios.forEach(radio => {
@@ -1226,7 +1187,7 @@ function openFieldConfigModal(key, label) {
 
     setupPreviewListeners();
     updateFieldPreview();
-    toggleContentLimitVisibility();
+    
 
     modal.style.display = 'flex';
 }
@@ -1240,15 +1201,10 @@ function closeFieldConfigModal() {
 function setupPreviewListeners() {
     const inputs = [
         'config-show-label',
-        'config-use-pipe',
         'config-uppercase',
         'config-bold',
         'config-font-size', // ADICIONAR esta linha (está faltando!)
-        'config-max-chars',
-        'config-limit-characters',
-        'config-break-line',
-        'config-auto-reduce-font',
-        'content-limit-input'
+        
     ];
 
     inputs.forEach(id => {
@@ -1263,10 +1219,7 @@ function setupPreviewListeners() {
 
 
     // O resto continua igual...
-    document.querySelectorAll('input[name="config-overflow-rule"]').forEach(radio => {
-        radio.removeEventListener('change', updateFieldPreview);
-        radio.addEventListener('change', updateFieldPreview);
-    });
+    
 
     document.querySelectorAll('input[name="config-alignment"]').forEach(radio => {
         radio.removeEventListener('change', updateFieldPreview);
@@ -1288,12 +1241,7 @@ function setupPreviewListeners() {
     document.getElementById('config-year-separator')?.addEventListener('change', updateFieldPreview);
 }
 
-function toggleContentLimitVisibility() {
-    const limiter = document.getElementById('config-limit-characters');
-    const wrapper = document.getElementById('content-limit-wrapper');
-    if (!wrapper) return;
-    wrapper.style.display = limiter && limiter.checked ? 'block' : 'none';
-}
+
 
 function updateFieldPreview() {
     const preview = document.getElementById('field-config-preview');
@@ -1302,13 +1250,12 @@ function updateFieldPreview() {
     const fieldType = getFieldType(currentConfigField.key);
 
     const showLabel = document.getElementById('config-show-label')?.checked || false;
-    const usePipe = document.getElementById('config-use-pipe')?.checked || false;
+    
     const uppercase = document.getElementById('config-uppercase')?.checked || false;
     const bold = document.getElementById('config-bold')?.checked || false;
 
     const fontSize = parseInt(document.getElementById('config-font-size')?.value) || 11;
-    const overflowRule = document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap';
-    const maxChars = parseInt(document.getElementById('config-max-chars')?.value) || 0;
+    
 
     const fieldName = currentConfigField.label || 'Campo';
 
@@ -1371,27 +1318,13 @@ function updateFieldPreview() {
         previewText = previewText.toUpperCase();
     }
 
-    // Aplicar limite de caracteres
-    if (maxChars > 0 && previewText.length > maxChars) {
-        if (overflowRule === 'truncate') {
-            previewText = previewText.substring(0, maxChars) + '...';
-        }
-    }
+    
 
     // Construir estilos CSS
     if (bold) style += 'font-weight: bold; ';
     style += `font-size: ${fontSize}px; `;
 
-    // Aplicar regras de overflow
-    if (overflowRule === 'truncate') {
-        style += 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
-    } else if (overflowRule === 'wrap') {
-        style += 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;';
-    } else if (overflowRule === 'reduce-font') {
-        style += 'white-space: normal; word-wrap: break-word;';
-    } else {
-        style += 'white-space: normal; word-wrap: break-word;';
-    }
+    
 
     // Aplicar alinhamento
     const alignment = document.querySelector('input[name="config-alignment"]:checked')?.value || 'left';
@@ -1413,14 +1346,12 @@ function saveFieldConfig() {
     const configChanges = {
 
         showLabel: document.getElementById('config-show-label')?.checked || false, // <-- ADICIONE AQUI
-        usePipe: document.getElementById('config-use-pipe')?.checked || false,
+        
         uppercase: document.getElementById('config-uppercase')?.checked || false,
         bold: document.getElementById('config-bold')?.checked || false,
         fontSize: parseInt(document.getElementById('config-font-size')?.value) || 11,
         alignment: document.querySelector('input[name="config-alignment"]:checked')?.value || 'left',
-        columnLayout: document.querySelector('input[name="config-column-layout"]:checked')?.value || 'single',
-        overflowRule: document.querySelector('input[name="config-overflow-rule"]:checked')?.value || 'wrap',
-        maxChars: parseInt(document.getElementById('config-max-chars')?.value) || 0,
+        
     };
 
     // Adicionar configurações específicas de CLASSIFICAÇÃO
