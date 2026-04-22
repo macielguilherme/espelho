@@ -988,7 +988,7 @@ function openFieldConfigModal(key, label) {
 
     if (!modal) return;
 
-    title.textContent = `Configurar: ${label}`;
+    title.textContent = `Configuração do Campo`;
 
     const fieldConfig = getFieldConfig(modelName, key);
     const fieldType = getFieldType(key);
@@ -1485,7 +1485,7 @@ function renderPencilButton(key, label) {
                     class="btn btn-outline" 
                     style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;" 
                     onclick="openBarcodeConfigModal()" 
-                    title="Configurar Código de Barras">
+                    title="Configuração do Campo">
                 &#9881;
             </button>
         `;
@@ -1515,7 +1515,7 @@ function renderPencilButton(key, label) {
                 class="btn ${btnClass}" 
                 style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; position: relative;" 
                 onclick="openFieldConfigModal('${key}', '${label}')" 
-                title="Configurar ${label}">
+                title="Configuração do Campo">
             &#9881;
             ${hasCustomConfig ?
                 '<span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#10b981;border-radius:50%;"></span>' :
@@ -1546,7 +1546,7 @@ function renderPencilButton(key, label) {
                 class="btn ${btnClass}" 
                 style="padding: 0.5rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; position: relative;" 
                 onclick="openFieldConfigModal('${key}', '${label}')" 
-                title="Configurar ${label}">
+                title="Configuração do Campo">
             &#9881;
             ${hasCustomConfig ?
             '<span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#10b981;border-radius:50%;"></span>' :
