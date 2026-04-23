@@ -101,19 +101,19 @@ const headerLabelOptionsByModel = {
         top: ['Classificação - c17']
     },
     'Modelo 2': {
-        top: ['DEPARTAMENTO - C7'],
+        top: ['Departamento - c7'],
         title: ['Classificação - c17'],
         extra: ['Classificação - c17']
     },
     'Modelo 3': {
-        top: ['UNIDADE', 'Classificação - c17'],
-        title: ['Nº CAIXA', 'Classificação - c17'],
-        extra: ['DEPARTAMENTO', 'Classificação - c17'],
-        line4: ['TIPO DOCUMENTAL', 'Classificação - c17'],
-        line5: ['CODIGO', 'Classificação - c17'],
+        top: ['Unidade - c90'],
+        title: ['Identificador SOS - c1'],
+        extra: ['Departamento - c7'],
+        line4: ['Tipo Documental - c16'],
+        line5: ['Código - c93'],
     },
     'Modelo 4': {
-        top: ['DEPARTAMENTO - C7'],
+        top: ['Departamento - c7'],
         title: ['Classificação - c17']
 
     }
