@@ -232,36 +232,43 @@
                 <div id="year-config" style="margin-top: 24px; display: none;">
                     <div style="background: #f8fafc; border-radius: 6px; padding: 16px; border: 1px solid #e2e8f0;">
                         <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: #0f172a;">
-                            Configuração de Ano</h4>
+                            Configuração de Período (Anos)</h4>
 
-                        <div style="margin-bottom: 16px;">
-                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de
-                                Exibição:</label>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <label class="radio-item">
-                                    <input type="radio" name="config-year-mode" value="both" checked>
-                                    Ano Inicial e Ano Final
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="config-year-mode" value="initial">
-                                    Ano Inicial
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="config-year-mode" value="final">
-                                    Ano Final
-                                </label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                            <div>
+                                <label class="form-label" style="font-size: 11px;">Campo Ano Inicial:</label>
+                                <select id="config-year-field-start" class="form-input text-xs">
+                                    <option value="">Selecione...</option>
+                                    <option value="ANO INICIAL - N1">Ano Inicial - n1</option>
+                                    <option value="ANO FINAL - N2">Ano Final - n2</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 11px;">Campo Ano Final:</label>
+                                <select id="config-year-field-end" class="form-input text-xs">
+                                    <option value="">Selecione...</option>
+                                    <option value="ANO INICIAL - N1">Ano Inicial - n1</option>
+                                    <option value="ANO FINAL - N2">Ano Final - n2</option>
+                                </select>
                             </div>
                         </div>
 
-                        <div>
-                            <label class="form-label" style="margin-bottom: 8px; display: block;">Separador entre
-                                Anos:</label>
-                            <select id="config-year-separator" class="form-input" style="width: 100%;">
-                                <option value=" - ">Hífen com espaços ( - )</option>
-                                <option value="-">Hífen sem espaços (-)</option>
-                                <option value=" a ">"a" (2020 a 2021)</option>
-                                <option value="/">Barra (/)</option>
-                            </select>
+                        <hr style="margin: 12px 0;">
+
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">Modo de Exibição no
+                                Espelho:</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label class="radio-item">
+                                    <input type="radio" name="config-year-mode" value="both"> Período (Inicial - Final)
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="config-year-mode" value="initial"> Exibir Apenas Inicial
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="config-year-mode" value="final"> Exibir Apenas Final
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
