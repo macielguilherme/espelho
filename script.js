@@ -1721,7 +1721,7 @@ function renderForm() {
     <div class="grid grid-cols-2 gap-2">
         <div class="flex gap-1 items-center">
             <div class="form-input flex-1 text-xs" style="background:#f1f5f9; display:flex; align-items:center; opacity:0.8;">
-                Período (Ano)
+                Ano - c20
             </div>
             ${renderPencilButton('data_1_value', 'Configurar Período')}
         </div>
