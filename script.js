@@ -619,7 +619,6 @@ function renderColumnFieldGroups(modelName, columnConfig) {
                             ${columnConfig.maxColumns >= 3 ? '<option value="3">3 Colunas</option>' : ''}
                             ${columnConfig.maxColumns >= 4 ? '<option value="4">4 Colunas</option>' : ''}
                         </select>
-                        // Procure por este trecho dentro de renderColumnFieldGroups e substitua o conteúdo do botão:
 <button class="btn btn-outline btn-sm" onclick="removeFieldGroup(${groupIndex})" title="Remover grupo">
     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="3 6 5 6 21 6"></polyline>
